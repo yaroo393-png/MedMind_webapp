@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เขียน SRS ให้ทีมสร้างได้จริง — คู่มือ Software Requirements — Write a Buildable SRS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f7fb; --surface:#ffffff; --surface-2:#eef1f7;
+    --ink:#161a22; --ink-soft:#3c4657; --muted:#6b7686; --faint:#9aa4b2;
+    --line:#e2e6ee; --line-soft:#eef1f6;
+    --accent:#0e7c86; --accent-2:#0b5e66; --accent-soft:#d7eef0;
+    --warn:#b45309; --warn-soft:#fdf1de;
+    --bad:#b91c1c; --bad-soft:#fbe6e6;
+    --good:#15803d; --good-soft:#e2f3e7;
+    --brand:#3d2f8f; --brand-soft:#e9e5fb;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 8px 24px rgba(16,24,40,.06);
+    --radius:16px;
+    --sans:'Sarabun','Segoe UI',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0d1017; --surface:#151a23; --surface-2:#1b222d;
+      --ink:#e8ecf3; --ink-soft:#c2cad6; --muted:#8b95a4; --faint:#5f6a79;
+      --line:#262e3a; --line-soft:#1e2530;
+      --accent:#39c2cf; --accent-2:#7fdfe8; --accent-soft:#123236;
+      --warn:#e0a23f; --warn-soft:#2e2413;
+      --bad:#f0787a; --bad-soft:#2e1616;
+      --good:#66c98a; --good-soft:#16281c;
+      --brand:#b3a6f5; --brand-soft:#1e1a34;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);font-size:17px;line-height:1.72;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+
+  /* ---- language toggle ---- */
+  [data-lang="th"] .l-en{display:none}
+  [data-lang="en"] .l-th{display:none}
+  .langbar{
+    position:fixed;top:16px;right:16px;z-index:50;display:flex;gap:4px;
+    background:var(--surface);border:1px solid var(--line);border-radius:999px;
+    padding:4px;box-shadow:var(--shadow);
+  }
+  .langbar button{
+    border:0;background:transparent;color:var(--muted);font-family:var(--sans);
+    font-weight:700;font-size:13px;letter-spacing:.04em;padding:6px 14px;border-radius:999px;
+    cursor:pointer;transition:.14s;
+  }
+  .langbar button.on{background:var(--accent);color:#fff}
+  @media print{.langbar{display:none}}
+
+  /* Hero */
+  header.hero{
+    background:
+      radial-gradient(1200px 400px at 12% -10%,var(--accent-soft),transparent 60%),
+      radial-gradient(900px 380px at 100% 0%,var(--brand-soft),transparent 55%);
+    border-bottom:1px solid var(--line);
+    padding:64px 0 48px;
+  }
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--accent-2);background:var(--surface);border:1px solid var(--line);
+    padding:6px 13px;border-radius:999px;box-shadow:var(--shadow);
+  }
+  h1{font-size:clamp(30px,5vw,46px);line-height:1.18;margin:20px 0 12px;letter-spacing:-.01em;font-weight:700}
+  .lede{font-size:clamp(18px,2.4vw,21px);color:var(--ink-soft);max-width:52ch;margin:0}
+  .thesis{
+    margin-top:26px;padding:18px 22px;background:var(--surface);border:1px solid var(--line);
+    border-left:5px solid var(--accent);border-radius:12px;box-shadow:var(--shadow);
+    font-size:18px;max-width:62ch;
+  }
+  .thesis b{color:var(--accent-2)}
+
+  /* TOC */
+  nav.toc{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:20px 24px;margin:-28px auto 0;position:relative;z-index:2;
+  }
+  nav.toc h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+  nav.toc ol{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px 22px;counter-reset:t}
+  nav.toc a{counter-increment:t;display:flex;gap:11px;align-items:baseline;text-decoration:none;color:var(--ink-soft);padding:7px 8px;border-radius:9px;font-size:15.5px}
+  nav.toc a::before{content:counter(t,decimal-leading-zero);font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600;min-width:20px}
+  nav.toc a:hover{background:var(--surface-2);color:var(--ink)}
+
+  section{padding:46px 0;border-bottom:1px solid var(--line-soft)}
+  .kicker{font-family:var(--mono);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 8px;display:flex;align-items:center;gap:10px}
+  .kicker .en{color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0}
+  h2.sec{font-size:clamp(24px,3.4vw,32px);margin:0 0 6px;letter-spacing:-.01em;line-height:1.25}
+  h3{font-size:20px;margin:34px 0 10px;letter-spacing:-.005em}
+  h4{font-size:16.5px;margin:22px 0 6px;color:var(--ink)}
+  p{margin:0 0 15px}
+  .sub{color:var(--muted);font-size:16px;margin-bottom:22px;max-width:66ch}
+  strong{font-weight:600}
+  em{color:var(--accent-2);font-style:normal;font-weight:600}
+  a.inline{color:var(--accent-2);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+  code{font-family:var(--mono);font-size:.9em;background:var(--surface-2);padding:2px 7px;border-radius:6px;color:var(--accent-2)}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px 28px;margin:22px 0}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:760px){.grid2,.grid3{grid-template-columns:1fr}}
+
+  .tag{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;letter-spacing:.02em}
+  .tag.bad{background:var(--bad-soft);color:var(--bad)}
+  .tag.good{background:var(--good-soft);color:var(--good)}
+  .tag.warn{background:var(--warn-soft);color:var(--warn)}
+  .tag.brand{background:var(--brand-soft);color:var(--brand)}
+  .tag.accent{background:var(--accent-soft);color:var(--accent-2)}
+
+  .callout{border-radius:12px;padding:16px 20px;margin:20px 0;border:1px solid var(--line);font-size:16px}
+  .callout .lab{font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:5px}
+  .callout.info{background:var(--accent-soft);border-color:transparent}
+  .callout.info .lab{color:var(--accent-2)}
+  .callout.warn{background:var(--warn-soft);border-color:transparent}
+  .callout.warn .lab{color:var(--warn)}
+  .callout.brand{background:var(--brand-soft);border-color:transparent}
+  .callout.brand .lab{color:var(--brand)}
+
+  ul.clean{list-style:none;padding:0;margin:14px 0}
+  ul.clean li{position:relative;padding:6px 0 6px 30px;border-bottom:1px dashed var(--line-soft)}
+  ul.clean li:last-child{border-bottom:0}
+  ul.clean li::before{content:"—";position:absolute;left:4px;color:var(--accent);font-weight:700}
+
+  /* comparison flip cards */
+  .flip{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:18px 0}
+  @media(max-width:680px){.flip{grid-template-columns:1fr}}
+  .flip .side{padding:20px 22px}
+  .flip .before{background:var(--bad-soft)}
+  .flip .after{background:var(--good-soft);border-left:1px solid var(--line)}
+  @media(max-width:680px){.flip .after{border-left:0;border-top:1px solid var(--line)}}
+  .flip h5{margin:0 0 10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+  .flip .before h5{color:var(--bad)} .flip .after h5{color:var(--good)}
+  .flip p{font-size:15.5px;margin:0 0 8px}
+
+  /* 5 whys */
+  .whys{counter-reset:w;margin:18px 0}
+  .whys .step{position:relative;padding:12px 0 12px 46px;border-left:2px solid var(--accent-soft);margin-left:16px}
+  .whys .step::before{counter-increment:w;content:"W" counter(w);position:absolute;left:-17px;top:12px;width:32px;height:32px;background:var(--accent);color:#fff;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;font-family:var(--mono)}
+  .whys .q{font-weight:600}
+  .whys .a{color:var(--ink-soft);font-size:15.5px}
+  .whys .root{background:var(--brand-soft);border-radius:10px;padding:12px 16px;margin:8px 0 0 16px;font-weight:600;color:var(--brand)}
+
+  table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px}
+  th,td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--surface-2)}
+  td.num{font-family:var(--mono);text-align:right;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+  .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+  .scroll table{margin:0}
+
+  /* calculator */
+  .calc{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px 28px;margin:24px 0}
+  .calc .row{display:grid;grid-template-columns:1fr 130px;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line-soft)}
+  .calc label{font-size:15.5px}
+  .calc label small{display:block;color:var(--muted);font-size:13px}
+  .calc input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:15px;text-align:right}
+  .calc input:focus{outline:2px solid var(--accent);border-color:transparent}
+  .calc .out{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+  @media(max-width:620px){.calc .out{grid-template-columns:1fr}}
+  .calc .out .box{background:var(--surface-2);border-radius:12px;padding:16px;text-align:center}
+  .calc .out .box .k{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .calc .out .box .v{font-family:var(--mono);font-size:24px;font-weight:600;color:var(--accent-2);margin-top:6px}
+  .calc .out .box .d{font-size:12.5px;color:var(--muted);margin-top:4px}
+  .verdict{margin-top:18px;padding:14px 18px;border-radius:10px;font-size:15.5px;font-weight:500}
+
+  /* scorecard */
+  .score-item{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line-soft)}
+  .score-item:last-child{border-bottom:0}
+  .score-item .q b{display:block}
+  .score-item .q span{font-size:14px;color:var(--muted)}
+  .dots{display:flex;gap:6px}
+  .dots button{width:26px;height:26px;border-radius:50%;border:1.5px solid var(--line);background:var(--bg);cursor:pointer;color:var(--muted);font-weight:600;font-size:13px;transition:.12s}
+  .dots button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .score-total{margin-top:16px;padding:16px 20px;background:var(--surface-2);border-radius:12px;display:flex;justify-content:space-between;align-items:center;font-weight:600}
+  .score-total .n{font-family:var(--mono);font-size:26px;color:var(--accent-2)}
+
+  /* worksheet */
+  .ws{background:var(--surface);border:1px dashed var(--accent);border-radius:var(--radius);padding:26px 28px;margin:22px 0}
+  .ws .field{margin:16px 0}
+  .ws .field label{display:block;font-weight:600;margin-bottom:6px;font-size:15.5px}
+  .ws .field label small{font-weight:400;color:var(--muted)}
+  .ws .line{border-bottom:1.5px solid var(--line);height:30px}
+  .ws .box-in{border:1px solid var(--line);border-radius:10px;height:74px;background:var(--surface-2)}
+
+  .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+  .pill{font-size:14px;padding:7px 14px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-soft)}
+
+  .biglist{counter-reset:b;list-style:none;padding:0;margin:20px 0}
+  .biglist li{counter-increment:b;position:relative;padding:16px 18px 16px 60px;background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .biglist li::before{content:counter(b);position:absolute;left:16px;top:16px;width:30px;height:30px;background:var(--accent-soft);color:var(--accent-2);border-radius:9px;display:grid;place-items:center;font-weight:700;font-family:var(--mono)}
+  .biglist li b{display:block;margin-bottom:2px}
+
+  /* decision tree */
+  .tree{margin:20px 0}
+  .tnode{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:0 0 6px;box-shadow:var(--shadow);font-weight:600}
+  .tbranch{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0 18px}
+  @media(max-width:680px){.tbranch{grid-template-columns:1fr}}
+  .tbranch .leaf{border-radius:12px;padding:14px 18px;font-size:15px;border:1px solid var(--line)}
+  .leaf.stop{background:var(--bad-soft)}
+  .leaf.warn{background:var(--warn-soft)}
+  .leaf.go{background:var(--good-soft)}
+  .leaf .h{font-weight:700;display:block;margin-bottom:4px}
+  .leaf.stop .h{color:var(--bad)} .leaf.warn .h{color:var(--warn)} .leaf.go .h{color:var(--good)}
+
+  /* command chips */
+  .cmd{font-family:var(--mono);font-size:14px;background:var(--brand-soft);color:var(--brand);padding:3px 10px;border-radius:7px;font-weight:600;white-space:nowrap}
+
+  /* flow rail */
+  .rail{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0;font-family:var(--mono);font-size:13.5px}
+  .rail .stepchip{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:8px 12px;box-shadow:var(--shadow)}
+  .rail .stepchip b{color:var(--accent-2)}
+  .rail .arw{color:var(--accent);font-weight:700}
+
+  /* file tree */
+  .filetree{font-family:var(--mono);font-size:13.5px;line-height:1.85;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:18px 0;overflow-x:auto;box-shadow:var(--shadow)}
+  .filetree .dir{color:var(--accent-2);font-weight:600}
+  .filetree .note{color:var(--muted)}
+
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14.5px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+  .print-btn{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);padding:8px 16px;border-radius:9px;cursor:pointer;font-family:var(--sans);font-size:14px}
+  .print-btn:hover{background:var(--surface-2)}
+
+  @media print{
+    body{background:#fff;font-size:12px}
+    nav.toc,.print-btn,.calc input,.dots{box-shadow:none}
+    header.hero{padding:20px 0}
+    section{padding:18px 0;break-inside:avoid}
+    .card,.calc,.ws,.biglist li{box-shadow:none;break-inside:avoid}
+  }
+</style>
+</head>
+<body data-lang="th">
+
+<div class="langbar" role="group" aria-label="Language">
+  <button data-set="th" class="on">ไทย</button>
+  <button data-set="en">EN</button>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Intro to Software Engineering — 2569 — Milestone 2</span>
+    <h1>
+      <span class="l-th">เขียน SRS ให้ทีมสร้างได้จริง<br>ไม่ใช่แค่ “รายการสิ่งที่อยากได้”</span>
+      <span class="l-en">Write an SRS Your Team Can Actually Build<br>Not Just a “Wishlist of Features”</span>
+    </h1>
+    <p class="lede">
+      <span class="l-th">คู่มือแปลง “ปัญหา” จาก M1 ให้กลายเป็น <em>ข้อกำหนดความต้องการ (SRS)</em> ที่ชัด วัดผลได้ และให้ AI ลงมือสร้างต่อได้ทันที — ทีละ FR ทีละ NFR อย่างเป็นระบบ</span>
+      <span class="l-en">A guide to turning the <em>problem</em> from M1 into a <em>Software Requirements Specification</em> that's clear, testable, and ready for AI to build from — one FR and one NFR at a time.</span>
+    </p>
+    <div class="thesis">
+      <span class="l-th"><b>ประโยคเดียวที่ต้องจำ</b> requirement ที่ดีไม่ใช่ “สิ่งที่อยากได้” แต่คือ
+      <b>ข้อตกลงที่ทดสอบได้</b> ถ้าเขียนจนใครมาอ่านก็เข้าใจตรงกัน และรู้ว่า “เสร็จ” หน้าตาเป็นยังไง —
+      AI จะสร้างของถูกตัว ถ้าเขียนกำกวม ต่อให้ AI เก่งแค่ไหน ก็สร้างผิดเรื่อง</span>
+      <span class="l-en"><b>One sentence to remember:</b> a good requirement isn't “what you want” — it's a
+      <b>testable agreement</b>. Write it so any reader understands the same thing and knows what “done”
+      looks like, and the AI builds the right thing. Write it vaguely and no amount of AI skill builds the right thing.</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc">
+    <h2><span class="l-th">ในคู่มือนี้ — What's inside</span><span class="l-en">What's inside — ในคู่มือนี้</span></h2>
+    <ol>
+      <li><a href="#s1"><span class="l-th">SRS คืออะไร ทำไมต้องมี</span><span class="l-en">What an SRS is, and why</span></a></li>
+      <li><a href="#s2"><span class="l-th">กายวิภาคของ SRS</span><span class="l-en">Anatomy of an SRS</span></a></li>
+      <li><a href="#s3"><span class="l-th">จากปัญหา สู่ requirement</span><span class="l-en">From problem to requirements</span></a></li>
+      <li><a href="#s4"><span class="l-th">เขียน Functional Requirement ที่ดี</span><span class="l-en">Write a good Functional Requirement</span></a></li>
+      <li><a href="#s5"><span class="l-th">User Story กับ Use Case</span><span class="l-en">User stories vs use cases</span></a></li>
+      <li><a href="#s6"><span class="l-th">NFR ที่ “วัดได้”</span><span class="l-en">Non-functional requirements that measure</span></a></li>
+      <li><a href="#s7"><span class="l-th">Acceptance Criteria (G-W-T)</span><span class="l-en">Acceptance criteria (G-W-T)</span></a></li>
+      <li><a href="#s8"><span class="l-th">จัดลำดับความสำคัญ MoSCoW</span><span class="l-en">Prioritize with MoSCoW</span></a></li>
+      <li><a href="#s9"><span class="l-th">Traceability เส้นด้ายทอง</span><span class="l-en">Traceability: the golden thread</span></a></li>
+      <li><a href="#s10"><span class="l-th">10 กลิ่นไม่ดีของ requirement</span><span class="l-en">10 requirement smells</span></a></li>
+      <li><a href="#s11"><span class="l-th">เขียน SRS ด้วย AI</span><span class="l-en">Write your SRS with AI</span></a></li>
+      <li><a href="#s12"><span class="l-th">ตัวอย่าง SRS ของอาจารย์</span><span class="l-en">The instructor's example SRS</span></a></li>
+      <li><a href="#s13"><span class="l-th">Scorecard วัดความพร้อม SRS</span><span class="l-en">Scorecard: is your SRS ready?</span></a></li>
+      <li><a href="#s14"><span class="l-th">M2 ส่งอะไร + เกณฑ์ให้คะแนน</span><span class="l-en">M2: submit &amp; grading rubric</span></a></li>
+    </ol>
+  </nav>
+</div>
+
+<!-- ============ 1 ============ -->
+<section id="s1"><div class="wrap">
+  <p class="kicker">01 Mindset <span class="en">/ กรอบความคิด</span></p>
+  <h2 class="sec"><span class="l-th">SRS คืออะไร และทำไมต้องเสียเวลาเขียน</span><span class="l-en">What an SRS is — and why it's worth the time</span></h2>
+  <p class="sub l-th">ใน M1 คุณเลือก “ปัญหา” และรู้ว่าใครคือผู้ใช้ ตอนนี้คำถามเปลี่ยนเป็น “แล้วระบบต้องทำอะไรได้บ้าง” <b>SRS (Software Requirements Specification)</b> คือเอกสารที่ตอบคำถามนี้แบบตรวจสอบได้ — เป็นสะพานระหว่าง “ไอเดียในหัว” กับ “โค้ดที่รันได้”</p>
+  <p class="sub l-en">In M1 you chose a problem and named your users. The question now becomes “so what must the system
+  actually do?” An <b>SRS (Software Requirements Specification)</b> answers that in a checkable way — it's
+  the bridge between the idea in your head and code that runs.</p>
+
+  <div class="flip">
+    <div class="side before">
+      <h5><span class="l-th">ไม่มี SRS</span><span class="l-en">Without an SRS</span></h5>
+      <p><span class="l-th">“ทำแอปจองคิวร้านกาแฟนะ” → แต่ละคนในทีมจินตนาการคนละแบบ โค้ดชนกัน AI สร้างฟีเจอร์ที่ไม่มีใครขอ</span><span class="l-en">“Let's build a coffee-shop queue app” → each teammate imagines something different, code collides, the AI builds features nobody asked for.</span></p>
+      <p><span class="l-th">ถึงเวลาส่ง ถึงรู้ว่า “ไม่ตรงที่คิด” แต่แก้ไม่ทันแล้ว</span><span class="l-en">By submission day you discover it's “not what we meant” — too late to fix.</span></p>
+    </div>
+    <div class="side after">
+      <h5><span class="l-th">มี SRS</span><span class="l-en">With an SRS</span></h5>
+      <p><span class="l-th">“FR-01 ผู้ใช้จองคิวได้, FR-02 เห็นคิวปัจจุบัน, NFR-01 โหลด &lt; 3 วิบนมือถือ” ทุกคนเห็นภาพเดียวกัน</span><span class="l-en">“FR-01 user reserves a slot, FR-02 sees the current queue, NFR-01 loads in &lt; 3s on mobile.” Everyone sees the same picture.</span></p>
+      <p><span class="l-th">แต่ละ requirement รู้ว่า “เสร็จ” หน้าตายังไง ทดสอบได้ แบ่งงานได้</span><span class="l-en">Each requirement has a testable definition of done, so work can be split and checked.</span></p>
+    </div>
+  </div>
+
+  <div class="callout brand">
+    <span class="lab"><span class="l-th">3 สิ่งที่ SRS ให้คุณ</span><span class="l-en">Three things an SRS buys you</span></span>
+    <ul class="clean" style="margin:8px 0 0">
+      <li><span class="l-th"><b>ภาษากลาง</b> ทีม อาจารย์ ผู้ใช้ และ AI อ่านแล้วเข้าใจตรงกัน ไม่ต้องเดา</span><span class="l-en"><b>A shared language:</b> team, instructor, users, and AI all read it the same way — no guessing.</span></li>
+      <li><span class="l-th"><b>นิยามของคำว่า “เสร็จ”</b> ทุก requirement บอกล่วงหน้าว่าจะทดสอบยังไง</span><span class="l-en"><b>A definition of “done”:</b> every requirement says up front how it will be tested.</span></li>
+      <li><span class="l-th"><b>แผนที่แบ่งงาน</b> FR/NFR แต่ละตัวกลายเป็นงานที่มอบหมายและติดตามได้</span><span class="l-en"><b>A work map:</b> each FR/NFR becomes a task you can assign and track.</span></li>
+    </ul>
+  </div>
+
+  <div class="callout info">
+    <span class="lab"><span class="l-th">SRS ไม่ใช่นิยาย</span><span class="l-en">An SRS is not an essay</span></span>
+    <span class="l-th">อย่าเขียนเป็นเรียงความยาว ๆ SRS ที่ดีคือ <b>รายการข้อสั้น มีรหัส วัดผลได้</b> เขียนสิ่งที่ระบบต้อง “ทำ” (What) ไม่ใช่ “ทำยังไง” (How) — เรื่อง How เก็บไว้ตอนออกแบบ (M3)</span>
+    <span class="l-en">Don't write long prose. A good SRS is a <b>list of short, ID'd, testable statements</b>. Say what the
+    system must <b>do</b> (the What), not <b>how</b> it does it (the How) — the How belongs to design (M3).</span>
+  </div>
+</div></section>
+
+<!-- ============ 2 ============ -->
+<section id="s2"><div class="wrap">
+  <p class="kicker">02 Anatomy <span class="en">/ กายวิภาค</span></p>
+  <h2 class="sec"><span class="l-th">ข้างใน SRS มีอะไรบ้าง</span><span class="l-en">What's inside an SRS</span></h2>
+  <p class="sub l-th">มาตรฐาน IEEE 830 / ISO 29148 มีหัวข้อเยอะมาก แต่วิชานี้เก็บ <b>SRS แบบเบา 7 ส่วน</b> (ตรงกับบทที่ 4 ของวิชา) พอครบ 7 ส่วนนี้ ทีมและ AI ก็เริ่มสร้างได้ และข้อสำคัญคือ <b>ส่วนที่เว้นว่างถือว่าตก</b></p>
+  <p class="sub l-en">IEEE 830 / ISO 29148 list many sections, but this course keeps a <b>lightweight 7-part SRS</b> (matching the
+  course's Chapter 4). With these seven in place, your team — and the AI — can start building; and note: <b>an empty
+  section still counts as a failed section</b>.</p>
+
+  <div class="scroll"><table>
+    <thead><tr>
+      <th style="width:26%"><span class="l-th">ส่วน</span><span class="l-en">Section</span></th>
+      <th><span class="l-th">ตอบคำถามว่า</span><span class="l-en">Answers the question</span></th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><b>1. <span class="l-th">จุดประสงค์ &amp; ขอบเขต</span><span class="l-en">Purpose &amp; scope</span></b></td>
+        <td><span class="l-th">ระบบนี้แก้ปัญหาอะไร ทำอะไรบ้าง — ดึงตรงจาก Problem Brief ของ M1</span><span class="l-en">What problem it solves and what it does — pulled straight from your M1 Problem Brief.</span></td>
+      </tr>
+      <tr>
+        <td><b>2. <span class="l-th">ผู้มีส่วนได้เสีย (Stakeholders)</span><span class="l-en">Stakeholders</span></b></td>
+        <td><span class="l-th">ใครเกี่ยวข้องบ้าง <b>อย่างน้อย 3 คน/ฝ่าย</b> เช่น ผู้ใช้ ผู้กำหนดกติกา เจ้าของข้อมูล ระบบภายนอก</span><span class="l-en"><b>At least 3</b> — e.g. the user, whoever sets the rules, the data owner, an external system.</span></td>
+      </tr>
+      <tr>
+        <td><b>3. <span class="l-th">Functional Requirements (FR)</span></b></td>
+        <td><span class="l-th">ระบบต้องทำอะไรได้ — เขียนเป็น <b>user story + acceptance</b> มีรหัส <code>FR-01, FR-02…</code></span><span class="l-en">What the system must do — written as <b>user stories with acceptance criteria</b>, each ID'd <code>FR-01…</code></span></td>
+      </tr>
+      <tr>
+        <td><b>4. <span class="l-th">Non-Functional Requirements (NFR)</span></b></td>
+        <td><span class="l-th">ระบบต้อง “ดี” แค่ไหน — เร็ว ปลอดภัย รองรับกี่คน <b>ต้องมีเรื่องความเป็นส่วนตัว/PDPA อย่างน้อย 1 ข้อ</b> มีรหัส <code>NFR-01…</code></span><span class="l-en">How <b>well</b> — speed, security, capacity — <b>with at least one privacy/PDPA line</b>, each ID'd <code>NFR-01…</code></span></td>
+      </tr>
+      <tr>
+        <td><b>5. <span class="l-th">ชื่อ Use Case</span><span class="l-en">Use case names</span></b></td>
+        <td><span class="l-th">ระบุ “ชื่อ” use case หลัก ๆ ไว้ (ตัวไดอะแกรมค่อยวาดใน M3 Modeling)</span><span class="l-en">List the main use case <b>names</b> (the diagrams themselves come in M3 Modeling).</span></td>
+      </tr>
+      <tr>
+        <td><b>6. <span class="l-th">Out-of-Scope</span><span class="l-en">Out-of-scope</span></b></td>
+        <td><span class="l-th">สิ่งที่ <b>ตั้งใจจะไม่ทำ</b> เทอมนี้ — สัญญากับทีมเองว่าจะไม่ปล่อย scope บวม</span><span class="l-en">What you <b>deliberately won't build</b> this term — a promise to your team against scope creep.</span></td>
+      </tr>
+      <tr>
+        <td><b>7. <span class="l-th">บันทึกการใช้ AI</span><span class="l-en">AI-use log</span></b></td>
+        <td><span class="l-th">ใช้ AI ช่วยตรงไหน ตรวจ/แก้อะไรบ้าง — วิชานี้ถือว่า <b>ขาดไม่ได้</b> (AI ร่างได้ แต่คนเซ็นรับผิดชอบ)</span><span class="l-en">Where AI helped and what you verified/changed — <b>mandatory</b> here (AI may draft, a person signs off).</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout info">
+    <span class="lab"><span class="l-th">เท่านี้ก่อน อย่าเพิ่งใส่</span><span class="l-en">Keep it this size — don't add yet</span></span>
+    <span class="l-th">ยังไม่ต้องมี database schema, API, สถาปัตยกรรม หรือหน้าจอ — พวกนั้นคือ <b>M3 Design</b> SRS ตอบแค่ “ระบบต้องทำอะไร” และ “ดีแค่ไหน” เท่านั้น (acceptance criteria อยู่แนบใต้ FR แต่ละข้อ ดู section 7)</span>
+    <span class="l-en">No database schema, APIs, architecture, or screens yet — those are <b>M3 Design</b>. The SRS answers only
+    “what must it do” and “how well” (acceptance criteria sit beneath each FR — see Section 7).</span>
+  </div>
+
+  <div class="callout info">
+    <span class="lab"><span class="l-th">อ้างอิง</span><span class="l-en">Source</span></span>
+    <span class="l-th">โครง 7 ส่วนนี้ยึดจากเอกสารประกอบการสอน Intro2SE บทที่ 4 (Requirements) ซึ่งเก็บ subset แบบเบาของ IEEE Std 830-1998 / ISO/IEC/IEEE 29148:2018</span>
+    <span class="l-en">This 7-part structure follows the Intro2SE Chapter 4 (Requirements) teaching notes — a lightweight subset of IEEE Std 830-1998 / ISO/IEC/IEEE 29148:2018.</span>
+  </div>
+</div></section>
+
+<!-- ============ 3 ============ -->
+<section id="s3"><div class="wrap">
+  <p class="kicker">03 Flow <span class="en">/ ลำดับการทำงาน</span></p>
+  <h2 class="sec"><span class="l-th">จากปัญหา สู่ requirement — ทำตามลำดับ</span><span class="l-en">From problem to requirements — in order</span></h2>
+  <p class="sub l-th">อย่าเริ่มจากการนั่งลิสต์ฟีเจอร์มั่ว ๆ ให้เดินตามเส้นด้ายจาก M1 ทีละสเต็ป requirement ทุกตัวต้องสาวกลับไปถึง “ปัญหา” ได้</p>
+  <p class="sub l-en">Don't start by brainstorming random features. Walk the thread from M1 one step at a time — every
+  requirement must trace back to the problem.</p>
+
+  <div class="rail">
+    <span class="stepchip"><b><span class="l-th">ปัญหา (M1)</span><span class="l-en">problem (M1)</span></b></span><span class="arw">→</span>
+    <span class="stepchip"><span class="l-th">ผู้ใช้ &amp; งานที่เขาทำ</span><span class="l-en">users &amp; their jobs</span></span><span class="arw">→</span>
+    <span class="stepchip"><span class="l-th">ฟีเจอร์</span><span class="l-en">features</span></span><span class="arw">→</span>
+    <span class="stepchip">FR / NFR</span><span class="arw">→</span>
+    <span class="stepchip"><span class="l-th">acceptance</span><span class="l-en">acceptance</span></span>
+  </div>
+
+  <ol class="biglist">
+    <li><b><span class="l-th">เขียน “งาน” ของผู้ใช้ (Jobs)</span><span class="l-en">List the users' jobs</span></b><span class="l-th">ผู้ใช้แต่ละบทบาทมาที่ระบบเพื่อ “ทำอะไรให้สำเร็จ” เช่น ลูกค้าอยากจองคิวโดยไม่ต้องต่อแถว</span><span class="l-en">For each role, what are they trying to get done? e.g. a customer wants to reserve a slot without standing in line.</span></li>
+    <li><b><span class="l-th">แปลงงานเป็นฟีเจอร์</span><span class="l-en">Turn jobs into features</span></b><span class="l-th">แต่ละงานต้องมีฟีเจอร์รองรับ “จองคิว” → ฟีเจอร์เลือกเวลา + ยืนยัน + ดูสถานะ</span><span class="l-en">Each job needs features. “reserve a slot” → pick a time + confirm + view status.</span></li>
+    <li><b><span class="l-th">แตกฟีเจอร์เป็น FR</span><span class="l-en">Break features into FRs</span></b><span class="l-th">ฟีเจอร์หนึ่งอาจเป็นหลาย FR แต่ละ FR เป็นพฤติกรรมเดียวที่ทดสอบได้ ให้รหัส FR-01, FR-02…</span><span class="l-en">One feature may be several FRs. Each FR is a single, testable behavior. Give IDs FR-01, FR-02…</span></li>
+    <li><b><span class="l-th">ระบุ NFR ที่จำเป็น</span><span class="l-en">Add the NFRs that matter</span></b><span class="l-th">ถามว่า “ต้องเร็วแค่ไหน ปลอดภัยแค่ไหน รองรับกี่คน” เฉพาะที่สำคัญกับปัญหาจริง</span><span class="l-en">Ask “how fast, how safe, how many users” — only the ones that matter to the real problem.</span></li>
+    <li><b><span class="l-th">เขียน acceptance ให้ทุก FR หลัก</span><span class="l-en">Write acceptance for every core FR</span></b><span class="l-th">อย่างน้อยทุก FR ที่เป็น MVP ต้องมี Given–When–Then อย่างน้อย 1–2 ฉาก</span><span class="l-en">At minimum, every MVP FR gets 1–2 Given–When–Then scenarios.</span></li>
+  </ol>
+
+  <div class="callout warn">
+    <span class="lab"><span class="l-th">กับดักที่พบบ่อย</span><span class="l-en">Common trap</span></span>
+    <span class="l-th">นักศึกษามักเริ่มจาก “อยากได้หน้าจอสวย ๆ” หรือ “อยากใช้ React” — นั่นคือ <b>solution</b> ไม่ใช่ requirement ให้ถอยกลับมาถามว่า “ผู้ใช้ต้องทำอะไรให้สำเร็จ” ก่อนเสมอ</span>
+    <span class="l-en">Students often start from “I want a pretty screen” or “I want to use React” — that's a <b>solution</b>,
+    not a requirement. Step back and ask “what must the user accomplish?” first.</span>
+  </div>
+</div></section>
+
+<!-- ============ 4 ============ -->
+<section id="s4"><div class="wrap">
+  <p class="kicker">04 Functional <span class="en">/ FR</span></p>
+  <h2 class="sec"><span class="l-th">เขียน Functional Requirement ที่ดี</span><span class="l-en">Write a good Functional Requirement</span></h2>
+  <p class="sub l-th">ในวิชานี้ ทุก requirement ต้องผ่าน <b>“4 ประตูคุณภาพ (quality gates)”</b> ก่อนรับเข้า SRS — นี่คือเกณฑ์เดียวกับที่อาจารย์ใช้ให้คะแนน (จากบทที่ 4 ของวิชา อิงหลัก INVEST)</p>
+  <p class="sub l-en">In this course, every requirement must pass <b>four quality gates</b> before it enters the SRS — the same bar
+  used for grading (from the course's Chapter 4, grounded in INVEST).</p>
+
+  <ol class="biglist">
+    <li><b><span class="l-th">มี role ที่มีชื่อจริง (ไม่ใช่คำว่า “user”)</span><span class="l-en">A named role — not the word “user”</span></b><span class="l-th">ระบุผู้มีส่วนได้เสียเจาะจง เช่น “นักศึกษา” “พนักงาน” ไม่ใช่ “ผู้ใช้” ลอย ๆ</span><span class="l-en">Name a specific stakeholder — “a student,” “a staff member” — not a vague “user.”</span></li>
+    <li><b><span class="l-th">มี benefit (ส่วน “เพื่อ…/so that”)</span><span class="l-en">States a benefit (the “so that” clause)</span></b><span class="l-th">บอกว่าทำไปเพื่ออะไร ถ้าไม่มี benefit มักเป็นฟีเจอร์ที่เดาเอา ไม่ใช่ need จริง</span><span class="l-en">Say why. A story with no benefit is usually a guessed feature, not a real need.</span></li>
+    <li><b><span class="l-th">acceptance วัดได้ (ตัวเลข / สถานะ / yes-no)</span><span class="l-en">Measurable acceptance (a number / state / yes-no)</span></b><span class="l-th">ต้องเขียน Given–When–Then ได้ ถ้าสองคนเถียงกันได้ว่า “ผ่านหรือยัง” แปลว่ายังไม่วัดได้</span><span class="l-en">You can write a Given–When–Then. If two people can disagree whether it's met, it isn't measurable yet.</span></li>
+    <li><b><span class="l-th">เล็กพอสำหรับ MVP (ราว 3–5 FR)</span><span class="l-en">Small enough for an MVP (~3–5 FRs)</span></b><span class="l-th">ถ้าใหญ่เกินไป ให้แตกเป็นหลายเรื่อง หนึ่ง story = หนึ่งพฤติกรรมที่ทดสอบได้</span><span class="l-en">If it's too big, split it. One story = one testable behavior.</span></li>
+  </ol>
+
+  <div class="callout info">
+    <span class="lab"><span class="l-th">อ้างอิง</span><span class="l-en">Source</span></span>
+    <span class="l-th">4 ประตูคุณภาพ จากเอกสารประกอบการสอน Intro2SE บทที่ 4 (§4.5 User Stories &amp; Acceptance Criteria) อิงเกณฑ์ <b>INVEST</b> (Bill Wake) สำหรับ user story ที่ดี</span>
+    <span class="l-en">The four gates come from the Intro2SE Chapter 4 teaching notes (§4.5, User Stories &amp; Acceptance Criteria), grounded in the <b>INVEST</b> criteria (Bill Wake) for a good user story.</span>
+  </div>
+
+  <h3><span class="l-th">ภาคผนวก — 9 คุณสมบัติตามมาตรฐาน (อ้างอิงเชิงลึก)</span><span class="l-en">Appendix — the 9 standard characteristics (deeper reference)</span></h3>
+  <p class="l-th">ถ้าอยากลงลึก มาตรฐาน <b>ISO/IEC/IEEE 29148:2018</b> ระบุคุณสมบัติของ requirement รายข้อไว้ 9 ข้อ 4 ประตูข้างบนคือเวอร์ชันย่อที่ใช้จริงในชั้นเรียน ส่วน 9 ข้อนี้คือฉบับเต็มของมาตรฐาน</p>
+  <p class="l-en">For depth, <b>ISO/IEC/IEEE 29148:2018</b> lists nine characteristics of an individual requirement. The four
+  gates above are the classroom short form; these nine are the standard's full set.</p>
+
+  <div class="scroll"><table>
+    <thead><tr>
+      <th style="width:24%"><span class="l-th">คุณสมบัติ</span><span class="l-en">Characteristic</span></th>
+      <th><span class="l-th">หมายความว่า</span><span class="l-en">Meaning</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><td><b>Necessary</b><br><span style="color:var(--muted);font-size:13px"><span class="l-th">จำเป็น</span><span class="l-en">necessary</span></span></td><td><span class="l-th">ระบุความสามารถที่ขาดไม่ได้ ถ้าตัดออกระบบจะบกพร่อง — กันฟีเจอร์เกิน (gold-plating)</span><span class="l-en">States a capability that, if removed, leaves a deficiency — guards against gold-plating.</span></td></tr>
+      <tr><td><b>Appropriate</b><br><span style="color:var(--muted);font-size:13px"><span class="l-th">เหมาะกับระดับ</span><span class="l-en">appropriate</span></span></td><td><span class="l-th">รายละเอียดเหมาะกับระดับของระบบ ไม่ลงลึกเรื่องวิธีทำ (design) เกินความจำเป็น</span><span class="l-en">The level of detail suits the level of the system — not diving into design/how.</span></td></tr>
+      <tr><td><b>Unambiguous</b><br><span style="color:var(--muted);font-size:13px"><span class="l-th">ไม่กำกวม</span><span class="l-en">unambiguous</span></span></td><td><span class="l-th">ตีความได้ทางเดียว เลี่ยงคำลอย ๆ เช่น “ง่าย” “เร็ว” “เหมาะสม”</span><span class="l-en">Can be interpreted only one way — avoid floaty words like “easy,” “fast,” “appropriate.”</span></td></tr>
+      <tr><td><b>Complete</b><br><span style="color:var(--muted);font-size:13px"><span class="l-th">ครบถ้วนในตัว</span><span class="l-en">complete</span></span></td><td><span class="l-th">ระบุทุกอย่างที่จำเป็นครบในข้อเดียว ไม่มี “TBD” หรือเงื่อนไขที่หายไป</span><span class="l-en">States all it needs on its own — no “TBD,” no missing conditions.</span></td></tr>
+      <tr><td><b>Singular</b><br><span style="color:var(--muted);font-size:13px"><span class="l-th">ข้อเดียว</span><span class="l-en">singular</span></span></td><td><span class="l-th">ระบุ “ความสามารถเดียว” ถ้ามี “และ” เชื่อม 2 การกระทำ มักต้องแยกเป็น 2 FR</span><span class="l-en">States a single capability — an “and” joining two actions usually means two FRs.</span></td></tr>
+      <tr><td><b>Feasible</b><br><span style="color:var(--muted);font-size:13px"><span class="l-th">ทำได้จริง</span><span class="l-en">feasible</span></span></td><td><span class="l-th">ทำได้ภายในข้อจำกัดด้านเวลา ต้นทุน และเทคนิคของโปรเจกต์</span><span class="l-en">Achievable within the project's time, cost, and technical constraints.</span></td></tr>
+      <tr><td><b>Verifiable</b><br><span style="color:var(--muted);font-size:13px"><span class="l-th">ตรวจสอบได้</span><span class="l-en">verifiable</span></span></td><td><span class="l-th">พิสูจน์ได้ว่าทำสำเร็จ ด้วยการทดสอบ/ตรวจ/วิเคราะห์ — เขียน Given–When–Then ได้</span><span class="l-en">Provable by test/inspection/analysis — you can write a Given–When–Then for it.</span></td></tr>
+      <tr><td><b>Correct</b><br><span style="color:var(--muted);font-size:13px"><span class="l-th">ตรงความต้องการ</span><span class="l-en">correct</span></span></td><td><span class="l-th">สะท้อนความต้องการจริงของผู้ใช้อย่างถูกต้อง สาวกลับถึงปัญหาได้</span><span class="l-en">Accurately represents the real user need — traceable back to the problem.</span></td></tr>
+      <tr><td><b>Conforming</b><br><span style="color:var(--muted);font-size:13px"><span class="l-th">ตรงรูปแบบ</span><span class="l-en">conforming</span></span></td><td><span class="l-th">เขียนตามรูปแบบ/ถ้อยคำมาตรฐานที่ตกลงกัน เช่น ใช้ “ระบบต้อง (shall)”</span><span class="l-en">Follows the agreed template/wording — e.g. uses “the system shall.”</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout info">
+    <span class="lab"><span class="l-th">อ้างอิง</span><span class="l-en">Source</span></span>
+    <span class="l-th">ISO/IEC/IEEE 29148:2018 — <i>Systems and software engineering — Life cycle processes — Requirements engineering</i> (ฉบับปัจจุบัน แทน IEEE Std 830-1998) และคุณสมบัติชุดเดียวกันปรากฏใน <b>SWEBOK v4</b> (KA: Software Requirements) และ Sommerville, <i>Software Engineering</i> ซึ่งมีในโฟลเดอร์คอร์สแล้ว</span>
+    <span class="l-en">ISO/IEC/IEEE 29148:2018 — <i>Systems and software engineering — Life cycle processes — Requirements engineering</i> (current; supersedes IEEE Std 830-1998). The same set appears in <b>SWEBOK v4</b> (Software Requirements KA) and Sommerville, <i>Software Engineering</i> — both in the course folder.</span>
+  </div>
+
+  <h3><span class="l-th">สูตรเขียน FR</span><span class="l-en">An FR template</span></h3>
+  <div class="callout brand">
+    <span class="lab">Template</span>
+    <span class="l-th"><b>[รหัส]</b> ระบบต้องอนุญาตให้ <b>[บทบาท]</b> สามารถ <b>[การกระทำ]</b> เพื่อ <b>[ผลลัพธ์/คุณค่า]</b></span>
+    <span class="l-en"><b>[ID]</b> The system shall let <b>[role]</b> <b>[do action]</b> so that <b>[outcome/value]</b>.</span>
+  </div>
+
+  <div class="callout info">
+    <span class="lab"><span class="l-th">รูปแบบหลักของวิชา</span><span class="l-en">The course's primary format</span></span>
+    <span class="l-th">วิชานี้ใช้ <b>user story</b> เป็นรูปแบบหลักของ FR ตลอดเทอม: “<b>ในฐานะ «บทบาท» ฉันต้องการ «เป้าหมาย» เพื่อ «คุณค่า»</b>” แล้วแนบ acceptance แบบ Given–When–Then ข้างใต้ สูตร “ระบบต้อง (shall)” ข้างบนใช้ได้เช่นกัน (นิยมกับ NFR/ระดับระบบ) แต่ให้ถือ <b>user story เป็นค่าเริ่มต้น</b> — ดูวิธีเขียนใน section 5</span>
+    <span class="l-en">The course uses the <b>user story</b> as the primary FR format all term: “<b>As a «role», I want «goal», so
+    that «benefit»</b>,” with Given–When–Then acceptance beneath. The “shall” template above is also valid (common
+    for NFRs / system level), but treat the <b>user story as the default</b> — see Section 5.</span>
+  </div>
+
+  <div class="flip">
+    <div class="side before">
+      <h5><span class="l-th">FR ที่ไม่ดี</span><span class="l-en">A weak FR</span></h5>
+      <p><code>FR-01</code> <span class="l-th">ระบบต้องใช้งานง่ายและจัดการข้อมูลลูกค้าได้ดี พร้อมแจ้งเตือนที่เหมาะสม</span><span class="l-en">The system should be easy to use and manage customer data well, with appropriate notifications.</span></p>
+      <p style="font-size:14px;color:var(--bad)"><span class="l-th">✗ ไม่ Unambiguous ✗ ไม่ Singular ✗ ไม่ Verifiable</span><span class="l-en">✗ not Unambiguous ✗ not Singular ✗ not Verifiable</span></p>
+    </div>
+    <div class="side after">
+      <h5><span class="l-th">FR ที่ดี</span><span class="l-en">A strong FR</span></h5>
+      <p><code>FR-03</code> <span class="l-th">ระบบต้องอนุญาตให้พนักงานเพิ่มลูกค้าใหม่ด้วยชื่อและเบอร์โทร แล้วแสดงในรายการทันที</span><span class="l-en">The system shall let staff add a new customer with a name and phone number, and show them in the list immediately.</span></p>
+      <p style="font-size:14px;color:var(--good)"><span class="l-th">✓ Singular ✓ Correct/Necessary ✓ Verifiable (เขียน G-W-T ได้ทันที)</span><span class="l-en">✓ Singular ✓ Correct/Necessary ✓ Verifiable (a G-W-T writes itself)</span></p>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ 5 ============ -->
+<section id="s5"><div class="wrap">
+  <p class="kicker">05 Stories <span class="en">/ เล่าจากมุมผู้ใช้</span></p>
+  <h2 class="sec"><span class="l-th">User Story กับ Use Case ใช้เมื่อไหร่</span><span class="l-en">User stories vs use cases — when to use which</span></h2>
+  <p class="sub l-th">ทั้งสองอย่างช่วยให้ requirement เล่าจาก “มุมของผู้ใช้” ไม่ใช่มุมของระบบ ในวิชานี้เราใช้ <b>User Story</b> เป็นหลัก และเขียน <b>Use Case</b> เฉพาะ flow ที่ซับซ้อน</p>
+  <p class="sub l-en">Both keep requirements told from the <b>user's</b> side, not the system's. In this course we lead with
+  <b>user stories</b>, and write a <b>use case</b> only for the complex flows.</p>
+
+  <div class="grid2">
+    <div class="card" style="margin:0;border-top:4px solid var(--accent)">
+      <span class="tag accent">User Story</span>
+      <h4 style="margin-top:10px"><span class="l-th">ประโยคสั้นจากมุมผู้ใช้</span><span class="l-en">A short sentence from the user</span></h4>
+      <div class="callout brand" style="margin:10px 0">
+        <span class="l-th"><b>ในฐานะ</b> [บทบาท] <b>ฉันต้องการ</b> [ทำอะไร] <b>เพื่อ</b> [ได้คุณค่าอะไร]</span>
+        <span class="l-en"><b>As a</b> [role] <b>I want</b> [action] <b>so that</b> [value].</span>
+      </div>
+      <p style="font-size:15px;color:var(--ink-soft)"><span class="l-th">เช่น “ในฐานะลูกค้า ฉันต้องการจองคิวล่วงหน้า เพื่อไม่ต้องยืนรอหน้าร้าน”</span><span class="l-en">e.g. “As a customer, I want to reserve a slot ahead of time, so that I don't stand and wait.”</span></p>
+      <p style="font-size:14px;color:var(--muted)"><span class="l-th">เหมาะกับ backlog ทำงานเร็ว จับคู่กับ FR ได้ 1:1 หรือ 1:หลาย</span><span class="l-en">Great for a backlog, fast, maps to FRs 1:1 or 1:many.</span></p>
+    </div>
+    <div class="card" style="margin:0;border-top:4px solid var(--brand)">
+      <span class="tag brand">Use Case</span>
+      <h4 style="margin-top:10px"><span class="l-th">ลำดับขั้นของ flow ทั้งอัน</span><span class="l-en">The step-by-step of a whole flow</span></h4>
+      <ul class="clean" style="margin:10px 0">
+        <li><span class="l-th"><b>Actor</b> ใครเริ่ม</span><span class="l-en"><b>Actor</b> who starts it</span></li>
+        <li><span class="l-th"><b>Main flow</b> ขั้นตอนปกติ 1→2→3</span><span class="l-en"><b>Main flow</b> the happy path 1→2→3</span></li>
+        <li><span class="l-th"><b>Alternate / Error</b> ถ้าผิดพลาดทำยังไง</span><span class="l-en"><b>Alternate / error</b> what happens when it goes wrong</span></li>
+      </ul>
+      <p style="font-size:14px;color:var(--muted)"><span class="l-th">เหมาะกับ flow สำคัญที่มีหลายทางแยก เช่น การชำระเงิน การยืนยันตัวตน</span><span class="l-en">Best for critical, branching flows — payments, authentication.</span></p>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <span class="lab"><span class="l-th">ความสัมพันธ์กัน</span><span class="l-en">How they connect</span></span>
+    <span class="l-th">User Story บอก “ทำไม” (คุณค่า), FR บอก “อะไร” (พฤติกรรมของระบบ), Acceptance บอก “เสร็จเมื่อไหร่” หนึ่ง story มักแตกเป็นหลาย FR และแต่ละ FR มี acceptance ของตัวเอง</span>
+    <span class="l-en">The story gives the <b>why</b> (value), the FR gives the <b>what</b> (system behavior), and acceptance gives
+    the <b>when it's done</b>. One story usually splits into several FRs, each with its own acceptance.</span>
+  </div>
+</div></section>
+
+<!-- ============ 6 ============ -->
+<section id="s6"><div class="wrap">
+  <p class="kicker">06 Non-functional <span class="en">/ NFR</span></p>
+  <h2 class="sec"><span class="l-th">NFR — ระบบต้อง “ดี” แค่ไหน (ให้วัดได้)</span><span class="l-en">NFRs — how “well,” made measurable</span></h2>
+  <p class="sub l-th">FR บอกว่าระบบทำอะไร <b>NFR บอกว่าทำได้ดีแค่ไหน</b> ปัญหาที่พบบ่อยคือ NFR เขียนลอย ๆ วัดไม่ได้ กฎเหล็กคือ ทุก NFR ต้องมี <b>ตัวเลขหรือเงื่อนไขที่ทดสอบได้</b></p>
+  <p class="sub l-en">FRs say what the system does; <b>NFRs say how well</b>. The usual failure is a floaty, unmeasurable NFR.
+  The iron rule: every NFR carries a <b>number or a testable condition</b>.</p>
+
+  <div class="scroll"><table>
+    <thead><tr>
+      <th style="width:22%"><span class="l-th">ด้าน</span><span class="l-en">Aspect</span></th>
+      <th style="width:39%"><span class="l-th">✗ ลอย ๆ</span><span class="l-en">✗ Floaty</span></th>
+      <th><span class="l-th">✓ วัดได้</span><span class="l-en">✓ Measurable</span></th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><b><span class="l-th">ความเร็ว</span><span class="l-en">Performance</span></b></td>
+        <td><span class="l-th">“ต้องเร็ว”</span><span class="l-en">“must be fast”</span></td>
+        <td><span class="l-th">หน้าแรกโหลดเสร็จภายใน 3 วินาที บน 4G</span><span class="l-en">home screen loads within 3s on 4G</span></td>
+      </tr>
+      <tr>
+        <td><b><span class="l-th">ใช้งานง่าย</span><span class="l-en">Usability</span></b></td>
+        <td><span class="l-th">“ใช้ง่าย”</span><span class="l-en">“easy to use”</span></td>
+        <td><span class="l-th">ผู้ใช้ใหม่จองคิวสำเร็จได้ภายใน 3 ขั้นตอน โดยไม่ต้องอ่านคู่มือ</span><span class="l-en">a new user completes a booking in ≤ 3 steps with no manual</span></td>
+      </tr>
+      <tr>
+        <td><b><span class="l-th">ความปลอดภัย / PDPA</span><span class="l-en">Security / PDPA</span></b></td>
+        <td><span class="l-th">“ต้องปลอดภัย”</span><span class="l-en">“must be secure”</span></td>
+        <td><span class="l-th">รหัสผ่านถูกเข้ารหัส, เก็บข้อมูลส่วนบุคคลเฉพาะที่จำเป็น, มีปุ่มขอลบข้อมูลตาม PDPA</span><span class="l-en">passwords hashed; collect only necessary personal data; a PDPA “delete my data” action exists</span></td>
+      </tr>
+      <tr>
+        <td><b><span class="l-th">รองรับผู้ใช้</span><span class="l-en">Capacity</span></b></td>
+        <td><span class="l-th">“รองรับคนเยอะ”</span><span class="l-en">“handles many users”</span></td>
+        <td><span class="l-th">รองรับผู้ใช้พร้อมกัน 50 คนโดยไม่ค้าง</span><span class="l-en">supports 50 concurrent users without stalling</span></td>
+      </tr>
+      <tr>
+        <td><b><span class="l-th">อุปกรณ์</span><span class="l-en">Compatibility</span></b></td>
+        <td><span class="l-th">“ใช้ได้ทุกที่”</span><span class="l-en">“works everywhere”</span></td>
+        <td><span class="l-th">ใช้งานได้บน Chrome และ Safari บนจอมือถือกว้าง 360px ขึ้นไป</span><span class="l-en">works on Chrome and Safari at ≥ 360px phone width</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout info">
+    <span class="lab"><span class="l-th">สะพานสู่งานวิจัยจริง</span><span class="l-en">Bridge to real research</span></span>
+    <span class="l-th">โปรเจกต์ระบบ Wellness ของอาจารย์ มี NFR ด้าน <b>PDPA</b> เป็นหัวใจ เพราะจัดการข้อมูลสุขภาพ ลองคิดว่าถ้าระบบของคุณเก็บข้อมูลส่วนบุคคล NFR เรื่องความยินยอม (consent) และสิทธิ์ลบข้อมูล ต้องอยู่ใน SRS ตั้งแต่ต้น</span>
+    <span class="l-en">The instructor's Wellness project treats <b>PDPA</b> as a core NFR because it handles health data. If your
+    system stores personal data, put consent and the right-to-delete into the SRS from day one.</span>
+  </div>
+</div></section>
+
+<!-- ============ 7 ============ -->
+<section id="s7"><div class="wrap">
+  <p class="kicker">07 Acceptance <span class="en">/ นิยามของ “เสร็จ”</span></p>
+  <h2 class="sec"><span class="l-th">Acceptance Criteria แบบ Given–When–Then</span><span class="l-en">Acceptance criteria: Given–When–Then</span></h2>
+  <p class="sub l-th">acceptance criteria คือ “นิยามของคำว่าเสร็จ” ที่ทดสอบได้จริง เขียนก่อนลงมือสร้าง เพื่อให้ทีมและ AI รู้เป้าหมายชัด และใช้ตรวจงานตอนท้าย (M4 Testing)</p>
+  <p class="sub l-en">Acceptance criteria are the testable definition of done. Write them <b>before</b> building so the team and
+  the AI have a clear target, and reuse them to check the work later (M4 Testing).</p>
+
+  <div class="callout brand">
+    <span class="lab">Given–When–Then</span>
+    <ul class="clean" style="margin:8px 0 0">
+      <li><span class="l-th"><b>Given</b> (กำหนดให้) สถานะเริ่มต้น เช่น “ฉันอยู่หน้าจองคิว”</span><span class="l-en"><b>Given</b> a starting state — “I'm on the booking screen.”</span></li>
+      <li><span class="l-th"><b>When</b> (เมื่อ) การกระทำ เช่น “ฉันเลือกเวลา 10:00 แล้วกดยืนยัน”</span><span class="l-en"><b>When</b> an action — “I pick 10:00 and tap Confirm.”</span></li>
+      <li><span class="l-th"><b>Then</b> (แล้ว) ผลที่คาดหวัง เช่น “คิวของฉันปรากฏในรายการ พร้อมเลขคิว”</span><span class="l-en"><b>Then</b> the expected result — “my booking appears with a queue number.”</span></li>
+    </ul>
+  </div>
+
+  <h3><span class="l-th">ตัวอย่างเต็ม — ผูกกับ FR</span><span class="l-en">A full example — tied to an FR</span></h3>
+  <div class="card">
+    <p style="margin:0 0 6px"><code>FR-05</code> <span class="l-th"><b>ระบบต้องอนุญาตให้ลูกค้าจองคิวโดยเลือกช่วงเวลาที่ว่าง</b></span><span class="l-en"><b>The system shall let a customer book a slot by choosing an available time.</b></span></p>
+    <div class="filetree" style="margin:12px 0 0">
+<span class="dir"><span class="l-th">ฉาก: จองสำเร็จ</span><span class="l-en">Scenario: successful booking</span></span>
+  Given <span class="note"><span class="l-th">มีช่วงเวลา 10:00 ว่างอยู่</span><span class="l-en">the 10:00 slot is free</span></span>
+  When  <span class="note"><span class="l-th">ลูกค้าเลือก 10:00 แล้วกดยืนยัน</span><span class="l-en">the customer selects 10:00 and taps Confirm</span></span>
+  Then  <span class="note"><span class="l-th">ระบบสร้างคิวและแสดงเลขคิวให้ลูกค้า</span><span class="l-en">a booking is created and its queue number is shown</span></span>
+
+<span class="dir"><span class="l-th">ฉาก: เวลาถูกจองไปแล้ว</span><span class="l-en">Scenario: slot already taken</span></span>
+  Given <span class="note"><span class="l-th">ช่วงเวลา 10:00 ถูกจองเต็มแล้ว</span><span class="l-en">the 10:00 slot is full</span></span>
+  When  <span class="note"><span class="l-th">ลูกค้าพยายามเลือก 10:00</span><span class="l-en">the customer tries to select 10:00</span></span>
+  Then  <span class="note"><span class="l-th">ระบบแจ้งว่าเต็มและไม่สร้างคิว</span><span class="l-en">the system says it's full and creates no booking</span></span>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <span class="lab"><span class="l-th">อย่าลืม “ทางที่ผิด”</span><span class="l-en">Don't forget the unhappy path</span></span>
+    <span class="l-th">มือใหม่มักเขียนแค่ฉาก “ทุกอย่างราบรื่น” แต่ requirement ที่ดีต้องบอกด้วยว่าเมื่อ <b>ผิดพลาด</b> (ข้อมูลว่าง เน็ตหลุด ของเต็ม) ระบบต้องตอบสนองยังไง</span>
+    <span class="l-en">Beginners write only the “everything works” scenario. A good requirement also says what the system does
+    when things go <b>wrong</b> — empty input, lost connection, sold out.</span>
+  </div>
+</div></section>
+
+<!-- ============ 8 ============ -->
+<section id="s8"><div class="wrap">
+  <p class="kicker">08 Priority <span class="en">/ จัดลำดับ</span></p>
+  <h2 class="sec"><span class="l-th">จัดลำดับความสำคัญด้วย MoSCoW</span><span class="l-en">Prioritize with MoSCoW</span></h2>
+  <p class="sub l-th">คุณจะสร้างทุกอย่างไม่ทันในหนึ่งเทอม จึงต้องรู้ว่า “อะไรคือ MVP” MoSCoW ช่วยแยกของที่ขาดไม่ได้ ออกจากของที่ไว้ทีหลัง — ตรงกับ Priority (High/Medium/Low) ใน backlog</p>
+  <p class="sub l-en">You can't build everything in one term, so you must know your MVP. MoSCoW separates the non-negotiable from
+  the later — mapping to the High/Medium/Low priority in your backlog.</p>
+
+  <div class="grid2">
+    <div class="card" style="margin:0;border-top:4px solid var(--bad)"><span class="tag bad">Must — High = MVP</span><p style="margin:10px 0 0;font-size:15px"><span class="l-th">ขาดไม่ได้ ถ้าไม่มีระบบไม่มีความหมาย โฟกัส 3–5 FR แรกที่นี่</span><span class="l-en">Non-negotiable — without it the system is pointless. Your first 3–5 FRs live here.</span></p></div>
+    <div class="card" style="margin:0;border-top:4px solid var(--warn)"><span class="tag warn">Should — Medium</span><p style="margin:10px 0 0;font-size:15px"><span class="l-th">สำคัญแต่รอได้ ทำหลัง MVP เดินได้</span><span class="l-en">Important but can wait until the MVP works.</span></p></div>
+    <div class="card" style="margin:0;border-top:4px solid var(--accent)"><span class="tag accent">Could — Low</span><p style="margin:10px 0 0;font-size:15px"><span class="l-th">มีก็ดี ไม่มีก็ไม่เป็นไร ทำถ้ามีเวลาเหลือ</span><span class="l-en">Nice to have; skip it if time runs out.</span></p></div>
+    <div class="card" style="margin:0;border-top:4px solid var(--muted)"><span class="tag">Won't — <span class="l-th">รอบนี้ไม่ทำ</span><span class="l-en">not this time</span></span><p style="margin:10px 0 0;font-size:15px"><span class="l-th">ตั้งใจ “ไม่ทำ” รอบนี้ เขียนไว้กัน scope บวม</span><span class="l-en">Deliberately out of scope this round — write it down to stop scope creep.</span></p></div>
+  </div>
+
+  <div class="callout info">
+    <span class="lab"><span class="l-th">เคล็ดลับ MVP</span><span class="l-en">MVP tip</span></span>
+    <span class="l-th">ถ้าทุก FR เป็น “Must” หมด แปลว่ายังไม่ได้จัดลำดับจริง บังคับตัวเองให้เลือก Must แค่ 3–5 ข้อ ที่พิสูจน์ว่าระบบแก้ปัญหาได้ — ที่เหลือดันลงไป Should/Could</span>
+    <span class="l-en">If every FR is a “Must,” you haven't really prioritized. Force yourself to keep only 3–5 Musts that prove
+    the system solves the problem; push the rest to Should/Could.</span>
+  </div>
+</div></section>
+
+<!-- ============ 9 ============ -->
+<section id="s9"><div class="wrap">
+  <p class="kicker">09 Traceability <span class="en">/ เส้นด้ายทอง</span></p>
+  <h2 class="sec"><span class="l-th">Traceability — เส้นด้ายที่ต้องไม่ขาด</span><span class="l-en">Traceability — the thread that must not break</span></h2>
+  <p class="sub l-th">requirement ทุกตัวต้องสาวกลับไปถึง “ปัญหา” ได้ และสาวไปข้างหน้าถึง “การทดสอบ” ได้ นี่คือสิ่งที่รูบริกเรียกว่า <b>coherence</b> และเป็นเหตุผลที่เราให้ทุกอย่างมี <b>รหัส</b></p>
+  <p class="sub l-en">Every requirement must trace back to the problem and forward to a test. This is what the rubric calls
+  <b>coherence</b>, and it's why everything carries an <b>ID</b>.</p>
+
+  <div class="rail">
+    <span class="stepchip"><b><span class="l-th">ปัญหา</span><span class="l-en">problem</span></b></span><span class="arw">→</span>
+    <span class="stepchip">User Story</span><span class="arw">→</span>
+    <span class="stepchip">FR-05</span><span class="arw">→</span>
+    <span class="stepchip">NFR-01</span><span class="arw">→</span>
+    <span class="stepchip"><span class="l-th">acceptance</span><span class="l-en">acceptance</span></span><span class="arw">→</span>
+    <span class="stepchip"><span class="l-th">test case (M4)</span><span class="l-en">test case (M4)</span></span>
+  </div>
+
+  <p class="l-th">ในทางปฏิบัติ ให้ทำ <b>ตารางสอบทาน (traceability matrix)</b> ง่าย ๆ ที่จับคู่ FR กับ story ต้นทางและ acceptance ปลายทาง ถ้ามี FR ที่ไม่มี story ต้นทาง แปลว่ามัน “เกิน” (gold-plating) ถ้ามี story ที่ไม่มี FR แปลว่า “ตกหล่น”</p>
+  <p class="l-en">In practice, keep a simple <b>traceability matrix</b> pairing each FR with its source story and its acceptance.
+  An FR with no source story is <b>gold-plating</b>; a story with no FR is a <b>gap</b>.</p>
+
+  <div class="scroll"><table>
+    <thead><tr>
+      <th>User Story</th><th>FR</th><th>NFR</th><th><span class="l-th">Acceptance</span><span class="l-en">Acceptance</span></th><th><span class="l-th">ลำดับ</span><span class="l-en">Priority</span></th>
+    </tr></thead>
+    <tbody>
+      <tr><td><span class="l-th">ลูกค้าจองคิว</span><span class="l-en">Customer books a slot</span></td><td><code>FR-05</code></td><td><code>NFR-01</code></td><td><span class="l-th">2 ฉาก (สำเร็จ/เต็ม)</span><span class="l-en">2 scenarios (ok/full)</span></td><td><span class="tag bad">Must</span></td></tr>
+      <tr><td><span class="l-th">พนักงานเห็นคิววันนี้</span><span class="l-en">Staff view today's queue</span></td><td><code>FR-06</code></td><td><code>NFR-04</code></td><td><span class="l-th">1 ฉาก</span><span class="l-en">1 scenario</span></td><td><span class="tag warn">Should</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout brand">
+    <span class="lab"><span class="l-th">ทำไมอาจารย์ย้ำเรื่องรหัส</span><span class="l-en">Why the instructor insists on IDs</span></span>
+    <span class="l-th">เมื่อทุกอย่างมีรหัส FR/NFR การสั่ง AI จะแม่นขึ้นมาก เช่น “สร้าง test สำหรับ FR-05 ตาม acceptance” และตอนตรวจงาน อาจารย์สาวจากปัญหา → FR → หน้าจอ → test ได้ในไม่กี่วินาที นี่คือหัวใจของ Starter Kit</span>
+    <span class="l-en">Once everything has an FR/NFR ID, instructing the AI gets far sharper — “write the test for FR-05 from its
+    acceptance” — and grading can trace problem → FR → screen → test in seconds. This is the heart of the Starter Kit.</span>
+  </div>
+</div></section>
+
+<!-- ============ 10 ============ -->
+<section id="s10"><div class="wrap">
+  <p class="kicker">10 Smells <span class="en">/ กลิ่นไม่ดี</span></p>
+  <h2 class="sec"><span class="l-th">10 กลิ่นไม่ดีของ requirement</span><span class="l-en">10 requirement smells</span></h2>
+  <p class="sub l-th">ถ้าเจอสัญญาณเหล่านี้ใน SRS ให้หยุดแล้วเขียนใหม่ ก่อนที่มันจะกลายเป็นบั๊กราคาแพงในภายหลัง</p>
+  <p class="sub l-en">Spot any of these in your SRS and rewrite before they turn into expensive bugs later.</p>
+
+  <div class="grid2">
+    <div class="card" style="margin:0">
+      <h4 style="margin-top:0"><span class="l-th">กลิ่นเรื่องภาษา</span><span class="l-en">Language smells</span></h4>
+      <ul class="clean">
+        <li><span class="l-th"><b>คำกำกวม</b> ง่าย เร็ว สวย ดี เหมาะสม ยืดหยุ่น</span><span class="l-en"><b>Vague words:</b> easy, fast, nice, good, appropriate, flexible</span></li>
+        <li><span class="l-th"><b>ฯลฯ / และอื่น ๆ</b> ซ่อน requirement ที่ยังไม่คิด</span><span class="l-en"><b>“etc.” / “and so on”</b> hides requirements you haven't thought through</span></li>
+        <li><span class="l-th"><b>และ/หรือ</b> รวมหลายเรื่องในข้อเดียว</span><span class="l-en"><b>“and/or”</b> bundles several things into one</span></li>
+        <li><span class="l-th"><b>คำคลุมเครือ</b> บางที ควรจะ โดยประมาณ</span><span class="l-en"><b>Weasel words:</b> maybe, should probably, roughly</span></li>
+      </ul>
+    </div>
+    <div class="card" style="margin:0">
+      <h4 style="margin-top:0"><span class="l-th">กลิ่นเรื่องเนื้อหา</span><span class="l-en">Content smells</span></h4>
+      <ul class="clean">
+        <li><span class="l-th"><b>Solution ปน requirement</b> ระบุ React/ตาราง SQL แทนที่จะบอกพฤติกรรม</span><span class="l-en"><b>Solution in the requirement:</b> naming React / an SQL table instead of behavior</span></li>
+        <li><span class="l-th"><b>วัดไม่ได้</b> NFR ไม่มีตัวเลข</span><span class="l-en"><b>Unmeasurable:</b> an NFR with no number</span></li>
+        <li><span class="l-th"><b>Gold-plating</b> ฟีเจอร์ที่ไม่มีใครขอ ไม่ผูกกับปัญหา</span><span class="l-en"><b>Gold-plating:</b> a feature nobody asked for, tied to no problem</span></li>
+        <li><span class="l-th"><b>ยัดหลายข้อในหนึ่ง</b> ประโยคเดียวมี 3 พฤติกรรม</span><span class="l-en"><b>Multiple in one:</b> three behaviors in a single sentence</span></li>
+        <li><span class="l-th"><b>ไม่มีทางที่ผิด</b> เขียนแต่ happy path</span><span class="l-en"><b>No unhappy path:</b> only the happy case is written</span></li>
+        <li><span class="l-th"><b>ไม่มีรหัส</b> อ้างอิงและสาวกลับไม่ได้</span><span class="l-en"><b>No ID:</b> can't be referenced or traced</span></li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ 11 ============ -->
+<section id="s11"><div class="wrap">
+  <p class="kicker">11 AI-First <span class="en">/ เขียนด้วย AI</span></p>
+  <h2 class="sec"><span class="l-th">เขียน SRS ด้วย AI — เป็น “บรรณาธิการ” ไม่ใช่ “คนพิมพ์”</span><span class="l-en">Write your SRS with AI — as the editor, not the typist</span></h2>
+  <p class="sub l-th"><b>requirement ค้นจากผู้ใช้จริง ไม่ใช่คิดเองที่โต๊ะ</b> AI มีหน้าที่ช่วยร่าง “ตัวเลือก (candidate)” จากหลักฐานที่คุณเก็บมา แล้วคุณเอาไปตรวจกับผู้ใช้จริงเสมอ <b>AI ร่างได้ แต่คนเซ็นรับผิดชอบ</b></p>
+  <p class="sub l-en"><b>Requirements are discovered from real users, not invented at the desk.</b> AI drafts <b>candidates</b> from the
+  evidence you gathered; you verify them with a real user. AI may draft — a person signs off.</p>
+
+  <h3><span class="l-th">ทำ 3 จังหวะ</span><span class="l-en">Three beats</span></h3>
+  <div class="grid3">
+    <div class="card" style="margin:0;border-top:4px solid var(--brand)"><span class="tag brand">1 Evidence</span><h4 style="margin-top:10px"><span class="l-th">ป้อนหลักฐาน</span><span class="l-en">Feed evidence</span></h4><p style="font-size:15px;color:var(--ink-soft);margin:0"><span class="l-th">ให้ <b>โน้ตสัมภาษณ์/สังเกตจริง</b> ไม่ใช่แค่ปัญหาลอย ๆ</span><span class="l-en">Give a <b>real interview/observation note</b> — not just an abstract problem.</span></p></div>
+    <div class="card" style="margin:0;border-top:4px solid var(--accent)"><span class="tag accent">2 Draft</span><h4 style="margin-top:10px"><span class="l-th">ให้ AI ร่าง candidate</span><span class="l-en">AI drafts candidates</span></h4><p style="font-size:15px;color:var(--ink-soft);margin:0"><span class="l-th">ขอ <b>candidate</b> user story + acceptance ที่วัดได้</span><span class="l-en">Ask for <b>candidate</b> user stories + measurable acceptance.</span></p></div>
+    <div class="card" style="margin:0;border-top:4px solid var(--good)"><span class="tag good">3 Verify</span><h4 style="margin-top:10px"><span class="l-th">ตรวจกับผู้ใช้จริง</span><span class="l-en">Verify with a user</span></h4><p style="font-size:15px;color:var(--ink-soft);margin:0"><span class="l-th">ตรวจ เขียนเป็น test แล้วตัดที่ AI เดาเอง</span><span class="l-en">Verify, turn it into a test, cut what AI guessed.</span></p></div>
+  </div>
+
+  <h3><span class="l-th">prompt ที่แนะนำ</span><span class="l-en">The prompt to use</span></h3>
+  <p class="l-th">อย่าสั่งลอย ๆ ว่า “เขียน requirement ให้ระบบเรา” (AI จะเดา) ให้ <b>ป้อนโน้ตสัมภาษณ์จริง</b> แล้วขอ candidate ตามนี้</p>
+  <p class="l-en">Don't say “write the requirements for our system” (the AI guesses). <b>Feed a real interview note</b> and ask for
+  candidates like this:</p>
+  <div class="filetree">
+<span class="note"># <span class="l-th">หลักฐาน (จากสัมภาษณ์/สังเกตจริง)</span><span class="l-en">evidence (from a real interview/observation)</span></span>
+<span class="l-th">บทบาท:</span><span class="l-en">Role:</span> <span class="note">[<span class="l-th">คุยกับใคร</span><span class="l-en">who you talked to</span></span>]
+<span class="l-th">โน้ตสัมภาษณ์:</span><span class="l-en">Interview note:</span> <span class="note">[<span class="l-th">วางคำพูด/สิ่งที่เขาทำจริง verbatim</span><span class="l-en">paste a real quote / what they actually did</span></span>]
+<span class="l-th">กติกา: ร่างจากหลักฐานนี้เท่านั้น ถ้าไม่พอให้ถามฉัน อย่าเดาเอง</span><span class="l-en">Rule: draft only from this evidence; if it's not enough, ask me — don't invent.</span>
+
+<span class="note"># <span class="l-th">รูปแบบผลลัพธ์</span><span class="l-en">output format</span></span>
+- <span class="l-th">candidate user story: “ในฐานะ «บทบาท» ฉันต้องการ «เป้าหมาย» เพื่อ «คุณค่า»” (บทบาทมีชื่อจริง ไม่ใช่ “ผู้ใช้”)</span><span class="l-en">candidate user story: “As a «role», I want «goal», so that «benefit»” (a named role, not “user”)</span>
+- <span class="l-th">ใต้แต่ละข้อ ใส่ acceptance Given-When-Then ที่มีตัวเลข/สถานะ/yes-no (ห้ามคำว่า ง่าย/เร็ว/สวย)</span><span class="l-en">under each, Given-When-Then acceptance with a number/state/yes-no (no “easy/fast/nice”)</span>
+- <span class="l-th">อะไรที่อนุมานเกินจากโน้ต ให้ทำเครื่องหมาย [ASSUMPTION — ต้องไปตรวจ]</span><span class="l-en">flag anything inferred beyond the note as [ASSUMPTION — verify]</span>
+- <span class="l-th">ไม่ระบุเทคโนโลยี/ฐานข้อมูล/หน้าจอ</span><span class="l-en">no tech/database/screens</span>
+  </div>
+  <p class="l-th" style="font-size:13.5px;color:var(--muted);margin-top:8px">อยากได้คำถามสัมภาษณ์ก่อน? ขอ AI ร่าง 5 คำถามที่ถาม “ครั้งล่าสุดที่ปัญหาเกิด” ไม่ถามเรื่องปุ่ม/หน้าจอ และไม่ชี้นำ (แนวทางจากบทที่ 4 §4.8)</p>
+  <p class="l-en" style="font-size:13.5px;color:var(--muted);margin-top:8px">Want interview questions first? Ask for 5 that probe “the last time the problem happened,” not buttons/screens, non-leading. (Based on Chapter 4 §4.8.)</p>
+
+  <div class="callout brand">
+    <span class="lab"><span class="l-th">หลัง AI ร่างแล้ว คุณต้องทำต่อ</span><span class="l-en">After the AI drafts, you must</span></span>
+    <ul class="clean" style="margin:8px 0 0">
+      <li><span class="l-th">เอาแต่ละ candidate <b>ไปตรวจกับผู้ใช้จริง</b> แล้วเขียน acceptance ให้เป็น test</span><span class="l-en">take each candidate <b>to a real user</b>, then turn its acceptance into a test</span></li>
+      <li><span class="l-th"><b>ตัดข้อ [ASSUMPTION] ที่ยืนยันไม่ได้</b> และ gold-plating (ฟีเจอร์ที่ไม่มีใครขอ เช่น แต้มสะสม แชร์โซเชียล) ให้ทุกข้อผ่าน 4 quality gates</span><span class="l-en"><b>cut any [ASSUMPTION] you can't confirm</b> and gold-plating (features nobody asked for — loyalty points, social sharing); make every item pass the 4 quality gates</span></li>
+      <li><span class="l-th">เพิ่ม NFR ที่วัดได้จากข้อจำกัดจริง (รวม privacy/PDPA อย่างน้อย 1 ข้อ)</span><span class="l-en">add measurable NFRs from real constraints (incl. ≥1 privacy/PDPA)</span></li>
+      <li><span class="l-th">บันทึกลง <b>AI-use log</b> (ส่วนที่ 7)</span><span class="l-en">record it in the <b>AI-use log</b> (part 7)</span></li>
+    </ul>
+  </div>
+
+  <div class="callout info">
+    <span class="lab"><span class="l-th">ของเสริม (ไม่บังคับ) — skill สำเร็จรูป</span><span class="l-en">Optional — a ready-made skill</span></span>
+    <span class="l-th">อยากลองเครื่องมือระดับมืออาชีพ ชุด skills ของ <b>AI Hero</b> (Matt Pocock) มี <span class="cmd">/to-spec</span> ที่ “สังเคราะห์บทสนทนาเป็น spec” และให้ผลเป็น <b>user story</b> แบบเดียวกับวิชานี้ ติดตั้งเอง: <code>npx skills@latest add mattpocock/skills</code> แล้วรัน <span class="cmd">/setup-matt-pocock-skills</span> หนึ่งครั้ง มันลึกกว่าที่ M2 ต้องการ (ผูกกับ issue tracker/ADR) จึงเป็นของเสริม และ <b>วิชานี้ไม่ได้แจก skill ใด ๆ</b><br>ดูเพิ่ม: <a class="inline" href="https://www.aihero.dev/skills">https://www.aihero.dev/skills</a></span>
+    <span class="l-en">Want a professional-grade tool? The <b>AI Hero</b> set (Matt Pocock) has <span class="cmd">/to-spec</span>, which
+    “synthesizes a conversation into a spec” and outputs <b>user stories</b> — the same format as this course. Install it
+    yourself: <code>npx skills@latest add mattpocock/skills</code>, then run <span class="cmd">/setup-matt-pocock-skills</span>
+    once. It's deeper than M2 needs (tied to an issue tracker/ADR), so it's optional, and <b>this course ships no skill of
+    its own</b>.<br>More: <a class="inline" href="https://www.aihero.dev/skills">https://www.aihero.dev/skills</a></span>
+  </div>
+</div></section>
+
+<!-- ============ 12 (worked example) ============ -->
+<section id="s12"><div class="wrap">
+  <p class="kicker">12 Example <span class="en">/ ตัวอย่างของอาจารย์</span></p>
+  <h2 class="sec"><span class="l-th">ตัวอย่าง SRS สั้น ๆ ของอาจารย์</span><span class="l-en">A short worked SRS from the instructor</span></h2>
+  <p class="sub l-th">นี่คือตัวอย่างจริงแบบย่อ ให้เห็น “รูปทรง” ของ SRS 7 ส่วนที่ผ่านเกณฑ์ ใช้เคส <b>StudyMate</b> — แอปเตือน deadline สำหรับนักศึกษา ซึ่งเป็นเคสหลักที่ใช้สอนในบทที่ 4 ของวิชา</p>
+  <p class="sub l-en">A compact, real example showing the <b>shape</b> of a passing 7-part SRS, using <b>StudyMate</b> — a
+  deadline-reminder app for students, the running case from the course's Chapter 4.</p>
+
+  <div class="card">
+    <h4 style="margin-top:0"><span class="l-th">1. จุดประสงค์ &amp; ขอบเขต</span><span class="l-en">1. Purpose &amp; scope</span></h4>
+    <p style="font-size:15px"><span class="l-th">ช่วยนักศึกษาไม่ให้พลาดกำหนดส่งงาน โดยจัดการงานที่มี due date และเตือนล่วงหน้า</span><span class="l-en">Help students not miss deadlines by managing tasks with due dates and reminding them ahead of time.</span></p>
+
+    <h4><span class="l-th">2. ผู้มีส่วนได้เสีย (Stakeholders)</span><span class="l-en">2. Stakeholders</span></h4>
+    <p style="font-size:15px"><span class="l-th"><b>นักศึกษา</b> (ผู้ใช้หลัก), <b>อาจารย์</b> (ผู้กำหนด deadline), <b>มหาวิทยาลัย</b> (เจ้าของข้อมูล), <b>ผู้ให้บริการ AI/ปฏิทินภายนอก</b> (อาจล่มหรือรั่วข้อมูล)</span><span class="l-en"><b>Student</b> (primary user), <b>instructor</b> (sets deadlines), <b>university</b> (data owner), <b>external AI/calendar supplier</b> (can fail or leak).</span></p>
+
+    <h4><span class="l-th">3. Functional Requirements (เขียนเป็น user story)</span><span class="l-en">3. Functional Requirements (as user stories)</span></h4>
+    <div class="scroll"><table>
+      <thead><tr><th>ID</th><th><span class="l-th">User story</span><span class="l-en">User story</span></th><th><span class="l-th">ลำดับ</span><span class="l-en">Priority</span></th></tr></thead>
+      <tbody>
+        <tr><td><code>FR-1</code></td><td><span class="l-th">ในฐานะนักศึกษา ฉันต้องการเพิ่ม/แก้งานพร้อมกำหนดส่ง เพื่อรวมงานทั้งหมดไว้ที่เดียว</span><span class="l-en">As a student, I want to add/edit a task with a due date, so that all my work sits in one place.</span></td><td><span class="tag bad">Must</span></td></tr>
+        <tr><td><code>FR-2</code></td><td><span class="l-th">ในฐานะนักศึกษา ฉันต้องการเห็นงานของสัปดาห์นี้ เพื่อวางแผนล่วงหน้า</span><span class="l-en">As a student, I want to see this week's tasks, so that I can plan ahead.</span></td><td><span class="tag warn">Should</span></td></tr>
+        <tr><td><code>FR-3</code></td><td><span class="l-th">ในฐานะนักศึกษา ฉันต้องการการเตือนหนึ่งวันก่อนกำหนดส่ง เพื่อไม่ส่งงานสาย</span><span class="l-en">As a student, I want a reminder one day before a deadline, so that I don't submit late.</span></td><td><span class="tag bad">Must</span></td></tr>
+        <tr><td><code>FR-4</code></td><td><span class="l-th">ในฐานะนักศึกษา ฉันต้องการพิมพ์แผนเป็นภาษาไทยแล้วได้ event ที่ยืนยัน/แก้ก่อนบันทึก เพื่อกรอกงานได้เร็ว</span><span class="l-en">As a student, I want to type a plan in Thai and get a structured event to confirm/edit before saving, so that entry is fast.</span></td><td><span class="tag accent">Could</span></td></tr>
+      </tbody>
+    </table></div>
+
+    <h4><span class="l-th">4. Non-Functional Requirements (มีความเป็นส่วนตัว ≥1)</span><span class="l-en">4. Non-Functional Requirements (incl. ≥1 privacy)</span></h4>
+    <div class="scroll"><table>
+      <thead><tr><th>ID</th><th><span class="l-th">requirement</span><span class="l-en">Requirement</span></th></tr></thead>
+      <tbody>
+        <tr><td><code>NFR-1</code></td><td><span class="l-th">หน้า dashboard โหลดเสร็จภายใน 2 วินาที บน Wi-Fi ในห้องเรียน</span><span class="l-en">The dashboard loads within 2 seconds on classroom Wi-Fi.</span></td></tr>
+        <tr><td><code>NFR-2</code></td><td><span class="l-th">การเตือนต้องมาถึงภายใน 1 นาที นับจากเวลาที่กำหนด</span><span class="l-en">A reminder arrives within 1 minute of the due time.</span></td></tr>
+        <tr><td><code>NFR-5</code></td><td><span class="l-th"><b>(ความเป็นส่วนตัว/PDPA)</b> นักศึกษาเห็นเฉพาะงานของตัวเอง คำขอดูรหัสของคนอื่นต้องได้ผลลัพธ์ 403</span><span class="l-en"><b>(privacy/PDPA)</b> a student sees only their own tasks; a request for another student's id returns 403.</span></td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:13px;color:var(--muted);margin:8px 0 0"><span class="l-th">(ตัดมาบางส่วน — SRS จริงมี NFR มากกว่านี้)</span><span class="l-en">(excerpt — the full SRS has more NFRs)</span></p>
+
+    <h4><span class="l-th">5. ชื่อ Use Case</span><span class="l-en">5. Use case names</span></h4>
+    <p style="font-size:15px"><span class="l-th">จัดการงาน, ดูงานสัปดาห์นี้, รับการเตือน, บันทึกแผนด้วยภาษาไทย (ไดอะแกรมวาดใน M3)</span><span class="l-en">Manage tasks, View this week, Receive reminder, Enter plan in Thai (diagrams drawn in M3).</span></p>
+
+    <h4><span class="l-th">6. Out-of-Scope</span><span class="l-en">6. Out-of-scope</span></h4>
+    <p style="font-size:15px"><span class="l-th">ไม่มีแชทกลุ่ม, ไม่มีการชำระเงิน, ไม่มี AI ติวเตอร์, ไม่อ่านข้อความจากกลุ่ม LINE</span><span class="l-en">No group chat, no payments, no AI tutor, no reading of LINE group messages.</span></p>
+
+    <h4><span class="l-th">7. บันทึกการใช้ AI</span><span class="l-en">7. AI-use log</span></h4>
+    <p style="font-size:15px"><span class="l-th">ใช้ AI ช่วยร่าง user story ชุดแรกจากบันทึกสัมภาษณ์ แล้วทีมตรวจทุกข้อกับ 4 ประตูคุณภาพและแก้ให้วัดได้เอง</span><span class="l-en">AI drafted the first set of user stories from interview notes; the team checked each against the four quality gates and made them measurable.</span></p>
+
+    <h4><span class="l-th">Acceptance ของ FR-3</span><span class="l-en">Acceptance for FR-3</span></h4>
+    <div class="filetree" style="margin-top:10px">
+<span class="dir"><span class="l-th">ฉาก: มีงานที่ยังไม่เสร็จ</span><span class="l-en">Scenario: an open task</span></span>
+  Given <span class="note"><span class="l-th">มีงานที่ยังเปิดอยู่และมีกำหนดส่ง</span><span class="l-en">an open task with a due date</span></span>
+  When  <span class="note"><span class="l-th">ถึงหนึ่งวันก่อนกำหนดส่ง</span><span class="l-en">it is one day before the due date</span></span>
+  Then  <span class="note"><span class="l-th">นักศึกษาได้รับการเตือน</span><span class="l-en">the student receives a reminder</span></span>
+<span class="dir"><span class="l-th">ฉาก: งานที่ทำเสร็จแล้ว</span><span class="l-en">Scenario: a completed task</span></span>
+  <span class="note"><span class="l-th">งานที่ทำเสร็จแล้วต้องไม่ทำให้เกิดการเตือน</span><span class="l-en">a completed task does not trigger a reminder</span></span>
+    </div>
+  </div>
+
+  <div class="callout brand">
+    <span class="lab"><span class="l-th">สังเกตเส้นด้าย</span><span class="l-en">Notice the thread</span></span>
+    <span class="l-th">ปัญหา (กลัวส่งงานสาย) → FR-3 (Must = MVP) → NFR-2 วัดได้ → acceptance มีทั้งฉากที่เตือนและฉากที่เงียบ นี่คือ Golden Thread ที่วิชาใช้ให้คะแนน และเป็นเคส StudyMate เดียวกับที่สอนในบทที่ 4</span>
+    <span class="l-en">Problem (fear of submitting late) → FR-3 (Must = MVP) → measurable NFR-2 → acceptance with both a reminder path and
+    a silent path. This is the Golden Thread the course grades on — the same StudyMate case taught in Chapter 4.</span>
+  </div>
+</div></section>
+
+<!-- ============ 13 (scorecard) ============ -->
+<section id="s13"><div class="wrap">
+  <p class="kicker">13 Scorecard <span class="en">/ วัดความพร้อม</span></p>
+  <h2 class="sec"><span class="l-th">SRS ของคุณพร้อมส่งหรือยัง</span><span class="l-en">Is your SRS ready to submit?</span></h2>
+  <p class="sub l-th">ให้คะแนนตัวเองก่อนส่ง แต่ละข้อ 0 = ยังไม่มี, 1 = มีบ้าง, 2 = ครบ ตั้งเป้าอย่างน้อย <b>14/20</b></p>
+  <p class="sub l-en">Score yourself before submitting. Each item: 0 = missing, 1 = partial, 2 = full. Aim for at least
+  <b>14/20</b>.</p>
+
+  <div class="calc" id="scorebox">
+    <!-- items injected by JS -->
+    <div class="score-total">
+      <span><span class="l-th">คะแนนรวม</span><span class="l-en">Total</span></span>
+      <span class="n" id="srs_total">0 / 20</span>
+    </div>
+    <div class="verdict" id="srs_verdict" style="background:var(--surface-2);color:var(--muted)"><span class="l-th">เลือกคะแนนแต่ละข้อด้านบน</span><span class="l-en">Rate each item above.</span></div>
+  </div>
+</div></section>
+
+<!-- ============ 14 (submit + rubric) ============ -->
+<section id="s14"><div class="wrap">
+  <p class="kicker">14 Submit <span class="en">/ ส่งงาน</span></p>
+  <h2 class="sec"><span class="l-th">M2 ส่งอะไร และให้คะแนนยังไง</span><span class="l-en">M2 — what to submit &amp; how it's graded</span></h2>
+  <p class="sub l-th">M2 ส่ง <b>เอกสาร SRS ของทีม</b> ทีมละ 1 ไฟล์ ต่อยอดจาก Team Charter ของ M1 ต่อไปนี้คือสิ่งที่ต้องมี และเกณฑ์ที่ใช้ให้คะแนน</p>
+  <p class="sub l-en">M2's deliverable is your team's <b>SRS document</b>, one file per team, building on the M1 Team Charter.
+  Here's what it must contain and the rubric used to grade it.</p>
+
+  <div class="callout info">
+    <span class="lab"><span class="l-th">สิ่งที่ต้องส่ง</span><span class="l-en">What to submit</span></span>
+    <ul class="clean" style="margin:8px 0 0">
+      <li><span class="l-th"><b>เอกสาร SRS</b> (PDF หรือ Google Doc / Markdown) ทีมละ 1 ไฟล์ ตัวแทนแนบไฟล์แล้วกดส่งใน Google Classroom</span><span class="l-en"><b>An SRS document</b> (PDF or Google Doc / Markdown), one per team — a member attaches it and turns it in on Google Classroom.</span></li>
+      <li><span class="l-th">มีครบ 7 ส่วน (รวม out-of-scope และ AI-use log), FR อย่างน้อย 5 ข้อ (Must 3–5), NFR อย่างน้อย 3 ข้อ ที่วัดได้ <b>รวมความเป็นส่วนตัว/PDPA อย่างน้อย 1 ข้อ</b>, acceptance G-W-T ของทุก FR ที่เป็น Must</span><span class="l-en">All 7 sections (incl. out-of-scope and an AI-use log); at least 5 FRs (3–5 Musts); at least 3 measurable NFRs <b>including ≥1 privacy/PDPA</b>; G-W-T acceptance for every Must FR.</span></li>
+      <li><span class="l-th">ตั้งชื่อไฟล์ <code>M2-SRS_ชื่อทีม.pdf</code> — กำหนดส่งดูใน Google Classroom</span><span class="l-en">File name <code>M2-SRS_TeamName.pdf</code> — due date is posted in Google Classroom.</span></li>
+    </ul>
+  </div>
+
+  <h3><span class="l-th">เกณฑ์ให้คะแนน (เต็ม 10 คะแนน = 5% ของวิชา)</span><span class="l-en">Grading rubric (10 points = 5% of the course)</span></h3>
+  <p class="l-th">ให้คะแนนแต่ละข้อ <b>2 = ครบถ้วน, 1 = บางส่วน, 0 = ไม่มี</b></p>
+  <p class="l-en">Each criterion is scored <b>2 = full, 1 = partial, 0 = missing</b>.</p>
+  <div class="scroll"><table>
+    <thead><tr>
+      <th style="width:40%"><span class="l-th">เกณฑ์</span><span class="l-en">Criterion</span></th>
+      <th>2</th><th>1</th><th>0</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><b>1.</b> <span class="l-th">ขอบเขต &amp; stakeholders ชัด สาวกลับถึงปัญหา M1</span><span class="l-en">Clear scope &amp; stakeholders, traceable to the M1 problem</span></td>
+        <td><span class="l-th">ชัด เชื่อมโยงกัน</span><span class="l-en">clear &amp; linked</span></td>
+        <td><span class="l-th">มีแต่หลวม</span><span class="l-en">loose</span></td>
+        <td><span class="l-th">ไม่มี</span><span class="l-en">missing</span></td>
+      </tr>
+      <tr>
+        <td><b>2.</b> <span class="l-th">FR ผ่าน 4 quality gates เขียนเป็น user story มีรหัส ≥5 ข้อ</span><span class="l-en">FRs pass the 4 quality gates, written as user stories, ID'd, ≥5</span></td>
+        <td><span class="l-th">ผ่านทั้ง 4 gate</span><span class="l-en">passes all 4 gates</span></td>
+        <td><span class="l-th">กำกวมบางข้อ</span><span class="l-en">some vague</span></td>
+        <td><span class="l-th">ไม่มี/น้อย</span><span class="l-en">few/none</span></td>
+      </tr>
+      <tr>
+        <td><b>3.</b> <span class="l-th">NFR วัดได้ (มีตัวเลข) ≥3 ข้อ</span><span class="l-en">Measurable NFRs (with numbers), ≥3</span></td>
+        <td><span class="l-th">มีตัวเลขทุกข้อ</span><span class="l-en">numbers throughout</span></td>
+        <td><span class="l-th">บางข้อลอย</span><span class="l-en">some floaty</span></td>
+        <td><span class="l-th">ไม่มี</span><span class="l-en">none</span></td>
+      </tr>
+      <tr>
+        <td><b>4.</b> <span class="l-th">Acceptance G-W-T ครบทุก Must (มีทางที่ผิด)</span><span class="l-en">G-W-T acceptance for every Must (incl. unhappy path)</span></td>
+        <td><span class="l-th">ครบ + ทางผิด</span><span class="l-en">complete + unhappy</span></td>
+        <td><span class="l-th">มีแต่ happy path</span><span class="l-en">happy path only</span></td>
+        <td><span class="l-th">ไม่มี</span><span class="l-en">none</span></td>
+      </tr>
+      <tr>
+        <td><b>5.</b> <span class="l-th">ลำดับความสำคัญ &amp; traceability ชัด</span><span class="l-en">Priority &amp; traceability are clear</span></td>
+        <td><span class="l-th">MoSCoW + สาวกลับได้</span><span class="l-en">MoSCoW + traceable</span></td>
+        <td><span class="l-th">มีบางส่วน</span><span class="l-en">partial</span></td>
+        <td><span class="l-th">ไม่มี</span><span class="l-en">none</span></td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="callout warn">
+    <span class="lab"><span class="l-th">กฎการอนุมัติ</span><span class="l-en">Approval rule</span></span>
+    <span class="l-th">SRS ที่ยังมี “กลิ่นไม่ดี” หนัก ๆ (FR กำกวม หรือ NFR ไม่มีตัวเลข) จะถูก <b>ส่งกลับให้แก้ ไม่ใช่ตก</b> และให้คะแนนครั้งเดียวเมื่อส่งฉบับแก้ เคล็ดลับ ให้ผ่าน Scorecard ใน section 13 ที่ 14/20 ขึ้นไป และตรวจ requirement ทุกข้อให้ผ่าน 4 quality gates (section 4) ก่อนส่ง</span>
+    <span class="l-en">An SRS with heavy smells (vague FRs or number-less NFRs) is <b>returned for revision, not failed</b> — graded
+    once on resubmission. Tip: clear 14/20 on the Section 13 Scorecard and make every requirement pass the
+    4 quality gates (Section 4) before you submit.</span>
+  </div>
+
+  <div class="callout brand">
+    <span class="lab"><span class="l-th">ก้าวต่อไป → M3 Design</span><span class="l-en">Next → M3 Design</span></span>
+    <span class="l-th">เมื่อ SRS ผ่านแล้ว M3 จะเปลี่ยน “อะไร” ให้เป็น “ยังไง” — architecture, data model, และ prototype โดยยึด FR/NFR เดิมเป็นเข็มทิศ เส้นด้ายเดียวกันจะต่อไปจนถึงการทดสอบใน M4</span>
+    <span class="l-en">Once the SRS passes, M3 turns the “what” into the “how” — architecture, data model, and a prototype, guided
+    by these same FR/NFR IDs. The same thread runs on to testing in M4.</span>
+  </div>
+
+  <button class="print-btn" onclick="window.print()" style="margin-top: 24px;"><span class="l-th">พิมพ์ หรือ บันทึกเป็น PDF</span><span class="l-en">Print / Save as PDF</span></button>
+</div></section>
+
+<footer><div class="wrap">
+  <span>Intro to Software Engineering — <span class="l-th">ปีการศึกษา 2569</span><span class="l-en">Academic Year 2569</span> — Milestone 2 (Software Requirements Specification)</span>
+  <span>School of Applied Digital Technology, MFU</span>
+</div></footer>
+
+<script>
+  // ---- language toggle ----
+  (function(){
+    const saved = (function(){try{return localStorage.getItem('m2_lang')}catch(e){return null}})();
+    if(saved==='en'||saved==='th'){ document.body.dataset.lang = saved; }
+    function setLang(l){
+      document.body.dataset.lang = l;
+      document.documentElement.lang = l;
+      try{ localStorage.setItem('m2_lang', l); }catch(e){}
+      document.querySelectorAll('.langbar button').forEach(b=>b.classList.toggle('on', b.dataset.set===l));
+    }
+    document.querySelectorAll('.langbar button').forEach(b=>{
+      b.addEventListener('click',()=>setLang(b.dataset.set));
+    });
+    document.querySelectorAll('.langbar button').forEach(b=>b.classList.toggle('on', b.dataset.set===document.body.dataset.lang));
+  })();
+
+  const L = ()=>document.body.dataset.lang || 'th';
+  const TH = s=>s, EN = s=>s;
+
+  // ---- SRS readiness scorecard ----
+  const SRS_ITEMS = [
+    {th:'ขอบเขต (in/out) ชัด และสาวกลับถึงปัญหา M1', en:'Scope (in/out) is clear and traces to the M1 problem'},
+    {th:'ระบุ actors ทุกบทบาทที่ใช้ระบบ', en:'All actor roles are identified'},
+    {th:'FR ≥5 ข้อ มีรหัส เขียนเป็น user story ผ่าน 4 quality gates', en:'≥5 FRs, ID\'d, as user stories, passing the 4 quality gates'},
+    {th:'NFR ≥3 ข้อ มีตัวเลขที่วัดได้', en:'≥3 NFRs, each with a measurable number'},
+    {th:'Acceptance G-W-T ครบทุก Must (มีทางที่ผิด)', en:'G-W-T acceptance for every Must (incl. unhappy path)'},
+    {th:'จัดลำดับ MoSCoW และเลือก Must 3–5 ข้อ', en:'MoSCoW priority set; 3–5 Musts chosen'},
+    {th:'ไม่มี solution/เทคโนโลยีปนใน requirement', en:'No solution/tech leaked into requirements'},
+    {th:'มี traceability (story ↔ FR ↔ acceptance)', en:'Traceability holds (story ↔ FR ↔ acceptance)'},
+    {th:'ไม่มี gold-plating / ทุก FR ผูกกับปัญหา', en:'No gold-plating; every FR ties to the problem'},
+    {th:'ทุก FR ผ่าน 4 quality gates (ไม่มีคำกำกวม/solution ปน)', en:'Every FR passes the 4 quality gates (no vague words/leaked solution)'},
+  ];
+  const srsScores = {};
+  (function buildScore(){
+    const box = document.getElementById('scorebox');
+    const anchor = box.querySelector('.score-total');
+    SRS_ITEMS.forEach((it,i)=>{
+      const row = document.createElement('div');
+      row.className='score-item';
+      row.innerHTML = '<div class="q"><b>'+(i+1)+'. <span class="l-th">'+it.th+'</span><span class="l-en">'+it.en+'</span></b></div>'+
+        '<div class="dots" data-i="'+i+'">'+[0,1,2].map(v=>'<button data-v="'+v+'">'+v+'</button>').join('')+'</div>';
+      box.insertBefore(row, anchor);
+    });
+    box.querySelectorAll('.dots').forEach(d=>{
+      d.querySelectorAll('button').forEach(b=>{
+        b.addEventListener('click',()=>{
+          const i=d.dataset.i;
+          srsScores[i]=+b.dataset.v;
+          d.querySelectorAll('button').forEach(x=>x.classList.toggle('on', x===b));
+          srsTotal();
+        });
+      });
+    });
+  })();
+  function srsTotal(){
+    const t = Object.values(srsScores).reduce((a,b)=>a+b,0);
+    document.getElementById('srs_total').textContent = t+' / 20';
+    const v = document.getElementById('srs_verdict');
+    let bg,col,msg_th,msg_en;
+    if(Object.keys(srsScores).length<SRS_ITEMS.length){ bg='var(--surface-2)';col='var(--muted)';msg_th='ให้คะแนนให้ครบทุกข้อเพื่อดูผล';msg_en='Rate every item to see the verdict.'; }
+    else if(t>=17){ bg='var(--good-soft)';col='var(--good)';msg_th='พร้อมส่ง — SRS แน่นดี';msg_en='Ready to submit — a solid SRS.'; }
+    else if(t>=14){ bg='var(--good-soft)';col='var(--good)';msg_th='ผ่านเกณฑ์ ลองเก็บข้อที่ยังได้ 1 ให้เป็น 2';msg_en='Passing — push the 1s up to 2s if you can.'; }
+    else if(t>=10){ bg='var(--warn-soft)';col='var(--warn)';msg_th='ใกล้แล้ว แก้จุดที่ได้ 0–1 ก่อนส่ง';msg_en='Close — fix the 0–1 items before submitting.'; }
+    else { bg='var(--bad-soft)';col='var(--bad)';msg_th='ยังไม่พร้อม กลับไปเสริม FR/NFR/acceptance';msg_en='Not ready — strengthen FRs/NFRs/acceptance.'; }
+    v.style.background=bg; v.style.color=col;
+    v.innerHTML='<span class="l-th">'+msg_th+'</span><span class="l-en">'+msg_en+'</span>';
+  }
+</script>
+</body>
+</html>

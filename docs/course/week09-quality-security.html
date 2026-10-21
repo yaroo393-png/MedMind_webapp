@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intro2SE Ch8 — Software Quality &amp; Basic Security, Year-1 Core</title>
+<style>
+/* Intro2SE HTML slide-deck theme + engine
+   Matches the Intro2SE pptx (intro2se-weekNN.fig) look:
+   Space Grotesk + JetBrains Mono, #EEF0F3 bg, colored-circle motif,
+   white cards, red/yellow/blue/green accents.
+   Keyboard-navigable single-slide-at-a-time deck. Print = all slides. */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --bg:#EEF0F3; --ink:#0B0F19; --text:#3A4250; --muted:#7A8290;
+  --border:#E4E7EC; --border-2:#C8CCD3; --white:#FFFFFF; --panel:#F7F8FA;
+  --yellow:#FFC233; --red:#FF5A47; --blue:#2D5BFF; --green:#16B670;
+  --disp:"Space Grotesk",-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;
+  --mono:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+  --shadow:0 1.2vh 3vh rgba(11,15,25,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--disp);color:var(--text);background:#0b1b2e}
+
+#deck{position:relative;height:100vh;width:100vw;overflow:hidden}
+.slide{
+  position:absolute;inset:0;display:none;flex-direction:column;
+  padding:4.5vh 6vw 6vh;
+  background:linear-gradient(150deg,#f2f4f7 0%,#e9ecf1 100%);
+  overflow:hidden;
+}
+.slide.active{display:flex;animation:f .3s ease}
+@keyframes f{from{opacity:0;transform:translateY(1vh)}to{opacity:1;transform:none}}
+
+/* ---- top chrome bar ---- */
+.chrome{
+  display:flex;align-items:center;justify-content:space-between;gap:1vw;
+  font-family:var(--mono);font-weight:700;font-size:1.05vw;color:var(--ink);
+  padding-bottom:2.2vh;flex:0 0 auto;
+}
+.chrome .l{display:flex;align-items:center;gap:.7vw;min-width:0}
+.chrome .play{color:var(--blue)}
+.chrome .crumb{color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chrome .count{color:var(--muted);font-weight:500;white-space:nowrap}
+
+/* body region */
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;min-height:0}
+.body.top{justify-content:flex-start}
+
+/* ---- typography ---- */
+.kicker{font-family:var(--mono);font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  font-size:1.05vw;color:var(--muted);margin-bottom:1.4vh;display:block}
+.kicker.blue{color:var(--blue)} .kicker.red{color:var(--red)}
+.kicker.green{color:var(--green)} .kicker.gold{color:#a67a00}
+h1.head{font-family:var(--disp);font-weight:700;color:var(--ink);
+  font-size:4.6vw;line-height:1.05;letter-spacing:-.01em;margin-bottom:1.4vh}
+h2.head{font-family:var(--disp);font-weight:700;color:var(--ink);
+  font-size:3.2vw;line-height:1.1;letter-spacing:-.01em;margin-bottom:2vh}
+.dek{font-size:1.7vw;line-height:1.5;color:var(--text);max-width:80%;margin-bottom:2.4vh}
+.dek.narrow{max-width:64%}
+p{margin:0 0 1vh} strong{color:var(--ink);font-weight:700}
+.sub{font-size:1.35vw;color:var(--muted);margin-top:1vh}
+
+/* ---- title slide ---- */
+.title-slide .kicker{font-size:1.2vw}
+.title-slide h1.head{font-size:6vw;max-width:62%}
+.title-slide .lead{font-size:1.7vw;color:var(--text);max-width:52%;margin-top:3vh;line-height:1.5}
+.circles{position:absolute;right:6vw;top:50%;transform:translateY(-50%);width:34vw;height:70vh}
+.circles i{position:absolute;border-radius:50%;display:block}
+.circles .c1{width:13vw;height:13vw;background:var(--blue);right:6vw;top:6vh}
+.circles .c2{width:9vw;height:9vw;background:var(--green);left:0;top:34vh}
+.circles .c3{width:7vw;height:7vw;background:var(--yellow);right:0;top:40vh}
+.circles .c4{width:15vw;height:15vw;background:var(--red);right:9vw;bottom:2vh}
+
+/* ---- generic grids ---- */
+.grid{display:grid;gap:1.4vw}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+
+/* ---- browser cards (mac dots) ---- */
+.bcard{background:var(--white);border-radius:1.2vw;box-shadow:var(--shadow);
+  padding:2.4vh 1.7vw;display:flex;flex-direction:column;min-width:0}
+.bcard .dots{display:flex;gap:.5vw;margin-bottom:2vh}
+.bcard .dots i{width:.85vw;height:.85vw;border-radius:50%;display:block}
+.bcard .dots i:nth-child(1){background:var(--red)}
+.bcard .dots i:nth-child(2){background:var(--yellow)}
+.bcard .dots i:nth-child(3){background:var(--green)}
+.bcard .lbl{font-family:var(--mono);font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  font-size:1vw;color:var(--muted);margin-bottom:1.2vh}
+.bcard h3{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.9vw;line-height:1.1;margin-bottom:1.4vh}
+.bcard p{font-size:1.35vw;line-height:1.45;color:var(--text)}
+.bcard .foot{margin-top:auto;padding-top:1.6vh}
+
+/* chip row */
+.chips{display:flex;align-items:center;gap:.7vw;flex-wrap:wrap}
+.chips .chip{font-family:var(--mono);font-weight:500;font-size:1.1vw;color:var(--text);
+  background:var(--panel);border-radius:999px;padding:.7vh 1vw}
+.chips .chip.hot{background:#ffe9e6;color:var(--red)}
+.chips .arw{color:var(--muted);font-size:1.1vw}
+.squares{display:flex;gap:.6vw}
+.squares i{width:2.4vw;height:2.4vw;border-radius:.5vw;display:block}
+.squares .y{background:var(--yellow)} .squares .r{background:var(--red)} .squares .g{background:var(--green)}
+
+/* ---- big color cards (red/yellow/green) ---- */
+.ccard{border-radius:1.2vw;padding:3vh 1.8vw;display:flex;flex-direction:column;color:#fff;min-height:52vh}
+.ccard.red{background:var(--red)} .ccard.yellow{background:var(--yellow);color:var(--ink)}
+.ccard.green{background:var(--green)} .ccard.blue{background:var(--blue)}
+.ccard .lbl{font-family:var(--mono);font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  font-size:1vw;opacity:.8;margin-bottom:2vh}
+.ccard h3{font-family:var(--disp);font-weight:700;font-size:2.3vw;line-height:1.05;margin-bottom:2.2vh}
+.ccard p{font-size:1.35vw;line-height:1.45}
+.ccard .ico{margin-top:auto;align-self:flex-end;font-size:3vw;opacity:.9}
+
+/* ---- stage/step light cards (with progress bar or chip) ---- */
+.scard{background:var(--white);border-radius:1.1vw;box-shadow:var(--shadow);
+  padding:2.4vh 1.4vw;display:flex;flex-direction:column;min-width:0}
+.scard .lbl{font-family:var(--mono);font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  font-size:.92vw;color:var(--muted);margin-bottom:1vh}
+.scard h3{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.5vw;line-height:1.1;margin-bottom:1.2vh}
+.scard p{font-size:1.15vw;line-height:1.4;color:var(--text);flex:1}
+.scard .bar{display:flex;gap:.3vw;margin-top:1.6vh}
+.scard .bar i{height:.7vh;flex:1;border-radius:999px;background:var(--border-2)}
+.scard .bar.n1 i:nth-child(-n+1),.scard .bar.n2 i:nth-child(-n+2),
+.scard .bar.n3 i:nth-child(-n+3),.scard .bar.n4 i:nth-child(-n+4),
+.scard .bar.n5 i:nth-child(-n+5){background:var(--col,var(--blue))}
+.scard.c-red{--col:var(--red)} .scard.c-yellow{--col:var(--yellow)}
+.scard.c-blue{--col:var(--blue)} .scard.c-green{--col:var(--green)}
+.scard .chip{align-self:flex-start;margin-top:1.4vh;font-family:var(--mono);font-weight:500;
+  font-size:1vw;color:var(--text);background:var(--panel);border-radius:.5vw;padding:.5vh .9vw}
+
+/* ---- do / don't two cards ---- */
+.dcard{background:var(--white);border-radius:1.2vw;box-shadow:var(--shadow);padding:2.6vh 1.8vw}
+.dcard .pill{display:inline-block;font-family:var(--mono);font-weight:700;font-size:1vw;
+  color:#fff;border-radius:999px;padding:.5vh 1.1vw;margin-bottom:1.8vh}
+.dcard.do .pill{background:var(--green)} .dcard.dont .pill{background:var(--red)}
+.dcard .item{padding:1.2vh 0;border-top:1px solid var(--border)}
+.dcard .item:first-of-type{border-top:none}
+.dcard .item h4{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.4vw;margin-bottom:.5vh}
+.dcard .item p{font-size:1.15vw;line-height:1.4;color:var(--text)}
+
+/* ---- list + panel ---- */
+.listpanel{display:grid;grid-template-columns:1fr 1.05fr;gap:3vw;align-items:center}
+.expl h4{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.6vw;margin:1.8vh 0 .6vh}
+.expl h4:first-child{margin-top:0}
+.expl p{font-size:1.3vw;line-height:1.45;color:var(--text)}
+.panel{background:var(--white);border-radius:1.2vw;box-shadow:var(--shadow);padding:1vh 1.6vw}
+.panel .row{display:flex;align-items:center;gap:1vw;padding:1.6vh .4vw;border-top:1px solid var(--border)}
+.panel .row:first-child{border-top:none}
+.panel .row .sq{width:1.6vw;height:1.6vw;border-radius:.4vw;flex:0 0 auto}
+.panel .row .n{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.5vw;flex:0 0 auto;width:1.6vw}
+.panel .row .txt{font-size:1.3vw;color:var(--ink);flex:1}
+.panel .row .tag{font-family:var(--mono);font-size:1vw;color:var(--muted)}
+.b-blue{background:var(--blue)} .b-red{background:var(--red)}
+.b-yellow{background:var(--yellow)} .b-green{background:var(--green)} .b-purple{background:#7C4DFF}
+
+/* ---- pills (before you leave) ---- */
+.pillrows{display:flex;flex-direction:column;gap:1.4vh}
+.pillrow{display:flex;align-items:center;gap:1.4vw}
+.pillrow .k{font-size:1.4vw;color:var(--ink);width:12vw;flex:0 0 auto}
+.pillrow .v{font-family:var(--mono);font-weight:500;font-size:1.35vw;color:#fff;
+  border-radius:999px;padding:1.1vh 1.6vw;flex:1}
+
+/* ---- quote ---- */
+.quote{background:var(--panel);border-left:.5vw solid var(--yellow);border-radius:0 1vw 1vw 0;
+  padding:2.6vh 2vw}
+.quote p{font-size:2.2vw;line-height:1.35;color:var(--ink);font-weight:500}
+.quote .by{font-size:1.4vw;color:var(--muted);font-style:italic;margin-top:1.6vh}
+
+/* ---- horizontal flow ---- */
+.flow{display:flex;align-items:stretch;gap:1vw;flex-wrap:nowrap}
+.flow .node{background:var(--white);border-radius:1vw;box-shadow:var(--shadow);
+  padding:2vh 1.2vw;flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0;text-align:center}
+.flow .node .t{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.4vw;line-height:1.1}
+.flow .node .s{font-size:1vw;color:var(--muted);margin-top:.6vh}
+.flow .arw{align-self:center;color:var(--muted);font-size:1.8vw;flex:0 0 auto}
+.flow .node.on-blue{background:var(--blue);color:#fff} .flow .node.on-blue .t{color:#fff}
+.flow .node.on-green{background:var(--green);color:#fff} .flow .node.on-green .t{color:#fff}
+
+/* ---- table ---- */
+.table-wrap{overflow:auto;border-radius:1vw;box-shadow:var(--shadow);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;background:var(--white);font-size:1.25vw}
+thead th{font-family:var(--mono);font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+  font-size:1vw;color:#fff;background:var(--ink);text-align:left;padding:1.4vh 1.1vw}
+tbody td{padding:1.4vh 1.1vw;border-top:1px solid var(--border);vertical-align:top;line-height:1.35}
+tbody tr:nth-child(even){background:var(--panel)}
+td.b,th.b{font-weight:700;color:var(--ink)}
+
+/* summary 2x2 (dark) */
+.slide.dark{background:linear-gradient(150deg,#141a4a 0%,#0f1440 100%)}
+.slide.dark h2.head,.slide.dark .kicker{color:#fff}
+.quad{display:grid;grid-template-columns:1fr 1fr;gap:2.6vh 3vw;margin-top:1vh}
+.quad .q h4{font-family:var(--disp);font-weight:700;color:#fff;font-size:1.9vw;margin-bottom:.8vh}
+.quad .q p{font-size:1.3vw;line-height:1.45;color:#cfd4ea}
+.quad .q .tag{font-family:var(--mono);font-size:1vw;color:#8b93c7;text-transform:uppercase;letter-spacing:.06em}
+
+/* footer line */
+.foot-note{margin-top:2.4vh;font-size:1.2vw;color:var(--muted)}
+.rule{height:1px;background:var(--border);margin:2vh 0}
+
+/* ---- deck controls ---- */
+.bar{position:fixed;bottom:0;left:0;height:.6vh;background:var(--blue);transition:width .3s;z-index:6}
+.hint{position:fixed;bottom:1.6vh;left:50%;transform:translateX(-50%);font-family:var(--mono);
+  font-size:.85vw;color:var(--muted);z-index:6}
+
+/* ---- print: every slide on its own page ---- */
+@media print{
+  #deck{height:auto;overflow:visible}
+  .slide{display:flex!important;position:relative;height:100vh;page-break-after:always;
+    inset:auto;break-inside:avoid}
+  .bar,.hint{display:none}
+}
+
+/* ---- embedded figure images (from Week2.pptx) ---- */
+.fig{display:block;margin:0 auto;max-width:100%;max-height:44vh;height:auto;width:auto;
+  background:#fff;border-radius:1vw;box-shadow:var(--shadow);padding:1.6vh 1.6vw}
+.fig.sm{max-height:28vh}
+.figcap{text-align:center;font-family:var(--mono);font-size:1vw;color:var(--muted);margin-top:.9vh}
+
+</style>
+<style>
+  /* deeper green for SVG box fills carrying text — theme green (#16B670) fails AA on white (~2.6:1); this passes (~5:1) */
+  :root{ --gbox:#0B7A4A; }
+  /* dark closing slide: invert the chrome bar text (ink-on-navy ≈ invisible otherwise) */
+  .slide.dark .chrome .l{ color:#e8ecf7; }
+  .slide.dark .chrome .crumb, .slide.dark .chrome .count{ color:#aeb6dd; }
+  /* dark code block (git log, snippets, prompt) */
+  .code{background:#0f1440;border-radius:1vw;padding:2vh 1.6vw;font-family:var(--mono);
+    font-size:1.05vw;line-height:1.7;color:#c8d0f0;overflow:auto;white-space:pre}
+  .code.sm{font-size:.95vw;line-height:1.6}
+  .code .k{color:#7aa2ff}.code .c{color:#8891b8}.code .s{color:#7ee0b8}.code .g{color:#ffcf6b}.code .r{color:#ff8f7d}
+  .codecap{font-family:var(--mono);font-size:1vw;color:var(--muted);margin:.2vh 0 1vh}
+  /* numbered fundamentals panel */
+  .num-row{display:flex;align-items:flex-start;gap:1.1vw;padding:1.5vh .4vw;border-top:1px solid var(--border)}
+  .num-row:first-child{border-top:none}
+  .num-row .n{font-family:var(--mono);font-weight:700;color:#fff;background:var(--blue);
+    width:2.2vw;height:2.2vw;border-radius:.5vw;display:flex;align-items:center;justify-content:center;
+    font-size:1.15vw;flex:0 0 auto}
+  .num-row .n.g{background:var(--green)} .num-row .n.y{background:var(--yellow);color:var(--ink)}
+  .num-row .n.r{background:var(--red)} .num-row .n.p{background:#7C4DFF}
+  .num-row h4{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.5vw;margin-bottom:.3vh}
+  .num-row p{font-size:1.2vw;line-height:1.4;color:var(--text)}
+  /* label chip inline */
+  .lead-tag{display:inline-block;font-family:var(--mono);font-weight:700;font-size:.9vw;letter-spacing:.04em;
+    text-transform:uppercase;color:#fff;background:var(--blue);border-radius:.4vw;padding:.4vh .8vw;margin-bottom:1.2vh}
+  .lead-tag.g{background:var(--green)} .lead-tag.r{background:var(--red)} .lead-tag.y{background:var(--yellow);color:var(--ink)}
+  /* flow arrow label */
+  .flow .arw small{display:block;font-family:var(--mono);font-size:.7vw;color:var(--muted);text-align:center}
+  .flow.wrap{flex-wrap:wrap;gap:1.2vh 1vw}
+  /* red flow node (theme only ships on-blue / on-green) */
+  .flow .node.on-red{background:var(--red);color:#fff} .flow .node.on-red .t{color:#fff}
+  /* inline code — subtle mono chip on light surfaces */
+  code{font-family:var(--mono);font-size:.9em;background:var(--panel);border-radius:.3vw;padding:.1vh .45vw;color:var(--ink)}
+  .foot-note code{font-size:.95em}
+  /* shave a few px off dense scard+foot-note slides so nothing clips at 16:9 */
+  .scard{padding-top:2vh;padding-bottom:2vh}
+  .scard .bar{margin-top:1.2vh}
+  .body > .foot-note:last-child{margin-top:1.9vh}
+  /* "IN PLAIN TERMS" — a plain-language restatement / analogy for Year-1 readers */
+  .plain{background:#EAF1FF;border-left:.5vw solid var(--blue);border-radius:0 .7vw .7vw 0;
+    padding:1.15vh 1.2vw;margin-top:1.6vh}
+  .plain .lab{display:inline-block;font-family:var(--mono);font-weight:700;font-size:.82vw;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--blue);margin-bottom:.35vh}
+  .plain p{font-size:1.18vw;line-height:1.42;color:var(--ink);margin:0}
+  .plain.g{background:#E4F6EE;border-left-color:var(--green)} .plain.g .lab{color:#0B7A4A}
+  .plain.r{background:#FFECE9;border-left-color:var(--red)} .plain.r .lab{color:#C43A2B}
+  .slide.dark .plain{background:#16224a} .slide.dark .plain p{color:#e8ecf7}
+  /* compact SVG figure block with a mono caption */
+  .figblock{margin:.6vh 0 0}
+  .figblock .cap{font-family:var(--mono);font-size:.92vw;color:var(--muted);text-align:center;margin-top:.4vh}
+
+  /* ---- step reveal: Right/Space shows the next answer, Left hides it ---- */
+  .frag{transition:opacity .25s}
+  .frag:not(.on){opacity:0;visibility:hidden}
+  .mark{transition:background .25s,color .25s}
+  .mark.on{background:#E4F6EE;color:#0B7A4A;font-weight:700;border-radius:.4vw}
+  .mark.on b{color:#0B7A4A}
+  .ans{color:#0B7A4A;font-weight:700}
+  .stepnote{font-family:var(--mono);font-size:.85vw;color:var(--muted);margin-top:1.4vh}
+  /* concept-check slides get a warm tint so they read as "your turn" */
+  .slide.cc{background:linear-gradient(150deg,#fbf6ea 0%,#f1ead8 100%)}
+  .slide.cc .kicker{color:#a67a00}
+  .cc table{font-size:1.2vw}
+  .cc tbody td{padding:1.15vh 1.1vw}
+  /* All concept checks: larger type for the back row (professor, 19 Oct) */
+  .slide.cc table{font-size:1.65vw}
+  .slide.cc thead th{font-size:1.25vw;padding:1.3vh 1.2vw}
+  .slide.cc tbody td{padding:1.9vh 1.2vw;line-height:1.3}
+  .slide.cc .plain p{font-size:1.45vw}
+  .slide.cc .plain .lab{font-size:1vw}
+  .slide.cc .askbox h4{font-size:1.75vw}
+  .slide.cc .askbox p{font-size:1.45vw}
+  .slide.cc .askbox li{font-size:1.4vw}
+  .slide.cc .stepnote{font-size:1.05vw}
+  .askbox{background:var(--white);border-radius:1.1vw;box-shadow:var(--shadow);padding:2vh 1.5vw}
+  .askbox h4{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.45vw;margin-bottom:.8vh}
+  .askbox p{font-size:1.2vw;line-height:1.42;color:var(--text)}
+  .askbox p.ans{color:#0B7A4A}
+  .askbox ul{list-style:none;display:grid;gap:.6vh;margin-top:.6vh}
+  .askbox li{font-size:1.15vw;line-height:1.35;color:var(--ink);background:var(--panel);border-radius:.5vw;padding:.7vh .8vw}
+  /* question focus (Critique) */
+  .qf{background:var(--white);border-left:.5vw solid var(--red);border-radius:0 1vw 1vw 0;box-shadow:var(--shadow);padding:2.2vh 1.8vw}
+  .qf .lab{display:block;font-family:var(--mono);font-weight:700;font-size:.85vw;letter-spacing:.05em;text-transform:uppercase;color:var(--red);margin-bottom:.8vh}
+  .qf p{font-size:1.42vw;line-height:1.45;color:var(--ink)}
+  .qf p.th{font-size:1.12vw;line-height:1.6;color:var(--text);margin-top:1.2vh;font-family:"Noto Sans Thai","Sarabun",var(--disp)}
+  .th{font-family:"Noto Sans Thai","Sarabun",var(--disp)}
+  /* timer */
+  .timer{display:flex;align-items:center;gap:.9vw;margin-top:1.8vh}
+  .timer .t{font-family:var(--mono);font-weight:700;font-size:3vw;color:var(--ink);min-width:8.5vw}
+  .timer.run .t{color:var(--blue)} .timer.done .t{color:var(--red)}
+  .timer button{font-family:var(--mono);font-weight:700;font-size:.95vw;border:none;border-radius:999px;
+    padding:.9vh 1.2vw;background:var(--ink);color:#fff;cursor:pointer}
+  .timer button.ghost{background:var(--white);color:var(--ink);box-shadow:var(--shadow)}
+  .timer .k{font-family:var(--mono);font-size:.8vw;color:var(--muted)}
+  /* MCQ practice */
+  .mcq{background:var(--white);border-radius:1.1vw;box-shadow:var(--shadow);padding:1.7vh 1.4vw;min-width:0}
+  .mcq .q{font-size:1.18vw;line-height:1.36;color:var(--ink);font-weight:600;margin-bottom:.9vh}
+  .mcq .q strong{text-decoration:underline;text-underline-offset:.3vh}
+  .mcq .q .n{font-family:var(--mono);color:var(--blue);margin-right:.4vw}
+  .mcq ol{list-style:none;display:grid;gap:.25vh}
+  .mcq li{font-size:1.05vw;line-height:1.32;color:var(--text);padding:.4vh .6vw}
+  .mcq li b{font-family:var(--mono);margin-right:.5vw;color:var(--muted)}
+  /* concept map */
+  .cmap{display:grid;grid-template-columns:1fr 1fr;gap:1.6vw}
+  .cmap .col{background:var(--white);border-radius:1.1vw;box-shadow:var(--shadow);padding:2vh 1.5vw}
+  .cmap .col > .lab{font-family:var(--mono);font-weight:700;font-size:.95vw;letter-spacing:.05em;text-transform:uppercase;margin-bottom:1.2vh;display:block}
+  .cmap .step{display:flex;gap:1vw;align-items:flex-start;padding:1vh 0;border-top:1px solid var(--border)}
+  .cmap .step:first-of-type{border-top:none}
+  .cmap .step h4{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.35vw;width:7.5vw;flex:0 0 auto}
+  .cmap .step p{font-size:1.1vw;line-height:1.4;color:var(--text);margin:0}
+  /* editable "to be confirmed" fields on the announcement slide */
+  .tbc{background:#FFF3D1;border-bottom:.3vh dashed #a67a00;padding:0 .4vw;border-radius:.3vw;outline:none;color:var(--ink)}
+  .tbc:focus{background:#ffe7a3}
+  .slide.dark a{color:#9fb6ff}
+  /* ISO/IEC 25010:2023 nine-card grid */
+  .iso9{gap:1.1vh 1vw!important}
+  .iso9 .scard{padding:1.2vh 1.1vw}
+  .iso9 .scard h3{font-size:1.3vw;margin-bottom:.5vh}
+  .iso9 .scard p{font-size:1.02vw;line-height:1.3}
+  .iso9 .scard .chip{margin-top:.6vh;font-size:.78vw;padding:.3vh .6vw}
+  .chip.new{background:#FFECE9;color:#C43A2B;font-weight:700}
+  @media print{
+    .frag{opacity:1!important;visibility:visible!important}
+    .timer button,.timer .k{display:none}
+  }
+</style>
+</head>
+<body>
+<div id="deck">
+
+<section class="slide title-slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Quality &amp; Security / Build it to be trusted</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker">CHAPTER 8: YEAR-1 CORE, QUALITY &amp; BASIC SECURITY</span>
+    <h1 class="head">Does it <em>work</em> — and can it be <em>trusted</em>?</h1>
+    <p class="lead">Quality is not luck and security is not an add-on. You <strong>check</strong> quality with reviews, tests and tools, and you protect users with a few habits any beginner can apply today — including the law: Thailand's <strong>PDPA</strong>.</p>
+  </div>
+  <div class="circles"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i></div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Today</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">TODAY: ONE CHAPTER, DONE PROPERLY</span>
+    <h2 class="head">Today: Ch8, then exam practice</h2>
+    <div class="flow wrap" style="margin-bottom:2.4vh">
+      <div class="node on-blue"><div class="t">Ch8 Quality &amp; Security</div><div class="s" style="color:#cfe0ff">3 concept checks</div></div><div class="arw">→</div>
+      <div class="node on-red"><div class="t">Critique #8</div><div class="s" style="color:#ffe1dc">ask questions</div></div><div class="arw">→</div>
+      <div class="node on-green"><div class="t">Exam practice</div><div class="s" style="color:#d6f5e6">4 MCQ on Ch8</div></div><div class="arw">→</div>
+      <div class="node"><div class="t">Next class</div><div class="s">Ch9 + Ch10</div></div>
+    </div>
+    <div class="grid g3">
+      <div class="scard c-blue"><div class="lbl">Goal</div><h3>Understand the concepts</h3><p>Ch8 is on the final exam (Ch1 to Ch10, English MCQ with 4 options + short answer).</p><div class="bar n1"><i></i><i></i><i></i></div></div>
+      <div class="scard c-yellow"><div class="lbl">Concept checks</div><h3>Answer together</h3><p>After each topic: a short situation, the whole room answers at once. Not graded.</p><div class="bar n2"><i></i><i></i><i></i></div></div>
+      <div class="scard c-red"><div class="lbl">Bring</div><h3>One A4 sheet</h3><p>For Critique #8. Handwritten, handed in during class.</p><div class="bar n3"><i></i><i></i><i></i></div></div>
+    </div>
+    <p class="foot-note">Ch9 and Ch10 are next class: <strong>Mon 26 Oct, starting 13:00</strong>.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Where we are</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">THE GOLDEN THREAD: ONE STEP FURTHER</span>
+    <h2 class="head">Quality &amp; security are how the prototype earns trust</h2>
+    <div class="flow wrap" style="margin-bottom:2.4vh"><div class="node"><div class="t">Problem</div><div class="s">Wk 3</div></div><div class="arw">→</div><div class="node"><div class="t">FR / NFR</div><div class="s">SRS</div></div><div class="arw">→</div><div class="node"><div class="t">Model</div><div class="s">UML</div></div><div class="arw">→</div><div class="node"><div class="t">Design</div><div class="s">Wk 5</div></div><div class="arw">→</div><div class="node"><div class="t">Code</div><div class="s">Wk 6</div></div><div class="arw">→</div><div class="node"><div class="t">Test</div><div class="s">Ch7</div></div><div class="arw">→</div><div class="node on-blue"><div class="t">Quality</div><div class="s" style="color:#cfe0ff">Ch8</div></div><div class="arw">→</div><div class="node"><div class="t">PM</div><div class="s">Ch9</div></div><div class="arw">→</div><div class="node"><div class="t">Ethics</div><div class="s">Ch10</div></div></div>
+    <div class="grid g3">
+      <div class="scard c-blue"><div class="lbl">Part 1</div><h3>Quality</h3><p>What “quality” means, and how you actually check it — reviews, tests, linters.</p><div class="bar n1"><i></i><i></i><i></i></div></div>
+      <div class="scard c-green"><div class="lbl">Part 2</div><h3>Basic security</h3><p>The big three for beginners, plus a real vulnerability you can find today.</p><div class="bar n2"><i></i><i></i><i></i></div></div>
+      <div class="scard c-red"><div class="lbl">Part 3</div><h3>Privacy &amp; PDPA</h3><p>Personal data is a legal duty — consent, minimise, protect.</p><div class="bar n3"><i></i><i></i><i></i></div></div>
+    </div>
+    <p class="foot-note">Understand-only this term — these are habits you apply to the prototype and are assessed on the exam, not a separately graded security audit.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Quality attributes</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">PART 1: WHAT QUALITY MEANS</span>
+    <h2 class="head">Quality is several attributes — and each is checkable</h2>
+    <div class="grid g3" style="gap:1.2vw 1.2vw">
+      <div class="bcard"><span class="lbl">Reliability</span><h3>It keeps working</h3><p>Same input → same correct result, even on a bad day. Checked by tests.</p></div>
+      <div class="bcard"><span class="lbl">Usability</span><h3>People can use it</h3><p>Clear, forgiving, learnable. Checked by watching a real user try it.</p></div>
+      <div class="bcard"><span class="lbl">Maintainability</span><h3>Easy to change</h3><p>Readable code future-you can edit. Checked by reviews &amp; linters.</p></div>
+      <div class="bcard"><span class="lbl">Security</span><h3>It protects data</h3><p>Only the right people see the right data. Checked by thinking like an attacker.</p></div>
+      <div class="bcard"><span class="lbl">Performance</span><h3>Fast enough</h3><p>Responds within the NFR budget. Checked by measuring, not guessing.</p></div>
+      <div class="bcard"><span class="lbl" style="color:var(--blue)">The point</span><h3>You <em>check</em>, not hope</h3><p>Every attribute traces back to an NFR in your SRS — and to a way to verify it.</p></div>
+    </div>
+    <div class="plain"><span class="lab">In plain terms</span><p>Quality isn't one thing — it's a <strong>checklist</strong>, like judging a restaurant: taste, speed, cleanliness, price. Each is real, and each is checked a different way.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ ISO/IEC 25010:2023</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">PART 1b: A STANDARD VOCABULARY (ISO/IEC 25010:2023)</span>
+    <h2 class="head">Quality has an international model: nine characteristics</h2>
+    <div class="grid g3 iso9">
+      <div class="scard c-blue"><div class="lbl">#1</div><h3>Functional suitability</h3><p>Does what's needed, correctly.</p></div>
+      <div class="scard c-green"><div class="lbl">#2</div><h3>Performance efficiency</h3><p>Fast enough, within resources.</p></div>
+      <div class="scard c-yellow"><div class="lbl">#3</div><h3>Compatibility</h3><p>Works alongside other systems.</p></div>
+      <div class="scard c-red"><div class="lbl">#4</div><h3>Interaction capability</h3><p>People can learn and use it.</p><span class="chip">RENAMED: was Usability</span></div>
+      <div class="scard c-green"><div class="lbl">#5</div><h3>Reliability</h3><p>Keeps working over time.</p></div>
+      <div class="scard c-red"><div class="lbl">#6</div><h3>Security</h3><p>Protects data and access.</p></div>
+      <div class="scard c-blue"><div class="lbl">#7</div><h3>Maintainability</h3><p>Easy to change safely.</p></div>
+      <div class="scard c-yellow"><div class="lbl">#8</div><h3>Flexibility</h3><p>Adapts to new environments and needs.</p><span class="chip">RENAMED: was Portability</span></div>
+      <div class="scard c-red"><div class="lbl">#9</div><h3>Safety</h3><p>Avoids harm to people, property and the environment.</p><span class="chip new">NEW in 2023</span></div>
+    </div>
+    <div class="plain g"><span class="lab">Why it changed</span><p>The 2023 edition (replacing 2011) renamed Usability and Portability and added <strong>Safety</strong>, because software now runs cars, medical devices and AI systems. Each characteristic in your SRS becomes an NFR you can check.</p></div>
+    <p class="foot-note">Source: <strong>ISO/IEC 25010:2023</strong> Product quality model, Edition 2 (iso.org/standard/78176.html). Sommerville 9e Ch24 describes the earlier 2011 model.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Review &amp; static checks</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">PART 1: CHEAP, POWERFUL QUALITY TOOLS</span>
+    <h2 class="head">Code review &amp; the linter catch problems early</h2>
+    <div class="grid g2">
+      <div class="bcard"><span class="lbl">Human</span><h3>Code review</h3><p>A teammate <strong>reads your code</strong> before it reaches <code>main</code> — this is what a Pull Request is for (Ch6). Catches logic bugs, unclear names, missing cases, and spreads knowledge across the team.</p></div>
+      <div class="bcard"><span class="lbl">Automatic</span><h3>Linter / static analysis</h3><p>A tool that <strong>reads the code without running it</strong> and flags style, unused variables, likely bugs, risky patterns. Fast, consistent, runs on every commit.</p></div>
+    </div>
+    <div class="plain g"><span class="lab">In plain terms</span>
+      <p>A linter is <strong>spell-check for code</strong>; a code review is a <strong>classmate proof-reading your essay</strong>. Neither is optional on a real team — and both make AI-generated code far safer to keep.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Cost of fixing defects</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">PART 1c: WHY CHECK EARLY (BOEHM)</span>
+    <h2 class="head">The later you catch a defect, the more it costs</h2>
+    <div class="figblock">
+      <svg viewBox="0 0 820 300" style="width:100%;height:36vh;display:block;margin:.3vh auto">
+        <line x1="70" y1="260" x2="790" y2="260" stroke="var(--border-2)" stroke-width="2"/>
+        <line x1="70" y1="30"  x2="70"  y2="260" stroke="var(--border-2)" stroke-width="2"/>
+        <text x="40" y="150" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--muted)" transform="rotate(-90 40 150)">cost to fix →</text>
+        <path d="M120,248 C300,242 430,215 560,150 S740,55 760,46" fill="none" stroke="var(--red)" stroke-width="4"/>
+        <g font-family="var(--mono)" font-size="12" fill="var(--muted)" text-anchor="middle">
+          <circle cx="120" cy="248" r="5" fill="var(--blue)"/><text x="120" y="282">Requirements</text><text x="120" y="236" fill="var(--ink)">~1×</text>
+          <circle cx="300" cy="238" r="5" fill="var(--blue)"/><text x="300" y="282">Design</text><text x="300" y="226" fill="var(--ink)">~5×</text>
+          <circle cx="460" cy="205" r="5" fill="var(--yellow)"/><text x="460" y="282">Code</text><text x="460" y="193" fill="var(--ink)">~10×</text>
+          <circle cx="600" cy="135" r="5" fill="var(--yellow)"/><text x="600" y="282">Test</text><text x="600" y="123" fill="var(--ink)">~25×</text>
+          <circle cx="760" cy="46" r="6" fill="var(--red)"/><text x="760" y="282">Production</text><text x="760" y="34" fill="var(--red)" font-weight="700">~100×</text>
+        </g>
+      </svg>
+      <div class="cap">Illustrative scale — a bug caught in review/test is cheap; the same bug in production is not</div>
+    </div>
+    <p class="foot-note">After <strong>Boehm (1981) Software Engineering Economics</strong>. This is why reviews (here) and unit tests (Ch7) pay for themselves — they move the catch leftward.</p>
+    <div class="plain g"><span class="lab">In plain terms</span><p>A typo you catch <em>while writing</em> costs nothing; the same typo found <em>after the book is printed</em> means a reprint. Bugs are identical — catching them early, in a review or a test, is why both are worth the time.</p></div>
+  </div>
+</section>
+<section class="slide cc cc1">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Concept check 1</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker">CONCEPT CHECK 1: QUALITY ATTRIBUTES</span>
+    <h2 class="head">Which attribute is it, and how do you check it?</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:52%">Situation</th><th>Attribute</th><th>Check it by</th></tr></thead>
+        <tbody>
+          <tr><td>The app takes more than 5 seconds to respond when many people use it.</td><td class="frag ans" data-f="a">Performance</td><td class="frag" data-f="a">Measuring, not guessing</td></tr>
+          <tr><td>A new user cannot find the Save button.</td><td class="frag ans" data-f="b">Usability</td><td class="frag" data-f="b">Watching a real user try it</td></tr>
+          <tr><td>Changing one feature means editing 10 files.</td><td class="frag ans" data-f="c">Maintainability</td><td class="frag" data-f="c">Code review + linter</td></tr>
+          <tr><td>The calculation is sometimes wrong.</td><td class="frag ans" data-f="d">Reliability</td><td class="frag" data-f="d">Tests</td></tr>
+          <tr><td>User A can see User B's data.</td><td class="frag ans" data-f="e">Security</td><td class="frag" data-f="e">Thinking like an attacker (access control)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="plain g frag"><span class="lab">Follow-up</span><p>If that last bug reaches production, is it more expensive than catching it in review? <strong>Yes, by an order of magnitude or more (Boehm): the later you find it, the more it costs.</strong></p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ The big three</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker green">PART 2: SECURITY YOU CAN APPLY TODAY</span>
+    <h2 class="head">Three habits that stop most beginner mistakes</h2>
+    <div class="grid g3">
+      <div class="ccard blue" style="min-height:46vh"><div class="lbl">#1</div><h3>Validate input</h3><p>Never trust data from the user or the browser. Check type, length and range on the <strong>server</strong>, before you use or store it.</p></div>
+      <div class="ccard green" style="min-height:46vh"><div class="lbl">#2</div><h3>Access control</h3><p>A logged-in user may see <strong>only their own data</strong>. Check “who are you, and is this yours?” on every request.</p></div>
+      <div class="ccard red" style="min-height:46vh"><div class="lbl">#3</div><h3>No secrets in the repo</h3><p>Passwords, API keys, tokens never go in the code or Git history. Use <code>.env</code> + <code>.gitignore</code> (Ch6).</p></div>
+    </div>
+    <div class="plain"><span class="lab">In plain terms</span><p>Picture a shop: check what comes through the door (<strong>validate input</strong>), only staff can open the till (<strong>access control</strong>), and never tape the keys to the door (<strong>no secrets in the repo</strong>).</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ A vulnerability you can find today</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker red">PART 2: TRUSTING THE CLIENT = THE CLASSIC HOLE</span>
+    <h2 class="head">If the user can change the id, they can read your data</h2>
+    <div class="grid g2" style="align-items:start">
+      <div>
+        <p class="codecap">Wrong: The server trusts an id from the URL</p>
+        <div class="code sm"><span class="c"># anyone logged in can swap the number</span>
+GET /api/notes?user_id=<span class="r">1042</span>
+
+<span class="k">def</span> get_notes(user_id):
+  <span class="k">return</span> db.notes.where(owner=user_id)
+  <span class="c"># ...whose id is this? nobody checked.</span></div>
+        <p class="foot-note">Change <code>1042</code> to <code>1043</code> → you're reading someone else's notes. This is <strong>IDOR</strong> — broken access control.</p>
+      </div>
+      <div>
+        <p class="codecap">Right: Use the identity from the session</p>
+        <div class="code sm"><span class="c"># id comes from WHO is logged in</span>
+GET /api/notes
+
+<span class="k">def</span> get_notes(session):
+  me = session.user   <span class="c"># trusted</span>
+  <span class="k">return</span> db.notes.where(owner=me.id)</div>
+        <div class="plain r" style="margin-top:1.4vh"><span class="lab">The rule</span><p>Never decide “whose data” from something the user can edit. Derive it from the authenticated session.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="slide cc">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Concept check 2</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker">CONCEPT CHECK 2: THE BIG THREE</span>
+    <h2 class="head">Which habit was missing? Show 1, 2 or 3</h2>
+    <div class="flow" style="margin-bottom:2vh">
+      <div class="node"><div class="t">1. Validate input</div><div class="s">on the server</div></div>
+      <div class="node"><div class="t">2. Access control</div><div class="s">who are you, is it yours?</div></div>
+      <div class="node"><div class="t">3. No secrets in repo</div><div class="s">.env + .gitignore</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:62%">Situation</th><th>Answer</th></tr></thead>
+        <tbody>
+          <tr><td>The age field accepts <code>-5</code> and the system saves it.</td><td class="frag ans">1. Validate input</td></tr>
+          <tr><td>Changing <code>order_id</code> in the URL shows someone else's order.</td><td class="frag ans">2. Access control (IDOR)</td></tr>
+          <tr><td><code>config.js</code> in a Public repo contains an API key.</td><td class="frag ans">3. No secrets in the repo</td></tr>
+          <tr><td>Password length is checked only in the browser with JavaScript; the server accepts anything.</td><td class="frag ans">1. Validate input: check on the server, because users can bypass the browser</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Privacy &amp; PDPA</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker red">PART 3: A LEGAL DUTY, NOT JUST GOOD MANNERS</span>
+    <h2 class="head">Personal data comes with responsibilities</h2>
+    <div class="grid g3">
+      <div class="scard c-blue"><div class="lbl">Consent</div><h3>Ask first</h3><p>Collect personal data — schedules, notes, messages, faces — only with the person's informed consent, for a stated purpose.</p><div class="bar n1"><i></i><i></i><i></i></div></div>
+      <div class="scard c-green"><div class="lbl">Minimise</div><h3>Collect the least</h3><p>If the feature doesn't need it, don't store it. Less data = less risk and less to protect.</p><div class="bar n2"><i></i><i></i><i></i></div></div>
+      <div class="scard c-red"><div class="lbl">Protect</div><h3>Guard &amp; honour rights</h3><p>Secure it, and let people see, correct or delete their data. This is <strong>PDPA</strong> — Thai law since 2022.</p><div class="bar n3"><i></i><i></i><i></i></div></div>
+    </div>
+    <div class="plain"><span class="lab">For your project</span>
+      <p>Use <strong>fake / seed data</strong> in the prototype. Real personal data belongs nowhere near a student repo — and never in Git history.</p></div>
+  </div>
+</section>
+<section class="slide cc">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Concept check 3</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker">CONCEPT CHECK 3: PDPA</span>
+    <h2 class="head">Consent, minimise, or protect?</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:62%">Situation</th><th>Principle</th></tr></thead>
+        <tbody>
+          <tr><td>A note-taking app asks to read your whole contact list, but no feature uses it.</td><td class="frag ans">Minimise</td></tr>
+          <tr><td>An app stores photos of users' faces without saying what they are for.</td><td class="frag ans">Consent (and state the purpose)</td></tr>
+          <tr><td>A user asks to delete their account, but the system has no way to delete their data.</td><td class="frag ans">Protect: the owner's rights to see, correct and delete</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="plain frag"><span class="lab">Remember</span><p>PDPA (B.E. 2562, fully in force 2022): <strong>consent</strong> before collecting, <strong>minimise</strong> what you keep, <strong>protect</strong> it and honour the owner's rights.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Picture it</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">HOW THE CHECKS STACK UP</span>
+    <h2 class="head">Quality &amp; security are layers, not a final step</h2>
+    <div class="figblock">
+      <svg viewBox="0 0 900 260" style="width:100%;height:34vh;display:block;margin:.4vh auto">
+        <rect x="150" y="20"  width="600" height="44" rx="8" fill="var(--blue)"/>
+        <text x="450" y="48" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="18" fill="#fff">Write readable code (Ch6)</text>
+        <rect x="150" y="76" width="600" height="44" rx="8" fill="var(--green)"/>
+        <text x="450" y="104" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="18" fill="#fff">Unit tests prove it works (Ch7)</text>
+        <rect x="150" y="132" width="600" height="44" rx="8" fill="var(--yellow)"/>
+        <text x="450" y="160" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="18" fill="var(--ink)">Review + linter catch the rest (Ch8)</text>
+        <rect x="150" y="188" width="600" height="44" rx="8" fill="var(--red)"/>
+        <text x="450" y="216" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="18" fill="#fff">Validate input, access control, protect data</text>
+      </svg>
+      <div class="cap">Each layer catches what the one above let through — trust is built up, not bolted on</div>
+    </div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Your project + AI</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker red">DO THIS WITH YOUR TEAM</span>
+    <h2 class="head">Make quality &amp; safety part of the build</h2>
+    <div class="grid g2">
+      <div class="dcard do"><span class="pill">PROJECT STEP</span>
+        <div class="item"><h4>Add a linter on day one</h4><p>Let it run on every commit — cheap quality your whole team gets for free.</p></div>
+        <div class="item"><h4>Check access on every read</h4><p>Whose data is this? Derive the owner from the session, not the request.</p></div>
+      </div>
+      <div class="dcard dont" style="border:none"><span class="pill" style="background:var(--red)">AI-FIRST — VERIFY!</span>
+        <div class="item"><h4>Ask AI to review your code</h4><p>Great at spotting smells — but confirm each flag; it also invents some.</p></div>
+        <div class="item"><h4>Never paste real secrets/data</h4><p>Don't feed API keys or real personal data into a prompt — treat it as public.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ References &amp; further reading</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker blue">REFERENCES: WHERE THIS COMES FROM</span>
+    <h2 class="head">Textbook &amp; source references</h2>
+    <div class="panel" style="padding:.4vh 1.6vw"><div class="num-row"><span class="n ">1</span><div><h4>Sommerville, I. (2011) Software Engineering, 9e</h4><p>Ch24 Quality management; Ch14 Security engineering (§14.1 risk, §14.2 design for security); §11.4; §13.4.</p></div></div>
+<div class="num-row"><span class="n g">2</span><div><h4>ISO/IEC 25010:2023</h4><p>Product quality model, Edition 2 (replaces 2011): nine characteristics, Safety is new.</p></div></div>
+<div class="num-row"><span class="n y">3</span><div><h4>OWASP Top 10 (2021)</h4><p>The most critical web-app risks — Broken Access Control is #1 (the IDOR demo).</p></div></div>
+<div class="num-row"><span class="n r">4</span><div><h4>Boehm, B. (1981) Software Engineering Economics</h4><p>Cost of fixing a defect rises sharply across the life cycle.</p></div></div>
+<div class="num-row"><span class="n p">5</span><div><h4>PDPA B.E. 2562 (2019)</h4><p>Thailand's Personal Data Protection Act — in force 2022.</p></div></div></div>
+    <p class="foot-note">Read Ch24 + skim the OWASP Top 10 before the exam.</p>
+  </div>
+</section>
+<section class="slide dark">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Summary</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker">CHAPTER 8: IN FOUR LINES</span>
+    <h2 class="head">Check quality, don't hope for it — and protect the user</h2>
+    <div class="quad">
+      <div class="q"><div class="tag">Quality</div><h4>Attributes you can verify</h4><p>Reliability, usability, maintainability, security, performance — each traces to an NFR and a check.</p></div>
+      <div class="q"><div class="tag">Tools</div><h4>Review + linter</h4><p>A human reads it; a tool scans it. Cheap, early, on every commit.</p></div>
+      <div class="q"><div class="tag">Security</div><h4>The big three</h4><p>Validate input, enforce access control, keep secrets out of the repo.</p></div>
+      <div class="q"><div class="tag">Privacy</div><h4>PDPA is law</h4><p>Consent, minimise, protect — and keep real personal data out of the prototype.</p></div>
+    </div>
+    <p class="foot-note" style="color:#8b93c7">Reading: Sommerville (quality &amp; security), OWASP Top 10 (skim), PDPA overview. Next: Ch9 — Project Management &amp; Process.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ AI Critique #8</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker red">AI CRITIQUE #8: ASK, DON'T ANSWER (7 MIN, HANDWRITTEN A4)</span>
+    <h2 class="head">Ask questions about a project like yours</h2>
+    <div class="grid g2" style="align-items:start">
+      <div>
+        <div class="qf"><span class="lab">Question focus</span>
+          <p>Imagine a student project from this course, <strong>CareFlow OPD</strong> (outpatient queue booking), has been live at a hospital for one month. A patient posts on Facebook: "Change the appointment number in the link and you can see other patients' names, phone numbers and symptoms. I even cancelled someone else's appointment." The team says every FR was tested and all tests passed. The repo is public, and <code>config.js</code> contains the database password.</p>
+          <p class="th">สมมติว่าโปรเจกต์นักศึกษา CareFlow OPD (ระบบจองคิวผู้ป่วยนอก) เปิดใช้จริงในโรงพยาบาลมา 1 เดือน มีผู้ป่วยโพสต์ใน Facebook ว่า "ลองเปลี่ยนเลขนัดในลิงก์ดู จะเห็นชื่อ เบอร์โทร และอาการของผู้ป่วยคนอื่น ผมยังยกเลิกนัดของคนอื่นได้ด้วย" ทีมบอกว่าทดสอบทุก FR แล้วและเทสต์ผ่านหมด repo เป็น Public และไฟล์ config.js มีรหัสผ่านฐานข้อมูลอยู่</p>
+        </div>
+        <div class="timer" data-sec="420"><span class="t">7:00</span><button class="go">Start</button><button class="rs ghost">Reset</button><span class="k">T = start / pause, R = reset</span></div>
+      </div>
+      <div>
+      <div class="panel" style="padding:.4vh 1.4vw">
+        <div class="num-row"><span class="n">1</span><div><h4>Write at least 3 questions</h4><p>About the event. Do <strong>not</strong> answer them. End each with (closed) = short answer, or (open) = needs explaining.</p></div></div>
+        <div class="num-row"><span class="n y">2</span><div><h4>Circle the most important one</h4><p>Write 1 to 2 lines: why this question matters most.</p></div></div>
+        <div class="num-row"><span class="n g">3</span><div><h4>Link it to one Ch8 concept</h4><p>Name one concept that helps answer your circled question (e.g. access control, PDPA, cost of defects) and say in one line how.</p></div></div>
+      </div>
+      <p class="foot-note">Top of the A4: name, student ID, <strong>Critique #8</strong>. Alone, handwritten, phones and laptops face down until the sheet is collected. There are no wrong questions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Case: CareFlow OPD</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker red">CASE: CAREFLOW OPD, A WHAT-IF ON A STUDENT PROJECT</span>
+    <h2 class="head">Four Ch8 failures in one small system</h2>
+    <div class="grid g2" style="align-items:stretch;gap:1.2vh 1.2vw">
+      <div class="bcard"><span class="lbl">Access control (IDOR)</span><h3>Change the number, see another patient</h3><p>The server trusted the appointment id in the link. Fix: take the patient from the login session and check the appointment is theirs, for viewing <strong>and</strong> for cancelling.</p></div>
+      <div class="bcard"><span class="lbl">PDPA: minimise, protect</span><h3>Health data is sensitive</h3><p>Symptoms are health data, a sensitive category under PDPA that needs explicit consent. Does the booking page need symptoms at all? Show the least, protect the rest.</p></div>
+      <div class="bcard"><span class="lbl">Quality: check, don't hope</span><h3>"All tests passed"</h3><p>The tests only tried honest users. Add the attacker's case: patient A asks for patient B's appointment, and the system must refuse.</p></div>
+      <div class="bcard"><span class="lbl">No secrets in the repo</span><h3>A password in a public repo</h3><p>Anyone could read <code>config.js</code>. Revoke the password and keep secrets in <code>.env</code> listed in <code>.gitignore</code>. Deleting the line is not enough: Git history keeps it.</p></div>
+    </div>
+    <div class="plain r"><span class="lab">The lesson</span><p>You don't need a giant company to break every rule in Ch8. A student-sized system with real patients needs the <strong>big three</strong> and <strong>PDPA</strong> from day one.</p></div>
+    <p class="foot-note">What-if scenario built on a student project idea (Must FRs: book, view, cancel appointments). It does not describe any team's actual prototype. PDPA B.E. 2562, Section 26: health data is sensitive personal data.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Your questions, Ch8 concepts</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker red">CRITIQUE #8: LINK YOUR QUESTION TO THE CHAPTER</span>
+    <h2 class="head">Every good question leads back to a Ch8 concept</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:36%">If you asked</th><th style="width:30%">Ch8 concept</th><th>What really happened</th></tr></thead>
+        <tbody>
+          <tr><td>Why could changing the number show someone else's data?</td><td class="b">Access control (IDOR)</td><td>The server trusted the id in the link</td></tr>
+          <tr><td>Does the booking page need symptoms at all? Who agreed to share them?</td><td class="b">PDPA: minimise, consent for sensitive data</td><td>Health data visible to anyone with a link</td></tr>
+          <tr><td>How did every test pass?</td><td class="b">Quality: check, don't hope</td><td>The tests only tried honest users</td></tr>
+          <tr><td>Why was the password in the repo?</td><td class="b">No secrets in the repo</td><td><code>config.js</code> in a public repo</td></tr>
+          <tr><td>What does fixing it after launch cost, compared with at design time?</td><td class="b">Cost of defects</td><td>A code fix, plus a data review and telling patients</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="plain r"><span class="lab">The whole chapter in one case</span><p>The big three, PDPA, and testing the dishonest case. The best question is often the one the slide cannot answer yet, like <strong>"Who in the team should check the access rules before launch?"</strong></p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Exam practice: Ch8</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker green">EXAM PRACTICE: CH8 MCQ 1 TO 4 (ALONE, ON YOUR OWN PAPER, NOT GRADED)</span>
+    <h2 class="head">Practice like the real exam</h2>
+    <div class="grid g2" style="gap:1.4vh 1.4vw">
+      <div class="mcq"><p class="q"><span class="n">1.</span>Which of the following is <strong>not</strong> one of the "big three" security habits taught in this course?</p><ol><li><b>A.</b>Validate input on the server.</li><li><b>B.</b>Enforce access control on every request.</li><li><b>C.</b>Keep secrets out of the repository.</li><li class="mark"><b>D.</b>Use a dark theme to hide sensitive fields.</li></ol></div><div class="mcq"><p class="q"><span class="n">2.</span>A user changes <code>user_id=1042</code> to <code>user_id=1043</code> in the URL and sees another person's notes. What is the best fix?</p><ol><li><b>A.</b>Hide the id from the URL bar.</li><li class="mark"><b>B.</b>Take the owner's identity from the authenticated session.</li><li><b>C.</b>Check that the id is a number.</li><li><b>D.</b>Add a linter to the project.</li></ol></div><div class="mcq"><p class="q"><span class="n">3.</span>Which is <strong>not</strong> a characteristic in the ISO/IEC 25010:2023 product-quality model?</p><ol><li><b>A.</b>Interaction capability.</li><li><b>B.</b>Safety.</li><li class="mark"><b>C.</b>Profitability.</li><li><b>D.</b>Maintainability.</li></ol></div><div class="mcq"><p class="q"><span class="n">4.</span>According to Boehm's cost-of-defects idea, where is a defect usually <strong>cheapest</strong> to fix?</p><ol><li class="mark"><b>A.</b>Requirements.</li><li><b>B.</b>Testing.</li><li><b>C.</b>Production.</li><li><b>D.</b>Maintenance.</li></ol></div>
+    </div>
+    <p class="stepnote">About 4 minutes. Answers are revealed one by one afterwards.</p>
+  </div>
+</section>
+<section class="slide dark">
+  <div class="chrome"><span class="l"><span class="play"></span> intro2se-ch8-quality-security.fig <span class="crumb">/ Next class</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker">THAT'S CH8. SEE YOU NEXT CLASS</span>
+    <h2 class="head">Next: Ch9 and Ch10</h2>
+    <div class="quad">
+      <div class="q"><div class="tag">Next class</div><h4>Mon 26 Oct, 13:00 to 14:50</h4><p>Note the later start: <strong style="color:#fff">13:00</strong>, not 12:00. Ch9 Project Management and Ch10 Professional Ethics.</p></div>
+      <div class="q"><div class="tag">Bring</div><h4>Two A4 sheets</h4><p>Critique #9 and Critique #10, handwritten in class.</p></div>
+      <div class="q"><div class="tag">Hand in today</div><h4>Critique #8 sheet</h4><p>Your A4 has been collected. Name, student ID and "Critique #8" on top.</p></div>
+      <div class="q"><div class="tag">Before next class</div><h4>Review Ch8</h4><p>The Ch8 and Ch9 self-study handbook will be posted in Classroom, with self-checks and practice MCQs.</p></div>
+    </div>
+  </div>
+</section>
+
+</div>
+<div class="bar" id="bar"></div><span class="hint">← / →, click edges, Home / End, Ctrl/Cmd-P to print</span>
+<script>
+/* Intro2SE slide-deck engine: keyboard + click nav, progress bar, counter,
+   step reveal (.frag / .mark, grouped by data-f; going back re-hides answers), countdown timer (.timer),
+   editable to-be-confirmed fields (.tbc, remembered in this browser). */
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var i=0, bar=document.getElementById('bar');
+  function pad(n){return String(n).padStart(2,'0');}
+  function steps(s){
+    var g=[], seen={};
+    [].slice.call(s.querySelectorAll('.frag,.mark')).forEach(function(el){
+      var k=el.getAttribute('data-f');
+      if(k===null){g.push([el]);}
+      else if(seen[k]){seen[k].push(el);}
+      else{seen[k]=[el];g.push(seen[k]);}
+    });
+    return g;
+  }
+  function setSteps(s,n){
+    steps(s).forEach(function(grp,k){grp.forEach(function(el){el.classList.toggle('on',k<n);});});
+    s._n=n;
+  }
+  slides.forEach(function(s,k){
+    var c=s.querySelector('.count'); if(c) c.textContent=pad(k+1)+' / '+pad(slides.length);
+    setSteps(s,0);
+  });
+  function show(n,allSteps){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(function(s,k){ s.classList.toggle('active',k===i); });
+    setSteps(slides[i], allSteps ? steps(slides[i]).length : 0);
+    if(bar) bar.style.width=((i+1)/slides.length*100)+'%';
+  }
+  function next(){ var s=slides[i]; if(s._n<steps(s).length) setSteps(s,s._n+1); else if(i<slides.length-1) show(i+1,false); }
+  function prev(){ var s=slides[i]; if(s._n>0) setSteps(s,s._n-1); else if(i>0) show(i-1,false); }
+
+  /* countdown timers */
+  function fmt(t){return Math.floor(t/60)+':'+pad(t%60);}
+  [].slice.call(document.querySelectorAll('.timer')).forEach(function(tm){
+    var total=+tm.getAttribute('data-sec')||420, left=total, h=null;
+    var out=tm.querySelector('.t'), go=tm.querySelector('.go'), rs=tm.querySelector('.rs');
+    function paint(){ out.textContent=fmt(left); go.textContent=h?'Pause':(left<total&&left>0?'Resume':'Start'); }
+    function stop(){ clearInterval(h); h=null; tm.classList.remove('run'); paint(); }
+    function start(){ if(left<=0) return; tm.classList.add('run'); tm.classList.remove('done');
+      h=setInterval(function(){ left--; if(left<=0){ left=0; stop(); tm.classList.add('done'); out.textContent='0:00'; return;} paint(); },1000); paint(); }
+    tm._toggle=function(){ h?stop():start(); };
+    tm._reset=function(){ stop(); left=total; tm.classList.remove('done'); paint(); };
+    go.addEventListener('click',tm._toggle); rs.addEventListener('click',tm._reset); paint();
+  });
+
+  /* editable fields, remembered per browser */
+  [].slice.call(document.querySelectorAll('.tbc[data-key]')).forEach(function(el){
+    var k='intro2se:'+el.getAttribute('data-key');
+    try{ var v=localStorage.getItem(k); if(v) el.textContent=v; }catch(e){}
+    el.addEventListener('input',function(){ try{ localStorage.setItem(k,el.textContent); }catch(e){} });
+  });
+
+  document.addEventListener('keydown',function(e){
+    if(e.target.isContentEditable){ if(e.key==='Escape') e.target.blur(); return; }
+    if(['ArrowRight','ArrowDown',' ','PageDown'].indexOf(e.key)>-1){e.preventDefault();next();}
+    else if(['ArrowLeft','ArrowUp','PageUp'].indexOf(e.key)>-1){e.preventDefault();prev();}
+    else if(e.key==='Home'){show(0,false);} else if(e.key==='End'){show(slides.length-1,false);}
+    else if(e.key==='t'||e.key==='T'){ var tm=slides[i].querySelector('.timer'); if(tm) tm._toggle(); }
+    else if(e.key==='r'||e.key==='R'){ var tr=slides[i].querySelector('.timer'); if(tr) tr._reset(); }
+  });
+  document.getElementById('deck').addEventListener('click',function(e){
+    if(e.target.closest('a,button,[contenteditable]')) return;
+    if(e.clientX<innerWidth*0.25) prev(); else next();
+  });
+  show(0,false);
+})();
+</script>
+</body>
+</html>
