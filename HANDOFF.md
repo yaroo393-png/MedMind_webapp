@@ -2,6 +2,13 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-22 — A + Claude Code · เพิ่มกล้องสดสแกน QR (FR-01 ✓3 ✗7) — แก้ ADR-07
+- **เหตุ:** ผู้ใช้ทดสอบบนมือถือแล้วไม่เห็นภาพกล้อง — ร่างแรกของ AI ใช้ "ถ่าย/เลือกรูป" เพราะตีความว่ากล้องสดไม่จำเป็น แต่ AC ✗7 พูดถึง "ไม่อนุญาตกล้อง" → ผู้ใช้เลือกทำกล้องสด (ตัวเลือก A)
+- ไฟล์: `prototype/src/screens/pairing.js` (T039) · `app.css` `.scanner` (T040) · แก้ ADR-07, research R-2, screens.md, quickstart ข้อ 0, README, design-system §2 (T041) · `tasks.md` เพิ่ม T039–T042 · ไม่เพิ่ม dependency (jsQR เดิม) · ไม่แตะโมดูลกฎ
+- **ผลจริง:** `node --test` 73/73 ผ่าน · Chrome + กล้องปลอม (วิดีโอ QR): เปิดกล้องหลัง ไม่เสียง · สแกนก่อนยินยอม = ปฏิเสธ · ยินยอมแล้ว = จับคู่ · ไฟกล้องดับหลังเจอ/จับคู่/กดปิด · เวลาจำลองเดินไม่ทำให้กล้องหาย · ล็อกแล้วปุ่ม disabled · ไม่อนุญาตกล้อง = "อ่าน QR ไม่ได้…" ไม่นับครั้งผิด · ไม่มี API = ถอยไปรูป · ชุดเดิม US1 16 · US2 17 · US3 13 · NFR-03 27 ผ่านซ้ำ · console error 0
+- **ยังขาด (คนต้องทำ):** ทดสอบกล้องสดบนมือถือจริงผ่านลิงก์ HTTPS (quickstart ข้อ 0) — **ลิงก์ Pages ยังชี้ `feat/foundation` ต้อง push `feat/pairing` แล้วสลับ Pages ไป branch นั้น ไม่งั้นมือถือเห็นเวอร์ชันเก่าที่ไม่มีหน้าจับคู่เลย** · ผลทดสอบมือถือ = `[ทีมกรอก]` · ข้อจำกัดที่ยังไม่ได้ทดสอบ: iOS Safari (กล้องหลัง/autoplay)
+- branch: `feat/pairing` · ยังไม่ commit
+
 ## 2026-10-22 — A + Claude Code · `/speckit-implement` 001-pairing (FR-01) — ทำครบ 38/38 task
 - ไฟล์ใหม่: `prototype/src/modules/pairing.js` · `qrScan.js` · `prototype/src/screens/pairing.js` (S1, C1) · `prototype/tests/pairing.test.js` (44) · `qrScan.test.js` (6)
 - แก้: `index.html` (เปิด 5 บรรทัดของ A) · `tokens.css` (`--qr-size`) · `app.css` (`.qr`, `.invite-code`, `.field__input--code` — **แจ้ง D**) ·

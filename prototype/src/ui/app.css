@@ -170,6 +170,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .field__input--code { font-size: var(--text-xl); letter-spacing: var(--space-2); font-variant-numeric: tabular-nums; text-align: center; }
 
+/* กรอบภาพกล้องสด (FR-01 ✓3 · ADR-07) · เพิ่มโดย A 22/10/69 */
+.scanner {
+  aspect-ratio: 1; width: 100%; overflow: hidden;
+  background: var(--color-surface-sunken); border: var(--border-input) solid var(--color-line-strong); border-radius: var(--radius-md);
+}
+.scanner video { display: block; width: 100%; height: 100%; object-fit: cover; }
+
 /* Empty state */
 .empty {
   display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2);
