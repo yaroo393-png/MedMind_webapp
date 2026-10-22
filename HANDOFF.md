@@ -2,6 +2,25 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-22 — A (YAR OO) แทน D + Claude Code · Foundation ของ prototype
+- ไฟล์ใหม่: `prototype/index.html` · `prototype/README.md` · `prototype/src/core/{events,clock,store}.js` · `prototype/src/ui/{tokens.css,app.css,shell.js}` ·
+  `prototype/tests/foundation.test.js` · `docs/03-design/design-system.md` (v0.1) · `.gitignore`
+- แก้: `CLAUDE.md` (คำสั่ง test → `node --test` ที่ root) · `spec.md` §8 (AI log)
+- FR/NFR ที่ครอบ: ใช้ร่วม FR-01–05 · NFR-01 (นาฬิกาจำลอง) · NFR-03 (token ขนาด/สี) · NFR-09/10 (store.reset ลบข้อมูล) · SRS §2.2 (2 โทรศัพท์ไม่มี server)
+- test: `node --test` **23/23 ผ่าน** (Node 24.22, รันจริง) · ใส่ path `node --test prototype/tests` = fail (ตามที่ TEAM-PLAN เตือน)
+- ตรวจในเบราว์เซอร์ (Chrome headless, `file://`): ไม่มี error ใน console · 2 โทรศัพท์ + ป้าย Covers แสดง · +5 นาทีทำงาน · toast · dialog ล้างข้อมูลโฟกัส "ยกเลิก" ·
+  จอ 622 px สลับแท็บได้ ไม่ล้นจอ (Chrome headless บังคับกว้างขั้นต่ำ 504 px — ยังไม่ได้ลองจอ 360–390 px จริง)
+- **เพิ่ม (ตามที่ผู้ใช้ขอ):** เปิดแยกหน้า `index.html?role=senior` / `?role=caregiver` + ลิงก์ "เปิด:" บนแถบทดลอง · ซิงก์ข้อมูล เวลาจำลอง และการล้างข้อมูลข้ามแท็บ
+  · ทดสอบจริง (Chrome headless, 2 iframe จาก `file://`): ฝั่งผู้ดูแลเห็นข้อมูลที่ฝั่งผู้สูงอายุเขียน · เวลา 16:51 → 16:56 ตามกัน · ล้างข้อมูลแล้วอีกฝั่งกลับหน้าแรก · ไม่มี error
+  · ข้อควรระวังของ feature: ทุกหน้ารันกฎพร้อมกัน → ผลของกฎต้องเก็บใน store แบบทำซ้ำไม่เพิ่ม (README ส่วน "เขียนหน้าจอ")
+- **ทีมยืนยันแทน D (22/10):** reference app + token สีตาม `design-system.md`
+- ยังขาด / ต้องตัดสิน:
+  - **ADR (C):** แสดง 2 โทรศัพท์ในหน้าเดียว + เปิดแยกหน้าได้ (เลือกแล้วใน Foundation) vs หน้าเลือกบทบาท · นาฬิกาจำลอง · OCR แบบ `file://` (ดูรายการ OCR ด้านล่าง)
+  - **GitHub Pages:** Settings → Pages → Deploy from branch `main` / root (ต้องทำหลัง merge · เจ้าของ repo)
+  - `user-flow.md` + wireframe (D) ยังไม่มี
+  - สัญญาข้อมูล (ชื่อชุดข้อมูลใน store + ฟิลด์) ใน `architecture.md` (C) — feature ต้องรอหรือใช้ข้อมูลจำลอง
+- branch / PR: ยังไม่ commit · แนะนำ branch `feat/foundation` แยกจาก `srs/spec` (SRS commit แล้วที่ `c6d9df5`)
+
 ## 2026-10-22 — A (YAR OO) แทน B + Claude Code · ร่าง SRS v1.0
 - **การตัดสินใจของทีม (22/10):** A ทำงานที่เหลือของทุกคนในบัญชี A และระบุเจ้าของส่วนไว้ในไฟล์ (คอมเมนต์ `<!-- เจ้าของ ... -->`)
   · ความเสี่ยงที่ทีมรับทราบ: คะแนนรายคนคิดจาก commit ในบัญชีตัวเอง (ไม่มีร่องรอย = ×0.4) และขัด constitution ข้อ "สมาชิก commit งานตามบทบาท"
