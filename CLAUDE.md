@@ -61,8 +61,13 @@ docs/03-design/user-flow.md       user flow + wireframe (ก่อนทำห�
 docs/04-test/                     test scenarios + ผลจริง + usability/SUS
 docs/05-report/                   final-report.md · ai-use-statement.md
 docs/06-presentation/             demo slides
-prototype/index.html + src/       logic.js (กฎ) · app.js (หน้าจอ) · tokens.css · app.css
-prototype/tests/*.test.js         unit test: node --test prototype/tests
+prototype/index.html              เปิดด้วยดับเบิลคลิก · โหลด script ตามลำดับ (UMD ไม่มี import/export)
+prototype/src/core/               Foundation: clock · store · events (เจ้าของ D)
+prototype/src/ui/                 shell.js (2 โทรศัพท์ + แถบทดลอง) · tokens.css · app.css (เจ้าของ D)
+prototype/src/modules/            กฎของแต่ละ FR แยกไฟล์ต่อเจ้าของ (ฟังก์ชันล้วน test ได้)
+prototype/src/screens/            หน้าจอ S1–S3, C1–C3 ลงทะเบียนด้วย MedMind.screens.register
+prototype/vendor/                 jsQR · Tesseract.js · qrcode-generator (ห้ามแก้ไฟล์)
+prototype/tests/*.test.js         unit test: รัน `node --test` ที่ root
 specs/                            งานของ Spec Kit (1 Must FR = 1 feature)
 ```
 

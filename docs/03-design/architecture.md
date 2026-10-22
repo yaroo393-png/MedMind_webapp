@@ -112,6 +112,8 @@ flowchart LR
 - *Decision:* Caregiver ถ่าย/เลือกรูป QR → อ่านในเบราว์เซอร์ (jsQR) · ไม่ได้ → ช่องใส่รหัส 6 หลัก · QR เก็บข้อความ `MEDMIND:<รหัส 6 หลัก>` เท่านั้น
 - *Consequence:* ทำงานได้ทั้ง `file://` และ HTTPS (ทดสอบแล้ว · TEAM-PLAN 5.1) · ไม่มีข้อมูลส่วนตัวใน QR
 - *ปฏิเสธ:* สแกนสดจากวิดีโอกล้อง — ต้องใช้ HTTPS เสมอ โค้ดซับซ้อนกว่า และไม่จำเป็นต่อ AC
+- *เพิ่ม 22/10 (plan 001 · research R-1):* สร้าง QR ด้วย `qrcode-generator@1.4.4` (MIT, ไฟล์เดียวใน vendor) → `qrMatrix` วาดลง canvas (ไม่ใช้ innerHTML) · ทดสอบไป-กลับกับ jsQR ใน node ผ่าน ·
+  *ปฏิเสธ:* เขียนตัวเข้ารหัส QR เอง (Reed–Solomon ยาว ผิดง่าย) · CDN (ไม่มีเน็ตใช้ไม่ได้) · ไม่มี QR (ไม่ผ่าน ✓1/✓3)
 
 **ADR-08 — ส่งงานเป็นลิงก์ GitHub Pages + ทางสำรองดับเบิลคลิกที่อ่านฉลากได้** · **เสนอ — รอทีมยืนยัน (B, D) และคำตอบอาจารย์ (A)**
 - *Context:* เกณฑ์ M3 "เปิดด้วยดับเบิลคลิก" · OCR โหลดไฟล์ภาษาไม่ได้ผ่าน `file://` · มือถือต้องใช้ HTTPS เพื่อเปิดกล้อง
@@ -428,7 +430,7 @@ erDiagram
 - เวลา (`datetime`) = มิลลิวินาทีจาก clock (ADR-02) · เวลาในวัน (`time`) = ข้อความ `"HH:MM"` · วัน = `"YYYY-MM-DD"` (เวลาท้องถิ่น)
 - `sessionKey` = `"YYYY-MM-DD@HH:MM"` (วัน + เวลาเตือน T)
 - ฟังก์ชันที่ "เขียน" คืน **รายการใหม่** ไม่แก้รายการที่รับมา · ผิดเงื่อนไขคืน `{ ok: false, reason }` ไม่ throw (throw เฉพาะเมื่อเรียกผิดรูปแบบ)
-- ข้อความภาษาไทยบนหน้าจออยู่ในหน้าจอ ยกเว้นคำสถานะ (BR-14) และข้อความแจ้ง (BR-13, BR-15) ที่ต้องตรงทุกที่ → `escalation.statusLabel` / `noticeText`
+- ข้อความภาษาไทยบนหน้าจออยู่ในหน้าจอ ยกเว้นคำสถานะ (BR-14) และข้อความแจ้ง (BR-13, BR-15) ที่ต้องตรงทุกที่ → `escalation.statusLabel` / `noticeText` · และเหตุผลปฏิเสธการจับคู่ที่ AC FR-01 ✗5 ✗7 ✗8 กำหนดข้อความตรงตัว → `pairing.reasonText` (plan 001 · research R-6)
 
 ### 8.2 ชุดข้อมูลใน store (prototype)
 ชื่อชุดข้อมูล ↔ entity §6 · หน้าจอเป็นผู้อ่าน/เขียนผ่าน `ctx.app.store`
@@ -450,13 +452,18 @@ erDiagram
 | Operation | Input | Output | กฎ / AC |
 |---|---|---|---|
 | `newInvite(invites, seniorId, now, random)` | `random()` คืน 0–1 (test ส่งค่าคงที่) | `{ invite, invites }` · `invite` = `InviteCode` (consentAt, usedAt = null) · `invites` = ชุดเดิมที่ลบรหัสที่ยังไม่ได้ใช้ของ `seniorId` แล้ว + `invite` (clarify 22/10) | BR-01 · ✓1 · รหัสเดิมที่ยังไม่ใช้ → `pair` ได้ `'NOT_FOUND'` |
-| `consent(invite, now)` | | `InviteCode` ที่มี consentAt | BR-02 |
-| `pair(state, code, caregiverId, now)` | `state = { invites, pairing, pairAttempts }` | `{ ok: true, pairing, invites, pairAttempts }` (ล้างครั้งผิดของผู้ดูแลนี้) หรือ `{ ok: false, reason, pairAttempts, retryAt? }` · `reason` ตรวจตามลำดับและคืนข้อแรกที่ไม่ผ่าน: `'LOCKED'` (ไม่ตรวจรหัส ไม่เพิ่มครั้งผิด · มี `retryAt`) → `'NOT_FOUND'` → `'EXPIRED'` → `'USED'` → `'NO_CONSENT'` → `'ALREADY_PAIRED'` (5 ข้อหลังเพิ่มครั้งผิด 1 ครั้ง) (clarify 22/10) | ✓3 · ✗2 ✗4 ✗5 ✗8 · หมดอายุเมื่อ `now ≥ expiresAt` · ล็อกเมื่อมีครั้งผิด ≥ 5 ในช่วง `(now − 10 นาที, now]` → `retryAt` = ครั้งผิดที่ 5 ล่าสุด + 10 นาที (BR-18) |
+| `ensureDevices(devices, now, random)` | `devices` หรือ `undefined` | `{ seniorId, caregiverId, createdAt }` เติมเฉพาะที่ขาด | ADR-05 |
+| `currentInvite(invites, seniorId)` · `isExpired(invite, now)` | | รหัสที่ยังไม่ใช้ หรือ `null` · `now ≥ expiresAt` | BR-01 |
+| `consent(invites, code, now)` | | `{ ok: true, invites }` (ใส่ consentAt) หรือ `{ ok: false, reason: 'NOT_FOUND' \| 'EXPIRED' \| 'USED' }` | BR-02 · NFR-05 |
+| `pair(state, code, caregiverId, now)` | `state = { invites, pairing, pairAttempts }` | `{ ok: true, pairing, invites, pairAttempts }` (ล้างครั้งผิดของผู้ดูแลนี้) หรือ `{ ok: false, reason, pairAttempts, retryAt? }` · `reason` ตรวจตามลำดับและคืนข้อแรกที่ไม่ผ่าน: `'LOCKED'` (ไม่ตรวจรหัส ไม่เพิ่มครั้งผิด · มี `retryAt`) → `'NOT_FOUND'` → `'EXPIRED'` → `'USED'` → `'NO_CONSENT'` → `'ALREADY_PAIRED'` (5 ข้อหลังเพิ่มครั้งผิด 1 ครั้ง) (clarify 22/10) | ✓3 · ✗2 ✗4 ✗5 ✗8 · หมดอายุเมื่อ `now ≥ expiresAt` · ล็อกเมื่อ L = ครั้งผิดล่าสุด มีครั้งผิด ≥ 5 ในช่วง `(L − 10 นาที, L]` และ `now < L + 10 นาที` → `retryAt = L + 10 นาที` (BR-18 · แก้ 22/10 ตาม research R-3: นับจาก `now` ทำให้ปลดล็อกก่อนเวลา) · ตัดครั้งผิดที่ `failedAt ≤ now − 10 นาที` (NFR-09) |
 | `lockedUntil(pairAttempts, caregiverId, now)` | | datetime หรือ `null` | BR-18 · ✗8 (หน้าจอแสดงเวลาที่เหลือก่อนผู้ใช้กด) |
-| `canAccess(pairing, caregiverId)` | | boolean | NFR-04 · FR-05 ✗7 |
+| `minutesLeft(retryAt, now)` | | จำนวนเต็ม ≥ 1 (ปัดขึ้น) | ✗8 "กรุณารอ N นาที" |
+| `canAccess(pairing, caregiverId)` · `isSeniorPaired(pairing, seniorId)` | | boolean | NFR-04 · FR-05 ✗7 · หน้าจออื่นกลับ C1/S1 เมื่อถูกยกเลิก |
 | `unpair(data, pairingId)` | `data` = ชุดข้อมูลทั้งหมด §8.2 | ชุดข้อมูลที่ลบทุกระเบียนของ `pairingId` แล้ว | BR-17 · ✗6 · NFR-10 |
+| `reasonText(reason, minutesLeft?)` | `reason` ของ `pair` หรือ `'QR_UNREADABLE'` | ข้อความไทย (✗5 ✗7 ✗8 ตรงตัว) | SC-005 ของ spec 001 |
 
-**`qrScan` (A · FR-01)**: `qrText(code)` → `"MEDMIND:123456"` · `codeFromQr(text)` → `"123456"` หรือ `null` · `readQr(imageData)` → `codeFromQr(...)` หรือ `null` (✗7)
+**`qrScan` (A · FR-01)**: `qrText(code)` → `"MEDMIND:123456"` · `codeFromQr(text)` → `"123456"` หรือ `null` · `readQr(imageData)` → `codeFromQr(...)` หรือ `null` (✗7) · `qrMatrix(code)` → ตาราง boolean ของโมดูล QR (✓1 · ADR-07) · หน้าจอวาดลง canvas
+รายละเอียดเต็ม: `specs/001-pairing/contracts/pairing-module.md`
 
 **`readLabel` (B · FR-02 · adapter)**: `readLabel(file)` → `Promise<{ ok: true, text } | { ok: false, reason: 'UNSUPPORTED_PAGE' | 'UNREADABLE' }>` (✗5)
 
@@ -497,6 +504,13 @@ erDiagram
 ### 8.4 ใครรันกฎตามเวลา
 หน้าที่เปิดอยู่ทุกหน้า (ADR-06) เรียกตอนเวลาจำลองเปลี่ยน: `escalation.escalate(...)` แล้วเขียน `notices` เฉพาะเมื่อผลต่างจากเดิม
 — `addNotice` / `confirm` ทำซ้ำแล้วไม่เพิ่ม จึงไม่แจ้งซ้ำแม้เปิดหลายแท็บ (BR-13, NFR-07) · ตัวเรียกรวมอยู่ที่หน้าจอ C3 และ S2 (E, C ตกลงกันตอน implement)
+
+### 8.5 ข้อตกลงหน้าจอเรื่องสิทธิ์และการยกเลิกจับคู่ (NFR-04, NFR-10 · ตัดสิน 22/10 · plan 001 research R-8)
+บังคับทุกหน้าจอที่อ่านข้อมูลของคู่ · รายละเอียด `specs/001-pairing/contracts/screens.md`
+- C2 (B), C3 (E): ตอน render และใน `ctx.subscribe` → `!pairing.canAccess(pairing, devices.caregiverId)` → `ctx.go('C1', { notice: 'UNPAIRED' })` · `isStart` = `canAccess(...)`
+- S2 (C), S3 (D): `!pairing.isSeniorPaired(pairing, devices.seniorId)` → `ctx.go('S1')` · S3 มีทางไป S1 เพื่อยกเลิกการจับคู่
+- ทุกระเบียนของ `mealTimes`, `medications`, `confirmations`, `notices` มี `pairingId` → `unpair` ลบได้ครบ
+- *ปฏิเสธ:* hook ทั้งแอปใน shell — เพิ่มกลไกใน Foundation ทั้งที่ R7 ให้ทุก feature เรียกตัวตรวจสิทธิ์อยู่แล้ว
 
 ---
 

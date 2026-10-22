@@ -2,6 +2,18 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-22 — A + Claude Code · `/speckit-plan` specs/001-pairing (FR-01)
+- ไฟล์ใหม่: `specs/001-pairing/plan.md` · `research.md` · `data-model.md` · `contracts/pairing-module.md` · `contracts/screens.md` · `quickstart.md`
+- แก้: `architecture.md` §8.1 (ข้อยกเว้น `reasonText`) · §8.3 (**กฎล็อกนับจากครั้งผิดล่าสุด** — แบบเดิมปลดล็อกก่อนเวลา · `consent(invites, code, now)` · operation เสริม) · `spec.md` 001 R9 (ถ้อยคำ) · SRS AI log
+- ตรวจ: Mermaid 9 รูป (architecture 8 + data-model 1) เรนเดอร์ผ่าน · test: ยังไม่มี (ยังไม่เขียนโค้ด)
+- **ตัดสินแล้ว (ผู้ใช้ให้ AI "เลือกแนวทางที่ถูกต้องที่สุด"):**
+  - เพิ่ม `prototype/vendor/qrcode/qrcode.js` (qrcode-generator 1.4.4, MIT) + LICENSE · sha512 ตรง registry · สร้าง→อ่านกลับด้วย jsQR ผ่าน ·
+    บันทึกใน vendor/README, TEAM-PLAN ข้อ 4, ADR-07 · สัญญา `qrSvg` → `qrMatrix` (วาดลง canvas เพราะ shell ห้าม innerHTML)
+  - ข้อตกลงหน้าจอเป็น `architecture.md` §8.5 (บังคับ B, C, D, E)
+  - CLAUDE.md โครงสร้าง repo แก้ให้ตรง Foundation · constitution 1.0.0 → 1.0.1 (PATCH หลักการ III ชี้ `src/modules/`)
+- ยังขาด: B–E รับทราบ §8.5 · ทีมอนุมัติ constitution 1.0.1 ใน PR · test 23/23 ผ่าน (Foundation · ยังไม่มีของ FR-01)
+- ถัดไป: `/speckit-tasks` · branch: `feat/pairing` · ยังไม่ commit
+
 ## 2026-10-22 — A + Claude Code · `/speckit-clarify` specs/001-pairing (FR-01)
 - ถาม 4 ข้อ: ลำดับเหตุผลปฏิเสธ · อีกฝั่งเห็นอะไรเมื่อถูกยกเลิก · จำกัดการเดารหัส (→ **BR-18 + AC ✗8 ใหม่**) · สร้างรหัสใหม่ = รหัสเดิมเป็นโมฆะ (→ เพิ่มใน BR-01)
 - ไฟล์: `specs/001-pairing/spec.md` (Clarifications, Edge Cases, R1/R4/R9, PairAttempt, SC-007, Assumptions) · `checklists/requirements.md` ·
