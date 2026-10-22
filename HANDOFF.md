@@ -2,6 +2,46 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-22 — A + Claude Code · `/speckit-implement` 001-pairing (FR-01) — ทำครบ 38/38 task
+- ไฟล์ใหม่: `prototype/src/modules/pairing.js` · `qrScan.js` · `prototype/src/screens/pairing.js` (S1, C1) · `prototype/tests/pairing.test.js` (44) · `qrScan.test.js` (6)
+- แก้: `index.html` (เปิด 5 บรรทัดของ A) · `tokens.css` (`--qr-size`) · `app.css` (`.qr`, `.invite-code`, `.field__input--code` — **แจ้ง D**) ·
+  `design-system.md` §2 + §3 · `architecture.md` §8.3 + §9 · SRS §7 Golden Thread แถว FR-01 · `prototype/README.md` (วิธีลองจับคู่) · specs/001 (tasks, research, contracts, data-model)
+- FR/NFR: FR-01 ✓1 ✗2 ✓3 ✗4 ✗5 ✗6 ✗7 ✗8 · BR-01, 02, 17, 18 · NFR-03, 04, 05, 09, 10
+- **ผล test จริง:** `node --test` → **73/73 ผ่าน** (Foundation 23 + FR-01 50) · Chrome headless อัตโนมัติ: US1 16/16 · US2 17/17 · US3 13/13 · NFR-03/ปุ่มหลัก/render ไม่วน 27/27 · console error 0
+- **บั๊กที่ test จับได้ระหว่างทำ:** กฎ "ตัดครั้งผิดที่เก่ากว่า 10 นาที" (ที่ AI เขียนใน plan) ทำให้ปลดล็อกก่อนเวลา → แก้เป็น 20 นาที + อธิบายใน research R-3
+- เบี่ยงจาก tasks: ทำ `canAccess`/`isSeniorPaired` ก่อนหน้าจอ (หน้าจอต้องใช้) · T023 ไม่ต้องแก้
+- **ยังขาด (คนต้องทำ):**
+  - ทดสอบมือโดยคนตาม `specs/001-pairing/quickstart.md` โดยเฉพาะข้อ 4 (2 แท็บจริง) และข้อ 3.4 (สแกนจากมือถือจริงผ่าน GitHub Pages + จับเวลา) → จดผลจริง
+  - D: ตรวจ class/token ใหม่ใน `app.css`/`tokens.css` · B, C, D, E: หน้าจอของตัวเองต้องทำตาม `architecture.md` §8.5
+  - ปุ่มหลัก S1 ข้อความยาว ขึ้น 2 บรรทัด (ใช้ได้ ผ่าน NFR-03) → พิจารณาตอน professional pass
+- branch: `feat/pairing` · ยังไม่ commit
+
+## 2026-10-22 — A + Claude Code · `/speckit-analyze` 001-pairing + แก้ตามผล
+- ผล analyze: CRITICAL 0 · HIGH 3 · MEDIUM 4 · LOW 6 · coverage 100% (16 requirement / 38 task)
+- แก้แล้ว 12 ข้อ:
+  - `tasks.md` เพิ่ม "กติกาหน้าจอ S1/C1" 6 ข้อ: render เรียกซ้ำได้ผลเดิม · ห้าม `store.reload()` ใน render (ไม่งั้นวนไม่จบ) · เขียน store เฉพาะเมื่อค่าเปลี่ยน · สี canvas จาก token · ปุ่มหลัก ≤ 1 · feedback ทุกการกระทำ
+  - T013 ไม่เปิด script หน้าจอก่อนมีไฟล์ (กัน 404) · T014 toast "สร้างรหัสใหม่แล้ว" · T015 ปุ่ม "เชื่อมต่อ" เป็นปุ่มรอง + ไปหน้าแรกผู้ดูแลหลังจับคู่ · T026 จับเวลาอ่าน QR · T037 grep สีเขียนตรง/`reload` ใน render + ตรวจ render ไม่วน
+  - spec Assumptions อ้าง contracts แทนรายชื่อเก่า · data-model: Devices = SENIOR + CAREGIVER · ปุ่ม "สร้างรหัสใหม่" ทั้ง 2 สถานะรอ · รหัส 6 หลักใช้ `--text-2xl` ตาม design-system · research R-7 ชี้ชัดว่า reload เฉพาะในปุ่ม
+- ไม่แก้ (ตามที่ตัดสินแล้ว): E2 — `NO_CONSENT` นับเป็นครั้งผิดตาม BR-18 "ทุกเหตุผล" → **B ควรรู้ตอนยืนยัน BR-18** (ผู้ดูแลที่กดซ้ำระหว่างรอยินยอม 5 ครั้งจะถูกล็อก)
+- ถัดไป: `/speckit-implement` · branch: `feat/pairing` · ยังไม่ commit
+
+## 2026-10-22 — A + Claude Code · `/speckit-tasks` specs/001-pairing (FR-01)
+- ไฟล์: `specs/001-pairing/tasks.md` — 38 task (Setup 3 · Foundational 2 · US1 11 · US2 10 · US3 5 · Polish 7) · test บังคับตาม constitution III เขียนก่อน implement
+- ตาราง AC → test task ครบ ✓1–✗8 · MVP = Phase 1–3 (จับคู่ด้วยรหัส) แต่ demo M3 ต้องครบทั้ง 3 story (P1 ทั้งหมด)
+- ถัดไป: `/speckit-analyze` → `/speckit-implement` · branch: `feat/pairing` · ยังไม่ commit
+
+## 2026-10-22 — A + Claude Code · `/speckit-plan` specs/001-pairing (FR-01)
+- ไฟล์ใหม่: `specs/001-pairing/plan.md` · `research.md` · `data-model.md` · `contracts/pairing-module.md` · `contracts/screens.md` · `quickstart.md`
+- แก้: `architecture.md` §8.1 (ข้อยกเว้น `reasonText`) · §8.3 (**กฎล็อกนับจากครั้งผิดล่าสุด** — แบบเดิมปลดล็อกก่อนเวลา · `consent(invites, code, now)` · operation เสริม) · `spec.md` 001 R9 (ถ้อยคำ) · SRS AI log
+- ตรวจ: Mermaid 9 รูป (architecture 8 + data-model 1) เรนเดอร์ผ่าน · test: ยังไม่มี (ยังไม่เขียนโค้ด)
+- **ตัดสินแล้ว (ผู้ใช้ให้ AI "เลือกแนวทางที่ถูกต้องที่สุด"):**
+  - เพิ่ม `prototype/vendor/qrcode/qrcode.js` (qrcode-generator 1.4.4, MIT) + LICENSE · sha512 ตรง registry · สร้าง→อ่านกลับด้วย jsQR ผ่าน ·
+    บันทึกใน vendor/README, TEAM-PLAN ข้อ 4, ADR-07 · สัญญา `qrSvg` → `qrMatrix` (วาดลง canvas เพราะ shell ห้าม innerHTML)
+  - ข้อตกลงหน้าจอเป็น `architecture.md` §8.5 (บังคับ B, C, D, E)
+  - CLAUDE.md โครงสร้าง repo แก้ให้ตรง Foundation · constitution 1.0.0 → 1.0.1 (PATCH หลักการ III ชี้ `src/modules/`)
+- ยังขาด: B–E รับทราบ §8.5 · ทีมอนุมัติ constitution 1.0.1 ใน PR · test 23/23 ผ่าน (Foundation · ยังไม่มีของ FR-01)
+- ถัดไป: `/speckit-tasks` · branch: `feat/pairing` · ยังไม่ commit
+
 ## 2026-10-22 — A + Claude Code · `/speckit-clarify` specs/001-pairing (FR-01)
 - ถาม 4 ข้อ: ลำดับเหตุผลปฏิเสธ · อีกฝั่งเห็นอะไรเมื่อถูกยกเลิก · จำกัดการเดารหัส (→ **BR-18 + AC ✗8 ใหม่**) · สร้างรหัสใหม่ = รหัสเดิมเป็นโมฆะ (→ เพิ่มใน BR-01)
 - ไฟล์: `specs/001-pairing/spec.md` (Clarifications, Edge Cases, R1/R4/R9, PairAttempt, SC-007, Assumptions) · `checklists/requirements.md` ·

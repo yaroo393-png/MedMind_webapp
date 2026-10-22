@@ -1,3 +1,7 @@
+<!-- Sync Impact Report — 1.0.0 → 1.0.1 (PATCH · 22/10/69 · A + Claude Code /speckit-plan 001)
+     แก้: หลักการ III ชี้ตำแหน่งโมดูลตรรกะให้ตรง Foundation (`prototype/src/modules/` แทน `src/logic.js` ไฟล์เดียว) · ความหมายของหลักการไม่เปลี่ยน
+     ไฟล์ที่ต้องตรงกัน: CLAUDE.md "โครงสร้าง repo" ✅ แก้แล้ว · templates ของ Spec Kit ✅ ไม่อ้างไฟล์นี้
+     ต้องทำ: ทีมอนุมัติผ่าน PR ตาม Governance -->
 # MedMind Constitution
 
 ระบบเตือนกินยาและแจ้งสถานะการกินยาให้ผู้ดูแลผู้สูงอายุ · วิชา Intro to Software Engineering (MFU 2569)
@@ -31,7 +35,7 @@ feature = FR-x = diagram = test
 
 ### III. Acceptance-Criteria Tests on Separated Logic
 
-- กฎทั้งหมดต้องอยู่ในโมดูลตรรกะ (`prototype/src/logic.js`) แยกจากหน้าจอ และรับเวลาจาก clock ภายนอก
+- กฎทั้งหมดต้องอยู่ในโมดูลตรรกะ (`prototype/src/modules/` 1 ไฟล์ต่อโมดูลตาม `architecture.md` §8) แยกจากหน้าจอ และรับเวลาจาก clock ภายนอก
 - ทุก acceptance criterion (✓ และ ✗) ของ Must FR ต้องมี automated unit test อย่างน้อย 1 ตัว
   ก่อนงานที่แก้กฎนั้นจะ merge
 - test ต้องครอบกรณีว่าง (empty), กรณีถูกตัดออก (excluded เช่น มื้อที่ยืนยันแล้วต้องไม่ถูกเตือน)
@@ -111,4 +115,4 @@ feature = FR-x = diagram = test
   FR/NFR อ้างและเหตุผล
 - แนวทางรันไทม์สำหรับ AI: `SE-COURSE-PRINCIPLES.md` (กติกาวิชา) และ `CLAUDE.md` (ข้อมูลเฉพาะโปรเจกต์)
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-20 | **Last Amended**: 2026-10-20
+**Version**: 1.0.1 | **Ratified**: 2026-10-20 | **Last Amended**: 2026-10-22
