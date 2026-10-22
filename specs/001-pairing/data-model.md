@@ -11,7 +11,7 @@
 |---|---|---|---|
 | **Devices** (`devices`: object เดียว) = SENIOR + CAREGIVER ของ ERD §6 (1 เบราว์เซอร์จำลอง 2 เครื่อง จึงเก็บรวม) | `seniorId`, `caregiverId` (ข้อความสุ่ม `S-`/`C-` + 8 ตัว) · `createdAt` (ใช้แทน `createdAt` ของทั้งสอง entity — สร้างพร้อมกัน) | สร้างครั้งแรกที่เปิด (`ensureDevices`) · ไม่เปลี่ยนจนล้างข้อมูล | ADR-05 · SRS §2.2 (1 เบราว์เซอร์ = 2 เครื่องจำลอง) |
 | **InviteCode** (`invites`: list) | `code` (ตัวเลข 6 หลัก ข้อความ) · `seniorId` · `createdAt` · `expiresAt = createdAt + 10 นาที` · `consentAt` (null = ยังไม่ยินยอม) · `usedAt` (null = ยังไม่ใช้) | `code` ไม่ซ้ำใน list · ผู้สูงอายุ 1 คนมีรหัสที่ `usedAt = null` ≤ 1 รหัส · หมดอายุเมื่อ `now ≥ expiresAt` | BR-01, BR-02, NFR-05 · clarify Q4 |
-| **PairAttempt** (`pairAttempts`: list) | `caregiverId` · `failedAt` | เพิ่ม 1 รายการต่อการปฏิเสธเหตุผล 1–5 · ไม่เพิ่มเมื่อ `LOCKED` · ลบของผู้ดูแลคนนั้นเมื่อจับคู่สำเร็จ · ลบรายการที่ `failedAt ≤ now − 10 นาที` | BR-18 · research R-3 |
+| **PairAttempt** (`pairAttempts`: list) | `caregiverId` · `failedAt` | เพิ่ม 1 รายการต่อการปฏิเสธเหตุผล 1–5 · ไม่เพิ่มเมื่อ `LOCKED` · ลบของผู้ดูแลคนนั้นเมื่อจับคู่สำเร็จ · ลบรายการที่ `failedAt ≤ now − 20 นาที` | BR-18 · research R-3 |
 | **Pairing** (`pairing`: object หรือไม่มี) | `pairingId` · `seniorId` · `caregiverId` · `consentAt` (คัดจาก InviteCode) · `pairedAt` | มีได้ 1 รายการต่อผู้สูงอายุ (BR-02) · `consentAt` ต้องไม่ว่าง (NFR-05) | BR-02, NFR-04, NFR-05 |
 
 **ค่าที่คำนวณ ไม่เก็บเป็นฟิลด์:** ล็อกอยู่ไหม / `retryAt` / นาทีที่เหลือ (`lockedUntil`) · รหัสหมดอายุไหม · สถานะหน้าจอ S1/C1 · ข้อความเหตุผล

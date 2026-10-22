@@ -2,6 +2,20 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-22 — A + Claude Code · `/speckit-implement` 001-pairing (FR-01) — ทำครบ 38/38 task
+- ไฟล์ใหม่: `prototype/src/modules/pairing.js` · `qrScan.js` · `prototype/src/screens/pairing.js` (S1, C1) · `prototype/tests/pairing.test.js` (44) · `qrScan.test.js` (6)
+- แก้: `index.html` (เปิด 5 บรรทัดของ A) · `tokens.css` (`--qr-size`) · `app.css` (`.qr`, `.invite-code`, `.field__input--code` — **แจ้ง D**) ·
+  `design-system.md` §2 + §3 · `architecture.md` §8.3 + §9 · SRS §7 Golden Thread แถว FR-01 · `prototype/README.md` (วิธีลองจับคู่) · specs/001 (tasks, research, contracts, data-model)
+- FR/NFR: FR-01 ✓1 ✗2 ✓3 ✗4 ✗5 ✗6 ✗7 ✗8 · BR-01, 02, 17, 18 · NFR-03, 04, 05, 09, 10
+- **ผล test จริง:** `node --test` → **73/73 ผ่าน** (Foundation 23 + FR-01 50) · Chrome headless อัตโนมัติ: US1 16/16 · US2 17/17 · US3 13/13 · NFR-03/ปุ่มหลัก/render ไม่วน 27/27 · console error 0
+- **บั๊กที่ test จับได้ระหว่างทำ:** กฎ "ตัดครั้งผิดที่เก่ากว่า 10 นาที" (ที่ AI เขียนใน plan) ทำให้ปลดล็อกก่อนเวลา → แก้เป็น 20 นาที + อธิบายใน research R-3
+- เบี่ยงจาก tasks: ทำ `canAccess`/`isSeniorPaired` ก่อนหน้าจอ (หน้าจอต้องใช้) · T023 ไม่ต้องแก้
+- **ยังขาด (คนต้องทำ):**
+  - ทดสอบมือโดยคนตาม `specs/001-pairing/quickstart.md` โดยเฉพาะข้อ 4 (2 แท็บจริง) และข้อ 3.4 (สแกนจากมือถือจริงผ่าน GitHub Pages + จับเวลา) → จดผลจริง
+  - D: ตรวจ class/token ใหม่ใน `app.css`/`tokens.css` · B, C, D, E: หน้าจอของตัวเองต้องทำตาม `architecture.md` §8.5
+  - ปุ่มหลัก S1 ข้อความยาว ขึ้น 2 บรรทัด (ใช้ได้ ผ่าน NFR-03) → พิจารณาตอน professional pass
+- branch: `feat/pairing` · ยังไม่ commit
+
 ## 2026-10-22 — A + Claude Code · `/speckit-analyze` 001-pairing + แก้ตามผล
 - ผล analyze: CRITICAL 0 · HIGH 3 · MEDIUM 4 · LOW 6 · coverage 100% (16 requirement / 38 task)
 - แก้แล้ว 12 ข้อ:

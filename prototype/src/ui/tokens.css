@@ -64,6 +64,7 @@
   /* โครงหน้า */
   --phone-width: 390px;
   --phone-height: 780px;
+  --qr-size: 240px;     /* QR บนหน้าผู้สูงอายุ (FR-01 ✓1) · เพิ่มโดย A 22/10/69 */
   --duration-fast: 120ms;
 }
 

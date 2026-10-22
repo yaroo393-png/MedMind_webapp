@@ -455,7 +455,7 @@ erDiagram
 | `ensureDevices(devices, now, random)` | `devices` หรือ `undefined` | `{ seniorId, caregiverId, createdAt }` เติมเฉพาะที่ขาด | ADR-05 |
 | `currentInvite(invites, seniorId)` · `isExpired(invite, now)` | | รหัสที่ยังไม่ใช้ หรือ `null` · `now ≥ expiresAt` | BR-01 |
 | `consent(invites, code, now)` | | `{ ok: true, invites }` (ใส่ consentAt) หรือ `{ ok: false, reason: 'NOT_FOUND' \| 'EXPIRED' \| 'USED' }` | BR-02 · NFR-05 |
-| `pair(state, code, caregiverId, now)` | `state = { invites, pairing, pairAttempts }` | `{ ok: true, pairing, invites, pairAttempts }` (ล้างครั้งผิดของผู้ดูแลนี้) หรือ `{ ok: false, reason, pairAttempts, retryAt? }` · `reason` ตรวจตามลำดับและคืนข้อแรกที่ไม่ผ่าน: `'LOCKED'` (ไม่ตรวจรหัส ไม่เพิ่มครั้งผิด · มี `retryAt`) → `'NOT_FOUND'` → `'EXPIRED'` → `'USED'` → `'NO_CONSENT'` → `'ALREADY_PAIRED'` (5 ข้อหลังเพิ่มครั้งผิด 1 ครั้ง) (clarify 22/10) | ✓3 · ✗2 ✗4 ✗5 ✗8 · หมดอายุเมื่อ `now ≥ expiresAt` · ล็อกเมื่อ L = ครั้งผิดล่าสุด มีครั้งผิด ≥ 5 ในช่วง `(L − 10 นาที, L]` และ `now < L + 10 นาที` → `retryAt = L + 10 นาที` (BR-18 · แก้ 22/10 ตาม research R-3: นับจาก `now` ทำให้ปลดล็อกก่อนเวลา) · ตัดครั้งผิดที่ `failedAt ≤ now − 10 นาที` (NFR-09) |
+| `pair(state, code, caregiverId, now)` | `state = { invites, pairing, pairAttempts }` | `{ ok: true, pairing, invites, pairAttempts }` (ล้างครั้งผิดของผู้ดูแลนี้) หรือ `{ ok: false, reason, pairAttempts, retryAt? }` · `reason` ตรวจตามลำดับและคืนข้อแรกที่ไม่ผ่าน: `'LOCKED'` (ไม่ตรวจรหัส ไม่เพิ่มครั้งผิด · มี `retryAt`) → `'NOT_FOUND'` → `'EXPIRED'` → `'USED'` → `'NO_CONSENT'` → `'ALREADY_PAIRED'` (5 ข้อหลังเพิ่มครั้งผิด 1 ครั้ง) (clarify 22/10) | ✓3 · ✗2 ✗4 ✗5 ✗8 · หมดอายุเมื่อ `now ≥ expiresAt` · ล็อกเมื่อ L = ครั้งผิดล่าสุด มีครั้งผิด ≥ 5 ในช่วง `(L − 10 นาที, L]` และ `now < L + 10 นาที` → `retryAt = L + 10 นาที` (BR-18 · แก้ 22/10 ตาม research R-3: นับจาก `now` ทำให้ปลดล็อกก่อนเวลา) · ตัดครั้งผิดที่ `failedAt ≤ now − 20 นาที` (NFR-09) |
 | `lockedUntil(pairAttempts, caregiverId, now)` | | datetime หรือ `null` | BR-18 · ✗8 (หน้าจอแสดงเวลาที่เหลือก่อนผู้ใช้กด) |
 | `minutesLeft(retryAt, now)` | | จำนวนเต็ม ≥ 1 (ปัดขึ้น) | ✗8 "กรุณารอ N นาที" |
 | `canAccess(pairing, caregiverId)` · `isSeniorPaired(pairing, seniorId)` | | boolean | NFR-04 · FR-05 ✗7 · หน้าจออื่นกลับ C1/S1 เมื่อถูกยกเลิก |
@@ -519,7 +519,7 @@ erDiagram
 ### 9.1 FR → Operation → Entity → Screen
 | FR | Operation | Entity (C/R/U/D) | Screen |
 |---|---|---|---|
-| FR-01 | `newInvite` · `consent` · `pair` · `lockedUntil` · `canAccess` · `unpair` · `qrText` · `readQr` | INVITE_CODE (C, U) · PAIR_ATTEMPT (C, R, D) · PAIRING (C, R, D) · `unpair` D ทุก entity ของคู่ | S1, C1 |
+| FR-01 | `ensureDevices` · `currentInvite` · `isExpired` · `newInvite` · `consent` · `pair` · `lockedUntil` · `minutesLeft` · `reasonText` · `canAccess` · `isSeniorPaired` · `unpair` · `qrText` · `codeFromQr` · `qrMatrix` · `readQr` (ทำแล้ว 22/10) | INVITE_CODE (C, U) · PAIR_ATTEMPT (C, R, D) · PAIRING (C, R, D) · `unpair` D ทุก entity ของคู่ | S1, C1 |
 | FR-02 | `readLabel` · `parseLabel` · `validateDraft` · `reminderTimes` · `saveMedication` | MEDICATION (C) · MEAL_TIMES (C, U) | C2 |
 | FR-03 | `sessionsOf` · `roundAt` · `dueSessions` | MEDICATION (R) · MEAL_TIMES (R) · DOSE_CONFIRMATION (R) | S2 |
 | FR-04 | `confirm` · `notYet` · `lateUntil` · `statusOf` | DOSE_CONFIRMATION (C, R) | S2, S3 |
