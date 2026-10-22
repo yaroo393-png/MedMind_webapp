@@ -27,7 +27,7 @@ flowchart TB
     end
     subgraph L["ชั้นตรรกะ (Logic) — กฎ BR-01–17 · ฟังก์ชันล้วน รับเวลาจาก clock (ADR-02)"]
         direction LR
-        PA["pairing · qrScan<br/>FR-01 · BR-01, 02, 17"]
+        PA["pairing · qrScan<br/>FR-01 · BR-01, 02, 17, 18"]
         ME["labelParser · readLabel · medication<br/>FR-02 · BR-03–07"]
         DS["doseSession<br/>FR-03 · BR-06, 08, 09, 16"]
         CF["confirm<br/>FR-04 · BR-10–12, 15"]
@@ -35,7 +35,7 @@ flowchart TB
     end
     subgraph D["ชั้นข้อมูล (Data) — เก็บเฉพาะที่ FR-01–05 ใช้ (NFR-09) · ทุกระเบียนผูก Pairing (ADR-04)"]
         direction LR
-        STORE[("Pairing · InviteCode · MealTimes<br/>Medication · DoseConfirmation · CaregiverNotice")]
+        STORE[("Pairing · InviteCode · PairAttempt · MealTimes<br/>Medication · DoseConfirmation · CaregiverNotice")]
     end
     P -- "เรียก operation (§8)" --> L
     L -- "อ่าน/เขียนผ่าน store" --> D
@@ -255,7 +255,7 @@ sequenceDiagram
     participant C1 as C1
     actor Caregiver as ผู้ดูแล
 
-    S1->>PA: newInvite(seniorId, now)
+    S1->>PA: newInvite(invites, seniorId, now)
     PA-->>S1: รหัส 6 หลัก + QR · หมดอายุ now+10 นาที (BR-01)
     Senior->>S1: กด "ยินยอม" → consent(invite, now) (BR-02)
     Caregiver->>C1: ถ่ายรูป QR
@@ -268,10 +268,12 @@ sequenceDiagram
         Caregiver->>C1: พิมพ์รหัส
     end
     C1->>PA: pair(state, รหัส, caregiverId, now)
-    alt ok (FR-01 ✓3)
-        PA-->>C1: Pairing ใหม่ · รหัสถูกใช้แล้ว
-    else NO_CONSENT / NOT_FOUND / EXPIRED / USED / ALREADY_PAIRED (FR-01 ✗2, ✗4, ✗5)
-        PA-->>C1: เหตุผล → ข้อความบอกสาเหตุ ไม่เชื่อมต่อ
+    alt LOCKED — ผิดครบ 5 ครั้งใน 10 นาที (FR-01 ✗8, BR-18)
+        PA-->>C1: ไม่ตรวจรหัส · retryAt → "กรุณารอ N นาที"
+    else ok (FR-01 ✓3)
+        PA-->>C1: Pairing ใหม่ · รหัสถูกใช้แล้ว · ล้างตัวนับครั้งผิด
+    else NOT_FOUND / EXPIRED / USED / NO_CONSENT / ALREADY_PAIRED (FR-01 ✗2, ✗4, ✗5)
+        PA-->>C1: เหตุผลแรกที่ไม่ผ่าน + บันทึกครั้งผิด 1 ครั้ง → ข้อความบอกสาเหตุ ไม่เชื่อมต่อ
     end
 ```
 
@@ -316,6 +318,7 @@ stateDiagram-v2
 ```mermaid
 erDiagram
     SENIOR ||--o{ INVITE_CODE : "สร้าง (BR-01)"
+    CAREGIVER ||--o{ PAIR_ATTEMPT : "ใส่รหัสผิด (BR-18)"
     SENIOR ||--o| PAIRING : "มีผู้ดูแลได้ 1 คน (BR-02)"
     CAREGIVER ||--o| PAIRING : "ดูแล"
     PAIRING ||--o| MEAL_TIMES : "ตั้งเวลามื้อ (BR-06)"
@@ -338,6 +341,10 @@ erDiagram
         datetime expiresAt "createdAt + 10 นาที (BR-01)"
         datetime consentAt "Senior กดยินยอม · ว่าง = ยังไม่ยินยอม (BR-02, NFR-05)"
         datetime usedAt "ใช้ได้ 1 ครั้ง (BR-01)"
+    }
+    PAIR_ATTEMPT {
+        id caregiverId FK
+        datetime failedAt "ครั้งที่ถูกปฏิเสธ · ล็อกเมื่อมี 5 ครั้งใน 10 นาที (BR-18) · ล้างเมื่อจับคู่สำเร็จ"
     }
     PAIRING {
         id pairingId PK
@@ -381,7 +388,8 @@ erDiagram
 | Entity | FR | ฟิลด์ทุกตัวมีที่มา | สร้าง / ลบ |
 |---|---|---|---|
 | SENIOR, CAREGIVER | FR-01 | ADR-05 | สร้างเมื่อเปิดครั้งแรก · ล้างข้อมูลเบราว์เซอร์ = หาย |
-| INVITE_CODE | FR-01 | BR-01, BR-02 | `newInvite` · ใช้แล้ว/หมดอายุไม่ถูกใช้ซ้ำ |
+| INVITE_CODE | FR-01 | BR-01, BR-02 | `newInvite` · ใช้แล้ว/หมดอายุไม่ถูกใช้ซ้ำ · Senior มีรหัสที่ยังไม่ใช้ ≤ 1 |
+| PAIR_ATTEMPT | FR-01 | BR-18 | `pair` เพิ่มเมื่อถูกปฏิเสธ · ล้างของผู้ดูแลนั้นเมื่อจับคู่สำเร็จ · สถานะล็อกและเวลาที่เหลือคำนวณ ไม่เก็บ |
 | PAIRING | FR-01 | BR-02, NFR-04, NFR-05 | `pair` · `unpair` ลบพร้อมทุกระเบียนที่มี `pairingId` เดียวกัน (BR-17, NFR-10) |
 | MEAL_TIMES | FR-02, FR-03 | BR-06 | Caregiver ตั้งครั้งแรกตอนเพิ่มยา |
 | MEDICATION | FR-02, FR-03 | BR-04–07 | บันทึกเมื่อกดบันทึกเท่านั้น (NFR-06) |
@@ -397,7 +405,7 @@ erDiagram
 
 | Module (`prototype/src/modules/`) | FR | เจ้าของ | เขียน entity | อ่าน entity | ใช้ module อื่น |
 |---|---|---|---|---|---|
-| `pairing` | FR-01 | A | SENIOR, CAREGIVER, INVITE_CODE, PAIRING · ลบทุกอย่างของคู่ (BR-17) | — | — |
+| `pairing` | FR-01 | A | SENIOR, CAREGIVER, INVITE_CODE, PAIR_ATTEMPT, PAIRING · ลบทุกอย่างของคู่ (BR-17) | — | — |
 | `qrScan` | FR-01 | A | — | — | — (vendor jsQR) |
 | `readLabel` | FR-02 | B | — | — | — (vendor Tesseract) |
 | `labelParser` | FR-02 | B (+A ช่วย) | — | — | — |
@@ -429,6 +437,7 @@ erDiagram
 |---|---|---|---|
 | `devices` | `{ seniorId, caregiverId }` | SENIOR, CAREGIVER | A |
 | `invites` | `InviteCode[]` | INVITE_CODE | A |
+| `pairAttempts` | `PairAttempt[]` (`{ caregiverId, failedAt }`) | PAIR_ATTEMPT | A |
 | `pairing` | `Pairing` หรือไม่มี | PAIRING | A |
 | `mealTimes` | `{ pairingId, breakfast, lunch, dinner, bedtime }` | MEAL_TIMES | B |
 | `medications` | `Medication[]` | MEDICATION | B |
@@ -440,9 +449,10 @@ erDiagram
 **`pairing` (A · FR-01)**
 | Operation | Input | Output | กฎ / AC |
 |---|---|---|---|
-| `newInvite(seniorId, now, random)` | `random()` คืน 0–1 (test ส่งค่าคงที่) | `InviteCode` (consentAt, usedAt = null) | BR-01 · ✓1 |
+| `newInvite(invites, seniorId, now, random)` | `random()` คืน 0–1 (test ส่งค่าคงที่) | `{ invite, invites }` · `invite` = `InviteCode` (consentAt, usedAt = null) · `invites` = ชุดเดิมที่ลบรหัสที่ยังไม่ได้ใช้ของ `seniorId` แล้ว + `invite` (clarify 22/10) | BR-01 · ✓1 · รหัสเดิมที่ยังไม่ใช้ → `pair` ได้ `'NOT_FOUND'` |
 | `consent(invite, now)` | | `InviteCode` ที่มี consentAt | BR-02 |
-| `pair(state, code, caregiverId, now)` | `state = { invites, pairing }` | `{ ok: true, pairing, invites }` หรือ `{ ok: false, reason: 'NOT_FOUND' \| 'EXPIRED' \| 'USED' \| 'NO_CONSENT' \| 'ALREADY_PAIRED' }` | ✓3 · ✗2 ✗4 ✗5 · หมดอายุเมื่อ `now ≥ expiresAt` |
+| `pair(state, code, caregiverId, now)` | `state = { invites, pairing, pairAttempts }` | `{ ok: true, pairing, invites, pairAttempts }` (ล้างครั้งผิดของผู้ดูแลนี้) หรือ `{ ok: false, reason, pairAttempts, retryAt? }` · `reason` ตรวจตามลำดับและคืนข้อแรกที่ไม่ผ่าน: `'LOCKED'` (ไม่ตรวจรหัส ไม่เพิ่มครั้งผิด · มี `retryAt`) → `'NOT_FOUND'` → `'EXPIRED'` → `'USED'` → `'NO_CONSENT'` → `'ALREADY_PAIRED'` (5 ข้อหลังเพิ่มครั้งผิด 1 ครั้ง) (clarify 22/10) | ✓3 · ✗2 ✗4 ✗5 ✗8 · หมดอายุเมื่อ `now ≥ expiresAt` · ล็อกเมื่อมีครั้งผิด ≥ 5 ในช่วง `(now − 10 นาที, now]` → `retryAt` = ครั้งผิดที่ 5 ล่าสุด + 10 นาที (BR-18) |
+| `lockedUntil(pairAttempts, caregiverId, now)` | | datetime หรือ `null` | BR-18 · ✗8 (หน้าจอแสดงเวลาที่เหลือก่อนผู้ใช้กด) |
 | `canAccess(pairing, caregiverId)` | | boolean | NFR-04 · FR-05 ✗7 |
 | `unpair(data, pairingId)` | `data` = ชุดข้อมูลทั้งหมด §8.2 | ชุดข้อมูลที่ลบทุกระเบียนของ `pairingId` แล้ว | BR-17 · ✗6 · NFR-10 |
 
@@ -495,7 +505,7 @@ erDiagram
 ### 9.1 FR → Operation → Entity → Screen
 | FR | Operation | Entity (C/R/U/D) | Screen |
 |---|---|---|---|
-| FR-01 | `newInvite` · `consent` · `pair` · `canAccess` · `unpair` · `qrText` · `readQr` | INVITE_CODE (C, U) · PAIRING (C, R, D) · `unpair` D ทุก entity ของคู่ | S1, C1 |
+| FR-01 | `newInvite` · `consent` · `pair` · `lockedUntil` · `canAccess` · `unpair` · `qrText` · `readQr` | INVITE_CODE (C, U) · PAIR_ATTEMPT (C, R, D) · PAIRING (C, R, D) · `unpair` D ทุก entity ของคู่ | S1, C1 |
 | FR-02 | `readLabel` · `parseLabel` · `validateDraft` · `reminderTimes` · `saveMedication` | MEDICATION (C) · MEAL_TIMES (C, U) | C2 |
 | FR-03 | `sessionsOf` · `roundAt` · `dueSessions` | MEDICATION (R) · MEAL_TIMES (R) · DOSE_CONFIRMATION (R) | S2 |
 | FR-04 | `confirm` · `notYet` · `lateUntil` · `statusOf` | DOSE_CONFIRMATION (C, R) | S2, S3 |
@@ -504,7 +514,7 @@ erDiagram
 ### 9.2 Coverage (ไม่มี FR ไร้ที่อยู่ · ไม่มีส่วนเกิน)
 | FR / NFR | ADR | Use case §3 | Sequence §4 | State §5 | Entity §6 | Module §7 |
 |---|---|---|---|---|---|---|
-| FR-01 | 04, 05, 07 | UC-1, UC-7 | 4.3 | — | SENIOR, CAREGIVER, INVITE_CODE, PAIRING | `pairing`, `qrScan` |
+| FR-01 | 04, 05, 07 | UC-1, UC-7 | 4.3 | — | SENIOR, CAREGIVER, INVITE_CODE, PAIR_ATTEMPT, PAIRING | `pairing`, `qrScan` |
 | FR-02 | 03, 08 | UC-2 | 4.2 | — | MEDICATION, MEAL_TIMES | `readLabel`, `labelParser`, `medication` |
 | FR-03 | 01, 02 | UC-3 | 4.1 | รอถึงเวลา → กำลังเตือน | (คำนวณ) | `doseSession` |
 | FR-04 | 02 | UC-4 | 4.1 | กินแล้ว · ยืนยันช้า | DOSE_CONFIRMATION | `confirm` |
