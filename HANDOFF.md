@@ -2,6 +2,23 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-22 — A + Claude Code · `/speckit-clarify` specs/001-pairing (FR-01)
+- ถาม 4 ข้อ: ลำดับเหตุผลปฏิเสธ · อีกฝั่งเห็นอะไรเมื่อถูกยกเลิก · จำกัดการเดารหัส (→ **BR-18 + AC ✗8 ใหม่**) · สร้างรหัสใหม่ = รหัสเดิมเป็นโมฆะ (→ เพิ่มใน BR-01)
+- ไฟล์: `specs/001-pairing/spec.md` (Clarifications, Edge Cases, R1/R4/R9, PairAttempt, SC-007, Assumptions) · `checklists/requirements.md` ·
+  `docs/02-requirements/spec.md` (BR-01, BR-18, FR-01 ✗8, AI log) · `docs/03-design/architecture.md` (PAIR_ATTEMPT, Seq 4.3 LOCKED, สัญญา `pair`/`lockedUntil`/`newInvite`)
+- **สัญญาเปลี่ยน:** `newInvite(invites, seniorId, now, random)` → `{ invite, invites }` · `pair(state={invites,pairing,pairAttempts}, ...)`
+- **ต้องตัดสิน:** B (เจ้าของ SRS) ยืนยัน BR-18/✗8 และส่วนเพิ่มของ BR-01 — เพิ่มหลังเวลาล็อก FR/AC → แจ้งทีม
+- test: ไม่มี (เอกสาร) · ถัดไป: `/speckit-plan`
+- branch: `feat/pairing` · ยังไม่ commit
+
+## 2026-10-22 — A + Claude Code · `/speckit-specify` specs/001-pairing (FR-01)
+- ไฟล์: `specs/001-pairing/spec.md` · `specs/001-pairing/checklists/requirements.md` · `.specify/feature.json`
+- FR/NFR: FR-01 (AC ✓1 ✗2 ✓3 ✗4 ✗5 ✗6 ✗7) · BR-01, 02, 17 · NFR-04, 05, 10 · ไม่มี requirement ใหม่ · ไม่มี [NEEDS CLARIFICATION]
+- ตีความที่ไม่มี AC รองรับ 2 ข้อ (ใน Assumptions): "สร้างรหัสใหม่ทำให้รหัสเดิมเป็นโมฆะ" · "ยกเลิกแล้วไม่ยืนยัน = ไม่เปลี่ยนอะไร" → ถ้าทีมต้องการเป็น AC ทางการ แก้ `docs/02-requirements/spec.md`
+- ตัวเลือกที่ไม่ได้พิมพ์คำอธิบายหลัง `/speckit-specify` → ใช้ prompt ต้นแบบ TEAM-PLAN ข้อ 6
+- ถัดไป: `/speckit-clarify` → `/speckit-plan` → `/speckit-checklist` → `/speckit-tasks` → `/speckit-analyze` → `/speckit-implement`
+- branch: `feat/pairing` (แตกจาก `design/architecture`) · ยังไม่ commit
+
 ## 2026-10-22 — A + Claude Code · เปิด GitHub Pages
 - ลิงก์: https://yaroo393-png.github.io/MedMind_webapp/prototype/ (+ `?role=senior`, `?role=caregiver`) · ตรวจแล้ว: หน้าและไฟล์ src ตอบ 200
 - ตั้งค่า: Settings → Pages → branch `feat/foundation` / root (ชั่วคราว) · **ต้องเปลี่ยนเป็น `main` หลัง merge** ไม่งั้นลิงก์ค้างเวอร์ชันเก่า
