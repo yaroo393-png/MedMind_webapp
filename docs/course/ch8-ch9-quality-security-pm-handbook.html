@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คู่มืออ่านเอง Ch8 และ Ch9 — Quality, Security &amp; Project Management — Self-Study Handbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f7fb; --surface:#ffffff; --surface-2:#eef1f7;
+    --ink:#161a22; --ink-soft:#3c4657; --muted:#6b7686; --faint:#9aa4b2;
+    --line:#e2e6ee; --line-soft:#eef1f6;
+    --accent:#0e7c86; --accent-2:#0b5e66; --accent-soft:#d7eef0;
+    --warn:#b45309; --warn-soft:#fdf1de;
+    --bad:#b91c1c; --bad-soft:#fbe6e6;
+    --good:#15803d; --good-soft:#e2f3e7;
+    --brand:#3d2f8f; --brand-soft:#e9e5fb;
+    --shadow:0 1px 2px rgba(16,24,40,.06),0 8px 24px rgba(16,24,40,.06);
+    --radius:16px;
+    --sans:'Sarabun','Segoe UI',system-ui,-apple-system,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0d1017; --surface:#151a23; --surface-2:#1b222d;
+      --ink:#e8ecf3; --ink-soft:#c2cad6; --muted:#8b95a4; --faint:#5f6a79;
+      --line:#262e3a; --line-soft:#1e2530;
+      --accent:#39c2cf; --accent-2:#7fdfe8; --accent-soft:#123236;
+      --warn:#e0a23f; --warn-soft:#2e2413;
+      --bad:#f0787a; --bad-soft:#2e1616;
+      --good:#66c98a; --good-soft:#16281c;
+      --brand:#b3a6f5; --brand-soft:#1e1a34;
+      --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.72;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+
+  [data-lang="th"] .l-en{display:none}
+  [data-lang="en"] .l-th{display:none}
+  .langbar{position:fixed;top:16px;right:16px;z-index:50;display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px;box-shadow:var(--shadow)}
+  .langbar button{border:0;background:transparent;color:var(--muted);font-family:var(--sans);font-weight:700;font-size:13px;letter-spacing:.04em;padding:6px 14px;border-radius:999px;cursor:pointer;transition:.14s}
+  .langbar button.on{background:var(--accent);color:#fff}
+  @media print{.langbar{display:none}}
+
+  header.hero{background:radial-gradient(1200px 400px at 12% -10%,var(--accent-soft),transparent 60%),radial-gradient(900px 380px at 100% 0%,var(--brand-soft),transparent 55%);border-bottom:1px solid var(--line);padding:64px 0 48px}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-2);background:var(--surface);border:1px solid var(--line);padding:6px 13px;border-radius:999px;box-shadow:var(--shadow)}
+  h1{font-size:clamp(30px,5vw,46px);line-height:1.18;margin:20px 0 12px;letter-spacing:-.01em;font-weight:700}
+  .lede{font-size:clamp(18px,2.4vw,21px);color:var(--ink-soft);max-width:60ch;margin:0}
+  .thesis{margin-top:26px;padding:18px 22px;background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:12px;box-shadow:var(--shadow);font-size:18px;max-width:66ch}
+  .thesis b{color:var(--accent-2)}
+
+  nav.toc{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px 24px;margin:-28px auto 0;position:relative;z-index:2}
+  nav.toc h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:14px 0 10px}
+  nav.toc h2:first-child{margin-top:0}
+  nav.toc ol{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:4px 22px}
+  nav.toc a{display:flex;gap:11px;align-items:baseline;text-decoration:none;color:var(--ink-soft);padding:6px 8px;border-radius:9px;font-size:15.5px}
+  nav.toc a .n{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600;min-width:20px}
+  nav.toc a:hover{background:var(--surface-2);color:var(--ink)}
+
+  .partban{margin:56px 0 0;padding:26px 28px;border-radius:var(--radius);background:var(--brand-soft);border:1px solid var(--line)}
+  .partban .pk{font-family:var(--mono);font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);font-weight:600}
+  .partban h2{margin:6px 0 4px;font-size:clamp(24px,3.6vw,34px);line-height:1.2}
+  .partban p{margin:0;color:var(--ink-soft)}
+
+  section{padding:46px 0;border-bottom:1px solid var(--line-soft)}
+  .kicker{font-family:var(--mono);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 8px;display:flex;align-items:center;gap:10px}
+  .kicker .en{color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0}
+  h2.sec{font-size:clamp(24px,3.4vw,32px);margin:0 0 6px;letter-spacing:-.01em;line-height:1.25}
+  h3{font-size:20px;margin:30px 0 10px;letter-spacing:-.005em}
+  h4{font-size:16.5px;margin:18px 0 6px;color:var(--ink)}
+  p{margin:0 0 15px}
+  .sub{color:var(--muted);font-size:16px;margin-bottom:22px;max-width:70ch}
+  strong,b{font-weight:600}
+  em{color:var(--accent-2);font-style:normal;font-weight:600}
+  code{font-family:var(--mono);font-size:.88em;background:var(--surface-2);padding:2px 7px;border-radius:6px;color:var(--accent-2)}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 24px;margin:18px 0}
+  .card h4{margin-top:8px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  @media(max-width:860px){.grid4{grid-template-columns:1fr 1fr}}
+  @media(max-width:760px){.grid2,.grid3{grid-template-columns:1fr}}
+  @media(max-width:480px){.grid4{grid-template-columns:1fr}}
+  .grid2 .card,.grid3 .card,.grid4 .card{margin:0}
+
+  .tag{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;letter-spacing:.02em}
+  .tag.bad{background:var(--bad-soft);color:var(--bad)}
+  .tag.good{background:var(--good-soft);color:var(--good)}
+  .tag.warn{background:var(--warn-soft);color:var(--warn)}
+  .tag.brand{background:var(--brand-soft);color:var(--brand)}
+  .tag.accent{background:var(--accent-soft);color:var(--accent-2)}
+
+  .callout{border-radius:12px;padding:16px 20px;margin:20px 0;border:1px solid var(--line);font-size:16px}
+  .callout .lab{font-weight:700;font-size:13px;letter-spacing:.05em;text-transform:uppercase;display:block;margin-bottom:5px}
+  .callout.info{background:var(--accent-soft);border-color:transparent}
+  .callout.info .lab{color:var(--accent-2)}
+  .callout.warn{background:var(--warn-soft);border-color:transparent}
+  .callout.warn .lab{color:var(--warn)}
+  .callout.brand{background:var(--brand-soft);border-color:transparent}
+  .callout.brand .lab{color:var(--brand)}
+  .callout.exam{background:var(--surface);border:1.5px dashed var(--accent)}
+  .callout.exam .lab{color:var(--accent-2)}
+
+  ul.clean{list-style:none;padding:0;margin:14px 0}
+  ul.clean li{position:relative;padding:6px 0 6px 30px;border-bottom:1px dashed var(--line-soft)}
+  ul.clean li:last-child{border-bottom:0}
+  ul.clean li::before{content:"—";position:absolute;left:4px;color:var(--accent);font-weight:700}
+
+  .flip{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:18px 0}
+  @media(max-width:680px){.flip{grid-template-columns:1fr}}
+  .flip .side{padding:18px 20px;min-width:0}
+  .flip .before{background:var(--bad-soft)}
+  .flip .after{background:var(--good-soft);border-left:1px solid var(--line)}
+  @media(max-width:680px){.flip .after{border-left:0;border-top:1px solid var(--line)}}
+  .flip h5{margin:0 0 10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+  .flip .before h5{color:var(--bad)} .flip .after h5{color:var(--good)}
+  .flip p{font-size:15.5px;margin:0 0 8px}
+
+  pre.code{font-family:var(--mono);font-size:13.5px;line-height:1.65;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:8px 0 12px;overflow-x:auto;white-space:pre}
+  pre.code .c{color:var(--muted)}
+  pre.code .hl{background:var(--warn-soft);color:var(--warn);font-weight:600;border-radius:4px;padding:0 3px}
+  pre.code .ok{background:var(--good-soft);color:var(--good);font-weight:600;border-radius:4px;padding:0 3px}
+
+  table{width:100%;border-collapse:collapse;margin:0;font-size:15px}
+  th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--surface-2)}
+  tr:last-child td{border-bottom:0}
+  td.k{font-weight:600;white-space:nowrap}
+  .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:18px 0;background:var(--surface)}
+
+  .rail{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0;font-size:14.5px}
+  .rail .stepchip{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 13px;box-shadow:var(--shadow)}
+  .rail .stepchip b{color:var(--accent-2);display:block;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+  .rail .arw{color:var(--accent);font-weight:700}
+
+  .biglist{counter-reset:b;list-style:none;padding:0;margin:20px 0}
+  .biglist li{counter-increment:b;position:relative;padding:14px 18px 14px 60px;background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;box-shadow:var(--shadow)}
+  .biglist li::before{content:counter(b);position:absolute;left:16px;top:14px;width:30px;height:30px;background:var(--accent-soft);color:var(--accent-2);border-radius:9px;display:grid;place-items:center;font-weight:700;font-family:var(--mono)}
+  .biglist li b{display:block;margin-bottom:2px}
+
+  /* self-check */
+  details.check{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--brand);border-radius:12px;padding:14px 18px;margin:22px 0;box-shadow:var(--shadow)}
+  details.check > summary{cursor:pointer;font-weight:700;color:var(--brand);list-style:none}
+  details.check > summary::-webkit-details-marker{display:none}
+  details.check > summary::after{content:"+";float:right;font-family:var(--mono);color:var(--brand)}
+  details.check[open] > summary::after{content:"\2212"}
+  details.check .qs{margin:12px 0 0}
+  details.check .qa{padding:10px 0;border-top:1px dashed var(--line)}
+  details.check .qa:first-child{border-top:0}
+  details.check .ans{display:block;margin-top:4px;color:var(--good);font-weight:600}
+  details.check .ans span{font-weight:400;color:var(--ink-soft)}
+
+  /* cost bars */
+  .bars{display:flex;flex-direction:column;gap:8px;margin:18px 0}
+  .bar{display:grid;grid-template-columns:120px 1fr 56px;gap:12px;align-items:center;font-size:15px}
+  .bar .t{height:22px;border-radius:6px;background:var(--accent)}
+  .bar .v{font-family:var(--mono);font-weight:600;color:var(--accent-2);text-align:right}
+  @media(max-width:520px){.bar{grid-template-columns:92px 1fr 46px}}
+
+  /* layer stack */
+  .stack{display:flex;flex-direction:column;gap:8px;margin:18px 0}
+  .stack .ly{border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:10px;padding:12px 16px;background:var(--surface);box-shadow:var(--shadow)}
+  .stack .ly .h{font-weight:700}
+  .stack .ly .d{font-size:14.5px;color:var(--ink-soft)}
+  .stack .ly.l2{border-left-color:var(--brand)}
+  .stack .ly.l3{border-left-color:var(--warn)}
+  .stack .ly.l4{border-left-color:var(--good)}
+
+  /* board */
+  .board{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+  @media(max-width:640px){.board{grid-template-columns:1fr}}
+  .board .col{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .board .ch{font-family:var(--mono);font-size:12.5px;font-weight:700;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;display:flex;justify-content:space-between}
+  .board .ch .lim{color:var(--warn)}
+  .board .tk{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin-bottom:8px;font-size:14.5px;box-shadow:var(--shadow)}
+  .board .tk .who{display:block;font-size:12.5px;color:var(--muted)}
+  .board .tk .sz{float:right;font-family:var(--mono);font-size:12px;font-weight:700;color:var(--accent-2)}
+
+  /* burndown svg */
+  .fig{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:20px;margin:18px 0}
+  .fig .cap{font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 12px;text-align:center}
+  .bd{display:block;width:100%;max-width:620px;height:auto;margin:0 auto;font-family:var(--sans)}
+  .bd .ax{stroke:var(--muted);stroke-width:1.2}
+  .bd .gr{stroke:var(--line);stroke-width:1}
+  .bd .ideal{stroke:var(--muted);stroke-width:2;stroke-dasharray:6,5;fill:none}
+  .bd .act{stroke:var(--bad);stroke-width:2.6;fill:none}
+  .bd .pt{fill:var(--bad)}
+  .bd .lb{fill:var(--muted);font-size:12px}
+  .bd .lbk{fill:var(--ink);font-size:13px;font-weight:600}
+  .bd .lbr{fill:var(--bad);font-size:13px;font-weight:600}
+
+  /* risk matrix */
+  .rmx{display:grid;grid-template-columns:auto repeat(3,1fr);gap:6px;margin:18px 0;max-width:560px;font-size:14px}
+  .rmx .hd{font-family:var(--mono);font-size:11.5px;color:var(--muted);text-align:center;align-self:end;font-weight:600}
+  .rmx .rh{font-family:var(--mono);font-size:11.5px;color:var(--muted);font-weight:600;align-self:center;padding-right:6px}
+  .rmx .cell{border-radius:8px;padding:12px 8px;text-align:center;font-weight:600}
+  .rmx .lo{background:var(--good-soft);color:var(--good)}
+  .rmx .md{background:var(--warn-soft);color:var(--warn)}
+  .rmx .hi{background:var(--bad-soft);color:var(--bad)}
+
+  /* quiz */
+  .quiz .qq{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:14px 0;box-shadow:var(--shadow)}
+  .quiz .qq .stem{font-weight:600;margin-bottom:10px}
+  .quiz .opt{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15.5px;padding:9px 12px;border-radius:9px;margin:6px 0;cursor:pointer}
+  .quiz .opt:hover{background:var(--surface-2)}
+  .quiz .opt.right{background:var(--good-soft);border-color:var(--good)}
+  .quiz .opt.wrong{background:var(--bad-soft);border-color:var(--bad)}
+  .quiz .fb{display:none;margin-top:8px;font-size:15px;padding:10px 12px;border-radius:9px;background:var(--surface-2)}
+  .quiz .fb.show{display:block}
+  .quiz .fb b{display:block}
+  .qscore{position:sticky;bottom:12px;margin:18px 0 0;padding:12px 18px;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;font-weight:600}
+  .qscore .n{font-family:var(--mono);font-size:20px;color:var(--accent-2)}
+  .qscore button{border:1px solid var(--line);background:var(--surface-2);color:var(--ink-soft);padding:6px 12px;border-radius:8px;cursor:pointer;font-family:var(--sans)}
+
+  .gloss{columns:2;column-gap:28px;margin:16px 0}
+  @media(max-width:700px){.gloss{columns:1}}
+  .gloss div{break-inside:avoid;padding:8px 0;border-bottom:1px dashed var(--line-soft);font-size:15px}
+  .gloss b{color:var(--accent-2)}
+
+  footer{padding:40px 0 70px;color:var(--muted);font-size:14.5px}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px}
+  .print-btn{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);padding:8px 16px;border-radius:9px;cursor:pointer;font-family:var(--sans);font-size:14px}
+  .print-btn:hover{background:var(--surface-2)}
+  .refs{font-size:14.5px;color:var(--ink-soft)}
+  .refs li{margin:4px 0}
+
+  @media print{
+    body{background:#fff;font-size:12px}
+    nav.toc,.card,.biglist li,details.check,.fig{box-shadow:none}
+    header.hero{padding:20px 0}
+    section{padding:18px 0}
+    .card,.biglist li,.flip,.fig{break-inside:avoid}
+    details.check{display:block}
+    .print-btn,.qscore{display:none}
+  }
+</style>
+</head>
+<body data-lang="th">
+
+<div class="langbar" role="group" aria-label="Language">
+  <button data-set="th" class="on">ไทย</button>
+  <button data-set="en">EN</button>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Intro to Software Engineering — 2569 — Ch8 and Ch9</span>
+    <h1>
+      <span class="l-th">คู่มืออ่านเอง Ch8 และ Ch9<br>ของที่สร้างต้องน่าไว้ใจ และทีมต้องทำงานให้เสร็จ</span>
+      <span class="l-en">Self-Study Handbook for Ch8 and Ch9<br>Build it to be trusted, and get it done as a team</span>
+    </h1>
+    <p class="lede">
+      <span class="l-th">อ่านคู่มือนี้แทนการจดในห้องได้ ครอบคลุม <em>Ch8 Quality &amp; Security</em> และ <em>Ch9 Project Management</em> ทุกหัวข้อที่ออกสอบปลายภาค มีตัวอย่าง ข้อเปรียบเทียบ คำถามทดสอบตัวเองท้ายหัวข้อ และแบบฝึกแนวข้อสอบท้ายเล่ม</span>
+      <span class="l-en">You can read this instead of taking notes in class. It covers every final-exam topic in <em>Ch8 Quality &amp; Security</em> and <em>Ch9 Project Management</em>, with examples, analogies, a self-check after each topic, and exam-style practice at the end.</span>
+    </p>
+    <div class="thesis">
+      <span class="l-th"><b>สองประโยคที่ต้องจำ</b> Ch8: คุณภาพต้อง <b>ตรวจ</b> ไม่ใช่ <b>หวัง</b> และความปลอดภัยคือนิสัยที่ทำตั้งแต่วันแรก Ch9: แตกงานให้เล็ก ทำให้ความคืบหน้า <b>มองเห็นได้</b> ตั้งชื่อความเสี่ยงก่อนมันเกิด และปรับปรุงทุกรอบ</span>
+      <span class="l-en"><b>Two sentences to remember.</b> Ch8: quality is <b>checked</b>, not <b>hoped for</b>, and security is a habit from day one. Ch9: break work small, make progress <b>visible</b>, name risks before they bite, and improve every cycle.</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav class="toc">
+    <h2><span class="l-th">ส่วน A: Ch8 Quality &amp; Security</span><span class="l-en">Part A: Ch8 Quality &amp; Security</span></h2>
+    <ol>
+      <li><a href="#a1"><span class="n">01</span><span class="l-th">คุณภาพคืออะไร</span><span class="l-en">What quality means</span></a></li>
+      <li><a href="#a2"><span class="n">02</span><span class="l-th">Code review และ linter</span><span class="l-en">Code review and the linter</span></a></li>
+      <li><a href="#a3"><span class="n">03</span><span class="l-th">ทำไมต้องจับ defect ให้เร็ว</span><span class="l-en">Why catch defects early</span></a></li>
+      <li><a href="#a4"><span class="n">04</span><span class="l-th">Security: big three</span><span class="l-en">Security: the big three</span></a></li>
+      <li><a href="#a5"><span class="n">05</span><span class="l-th">IDOR ช่องโหว่ที่เจอบ่อย</span><span class="l-en">IDOR, a common hole</span></a></li>
+      <li><a href="#a6"><span class="n">06</span><span class="l-th">ข้อมูลส่วนบุคคลและ PDPA</span><span class="l-en">Personal data and PDPA</span></a></li>
+      <li><a href="#a7"><span class="n">07</span><span class="l-th">กรณีศึกษา: CareFlow OPD</span><span class="l-en">Case study: CareFlow OPD</span></a></li>
+    </ol>
+    <h2><span class="l-th">ส่วน B: Ch9 Project Management</span><span class="l-en">Part B: Ch9 Project Management</span></h2>
+    <ol>
+      <li><a href="#b1"><span class="n">08</span><span class="l-th">แตกงานและประมาณขนาด</span><span class="l-en">Break down and estimate</span></a></li>
+      <li><a href="#b2"><span class="n">09</span><span class="l-th">Sprint และ task board</span><span class="l-en">Sprints and the task board</span></a></li>
+      <li><a href="#b3"><span class="n">10</span><span class="l-th">Scrum ในหน้าเดียว</span><span class="l-en">Scrum on one page</span></a></li>
+      <li><a href="#b4"><span class="n">11</span><span class="l-th">อ่าน burndown chart</span><span class="l-en">Reading a burndown chart</span></a></li>
+      <li><a href="#b5"><span class="n">12</span><span class="l-th">การจัดการความเสี่ยง</span><span class="l-en">Risk management</span></a></li>
+      <li><a href="#b6"><span class="n">13</span><span class="l-th">Role และ retrospective</span><span class="l-en">Roles and the retrospective</span></a></li>
+      <li><a href="#b7"><span class="n">14</span><span class="l-th">Case study: Denver Airport</span><span class="l-en">Case study: Denver Airport</span></a></li>
+    </ol>
+    <h2><span class="l-th">ส่วน C: เตรียมสอบ</span><span class="l-en">Part C: Exam prep</span></h2>
+    <ol>
+      <li><a href="#c1"><span class="n">15</span><span class="l-th">สรุปทั้งสองบทในหน้าเดียว</span><span class="l-en">Both chapters on one page</span></a></li>
+      <li><a href="#c2"><span class="n">16</span><span class="l-th">ศัพท์สำคัญ ไทย และอังกฤษ</span><span class="l-en">Key terms, Thai and English</span></a></li>
+      <li><a href="#c3"><span class="n">17</span><span class="l-th">แบบฝึก MCQ 12 ข้อ</span><span class="l-en">12 practice MCQs</span></a></li>
+      <li><a href="#c4"><span class="n">18</span><span class="l-th">Short answer และคำตอบตัวอย่าง</span><span class="l-en">Short answers with model answers</span></a></li>
+    </ol>
+  </nav>
+
+  <div class="callout info" style="margin-top:28px">
+    <span class="lab"><span class="l-th">วิธีใช้คู่มือนี้</span><span class="l-en">How to use this handbook</span></span>
+    <span class="l-th">อ่านตามลำดับ หัวข้อละประมาณ 5 ถึง 10 นาที ท้ายหัวข้อมีกล่อง <b>ทดสอบตัวเอง</b> ให้ลองตอบในใจก่อน แล้วค่อยกดดูเฉลย กรอบเส้นประ <b>แนวข้อสอบ</b> บอกว่าข้อสอบมักถามเรื่องนั้นแบบไหน ทั้งหมดใช้เวลาประมาณ 2 ชั่วโมง ข้อสอบปลายภาคเป็นภาษาอังกฤษ จึงควรสลับไปอ่านโหมด EN อย่างน้อย 1 รอบ</span>
+    <span class="l-en">Read in order, about 5 to 10 minutes per topic. Each topic ends with a <b>self-check</b>: answer in your head first, then open the answers. Dashed boxes marked <b>exam angle</b> tell you how the exam usually asks about that topic. The whole handbook takes about 2 hours. The final exam is in English, so read the EN mode at least once.</span>
+  </div>
+</div>
+
+<!-- ================= PART A ================= -->
+<div class="wrap">
+  <div class="partban">
+    <div class="pk">Part A — Chapter 8</div>
+    <h2><span class="l-th">Quality &amp; Security: ทำงานได้ และน่าไว้ใจ</span><span class="l-en">Quality &amp; Security: it works, and it can be trusted</span></h2>
+    <p><span class="l-th">Sommerville 9e บทที่ 24 Quality management และบทที่ 14 Security engineering</span><span class="l-en">Sommerville 9e, Ch24 Quality management and Ch14 Security engineering</span></p>
+  </div>
+</div>
+
+<!-- A1 -->
+<section id="a1"><div class="wrap">
+  <p class="kicker">01 Quality <span class="en">/ คุณภาพ</span></p>
+  <h2 class="sec"><span class="l-th">คุณภาพไม่ใช่สิ่งเดียว แต่เป็นหลาย attribute ที่ตรวจได้</span><span class="l-en">Quality is not one thing, it is several checkable attributes</span></h2>
+  <p class="sub"><span class="l-th">เวลาบอกว่าซอฟต์แวร์ "คุณภาพดี" เราหมายถึงหลายเรื่องพร้อมกัน เหมือนให้คะแนนร้านอาหาร ต้องดูทั้งรสชาติ ความเร็ว ความสะอาด และราคา แต่ละเรื่องเป็นของจริง และตรวจคนละวิธี</span><span class="l-en">When we call software "good quality", we mean several things at once. It is like rating a restaurant: taste, speed, cleanliness and price are all real, and each is checked a different way.</span></p>
+
+  <div class="scroll"><table>
+    <tr><th>Attribute</th><th><span class="l-th">ความหมาย</span><span class="l-en">Meaning</span></th><th><span class="l-th">ตรวจด้วยอะไร</span><span class="l-en">How you check it</span></th><th><span class="l-th">ตัวอย่างปัญหา</span><span class="l-en">Example problem</span></th></tr>
+    <tr><td class="k">Reliability</td><td><span class="l-th">ทำงานถูกต้องเหมือนเดิมทุกครั้ง</span><span class="l-en">Gives the same correct result every time</span></td><td><span class="l-th">test (Ch7)</span><span class="l-en">Tests (Ch7)</span></td><td><span class="l-th">คำนวณวันครบกำหนดผิดเป็นบางครั้ง</span><span class="l-en">Due dates are sometimes calculated wrong</span></td></tr>
+    <tr><td class="k">Usability</td><td><span class="l-th">คนใช้เป็น เรียนรู้ได้เร็ว ผิดแล้วแก้ได้</span><span class="l-en">People can learn and use it, and recover from mistakes</span></td><td><span class="l-th">ให้ผู้ใช้จริงลองใช้แล้วสังเกต</span><span class="l-en">Watch a real user try it</span></td><td><span class="l-th">ผู้ใช้ใหม่หาปุ่มบันทึกไม่เจอ</span><span class="l-en">New users cannot find the Save button</span></td></tr>
+    <tr><td class="k">Maintainability</td><td><span class="l-th">แก้ไขได้ง่ายและปลอดภัย</span><span class="l-en">Easy and safe to change</span></td><td><span class="l-th">code review และ linter</span><span class="l-en">Code review and a linter</span></td><td><span class="l-th">แก้ฟีเจอร์เดียวต้องไล่แก้ 10 ไฟล์</span><span class="l-en">Changing one feature means editing 10 files</span></td></tr>
+    <tr><td class="k">Security</td><td><span class="l-th">ข้อมูลเห็นได้เฉพาะคนที่มีสิทธิ์</span><span class="l-en">Only the right people see the right data</span></td><td><span class="l-th">คิดแบบผู้โจมตี</span><span class="l-en">Think like an attacker</span></td><td><span class="l-th">ผู้ใช้ A เห็นข้อมูลของผู้ใช้ B</span><span class="l-en">User A can see user B's data</span></td></tr>
+    <tr><td class="k">Performance</td><td><span class="l-th">ตอบสนองเร็วพอตาม NFR</span><span class="l-en">Responds within the NFR budget</span></td><td><span class="l-th">วัดจริง ไม่ใช่เดา</span><span class="l-en">Measure, don't guess</span></td><td><span class="l-th">ค้นหาช้าเกิน 5 วินาทีเมื่อข้อมูลเยอะ</span><span class="l-en">Search takes over 5 seconds with a lot of data</span></td></tr>
+  </table></div>
+
+  <div class="callout brand">
+    <span class="lab"><span class="l-th">เชื่อมกับ SRS</span><span class="l-en">Link to the SRS</span></span>
+    <span class="l-th">ทุก attribute ควรมี NFR ใน SRS รองรับ และ NFR ที่ดีต้องตรวจได้ เช่น "หน้าค้นหาแสดงผลภายใน 2 วินาทีสำหรับข้อมูล 1,000 รายการ" ดีกว่า "ระบบต้องเร็ว" เพราะวัดได้ว่าผ่านหรือไม่ผ่าน</span>
+    <span class="l-en">Every attribute should be backed by an NFR in the SRS, and a good NFR is checkable. "The search page shows results within 2 seconds for 1,000 records" beats "the system must be fast", because you can measure pass or fail.</span>
+  </div>
+
+  <h3><span class="l-th">มาตรฐานกลาง ISO/IEC 25010:2023 (ฉบับปัจจุบัน 9 characteristic)</span><span class="l-en">The shared standard: ISO/IEC 25010:2023 (current edition, 9 characteristics)</span></h3>
+  <p><span class="l-th">อุตสาหกรรมมีรายการคุณภาพที่ตกลงร่วมกันชื่อ ISO/IEC 25010 คิดว่าเป็น "ฉลากโภชนาการ" ของซอฟต์แวร์ ทุกบริษัทจะเข้าใจคำว่าคุณภาพตรงกัน <b>ฉบับปัจจุบันคือ Edition 2 เผยแพร่เดือนพฤศจิกายน 2023</b> แทนฉบับ 2011 (ที่ตำรา Sommerville ใช้ และมี 8 ข้อ) ซึ่งถูกยกเลิกแล้ว ฉบับ 2023 มี <b>9 characteristic</b></span><span class="l-en">Industry shares one agreed list called ISO/IEC 25010, a nutrition label for software so every company means the same thing by "quality". <b>The current version is Edition 2, published November 2023</b>, replacing the withdrawn 2011 edition (the one in Sommerville, with 8 characteristics). The 2023 edition has <b>9 characteristics</b>.</span></p>
+  <div class="grid3">
+    <div class="card"><span class="tag accent">1</span><h4>Functional suitability</h4><span class="l-th">ทำสิ่งที่ต้องทำได้ครบและถูกต้อง</span><span class="l-en">Does what is needed, completely and correctly</span></div>
+    <div class="card"><span class="tag accent">2</span><h4>Performance efficiency</h4><span class="l-th">เร็วพอ ใช้ทรัพยากรพอดี รับปริมาณงานได้</span><span class="l-en">Fast enough, within resources and capacity</span></div>
+    <div class="card"><span class="tag accent">3</span><h4>Compatibility</h4><span class="l-th">ทำงานร่วมกับระบบอื่นได้</span><span class="l-en">Works alongside other systems</span></div>
+    <div class="card"><span class="tag warn"><span class="l-th">4 เปลี่ยนชื่อ</span><span class="l-en">4 renamed</span></span><h4>Interaction capability</h4><span class="l-th">ผู้ใช้ทุกกลุ่มเรียนรู้และใช้งานได้ (เดิมชื่อ Usability)</span><span class="l-en">Every kind of user can learn and use it (was Usability)</span></div>
+    <div class="card"><span class="tag accent">5</span><h4>Reliability</h4><span class="l-th">ทำงานได้ต่อเนื่อง ไม่มีข้อผิดพลาด</span><span class="l-en">Keeps working, free of faults</span></div>
+    <div class="card"><span class="tag accent">6</span><h4>Security</h4><span class="l-th">ปกป้องข้อมูลและการเข้าถึง และต้านทานการโจมตี</span><span class="l-en">Protects data and access, and resists attacks</span></div>
+    <div class="card"><span class="tag accent">7</span><h4>Maintainability</h4><span class="l-th">แก้ไขได้ง่ายและปลอดภัย</span><span class="l-en">Easy to change safely</span></div>
+    <div class="card"><span class="tag warn"><span class="l-th">8 เปลี่ยนชื่อ</span><span class="l-en">8 renamed</span></span><h4>Flexibility</h4><span class="l-th">ปรับตัว ขยายขนาด และย้ายไปสภาพแวดล้อมใหม่ได้ (เดิมชื่อ Portability)</span><span class="l-en">Adapts, scales and moves to new environments (was Portability)</span></div>
+    <div class="card" style="border:2px solid var(--bad)"><span class="tag bad"><span class="l-th">9 ใหม่ปี 2023</span><span class="l-en">9 new in 2023</span></span><h4>Safety</h4><span class="l-th">ไม่ทำให้ชีวิต สุขภาพ ทรัพย์สิน หรือสิ่งแวดล้อมตกอยู่ในอันตราย</span><span class="l-en">Does not endanger human life, health, property or the environment</span></div>
+  </div>
+
+  <h3><span class="l-th">ปี 2023 เปลี่ยนอะไรบ้าง</span><span class="l-en">What changed in 2023</span></h3>
+  <div class="scroll"><table>
+    <tr><th>2011 (8)</th><th>2023 (9)</th><th><span class="l-th">เปลี่ยนอย่างไร</span><span class="l-en">Change</span></th></tr>
+    <tr><td><span class="l-th">ไม่มี</span><span class="l-en">none</span></td><td class="k">Safety</td><td><span class="l-th"><b>เพิ่มใหม่</b> มี 5 subcharacteristic: operational constraint, risk identification, fail safe, hazard warning, safe integration</span><span class="l-en"><b>New</b>, with 5 subcharacteristics: operational constraint, risk identification, fail safe, hazard warning, safe integration</span></td></tr>
+    <tr><td>Usability</td><td class="k">Interaction capability</td><td><span class="l-th"><b>เปลี่ยนชื่อ</b> เพิ่ม inclusivity, self-descriptiveness; accessibility แยกเป็น inclusivity กับ user assistance; user interface aesthetics เปลี่ยนเป็น user engagement</span><span class="l-en"><b>Renamed</b>; adds inclusivity and self-descriptiveness; accessibility split into inclusivity and user assistance; user interface aesthetics becomes user engagement</span></td></tr>
+    <tr><td>Portability</td><td class="k">Flexibility</td><td><span class="l-th"><b>เปลี่ยนชื่อ</b> เพิ่ม scalability (ขยายรองรับงานที่มากขึ้น)</span><span class="l-en"><b>Renamed</b>; adds scalability</span></td></tr>
+    <tr><td>Security</td><td class="k">Security</td><td><span class="l-th">เพิ่ม resistance (ต้านทานการโจมตี)</span><span class="l-en">Adds resistance (withstands attacks)</span></td></tr>
+    <tr><td>Reliability</td><td class="k">Reliability</td><td><span class="l-th">maturity เปลี่ยนเป็น faultlessness (ทำงานโดยไม่มีข้อผิดพลาด)</span><span class="l-en">Maturity becomes faultlessness</span></td></tr>
+  </table></div>
+
+  <div class="callout brand">
+    <span class="lab"><span class="l-th">ทำไมถึงเปลี่ยน (อธิบายแบบง่าย)</span><span class="l-en">Why it changed, in plain terms</span></span>
+    <span class="l-th"><b>1. ขอบเขตกว้างขึ้น:</b> ฉบับ 2023 ใช้กับ <b>ICT product</b> ทั้งระบบ ซึ่งมาตรฐานระบุว่ารวมซอฟต์แวร์ ฮาร์ดแวร์ firmware ข้อมูล และโครงสร้างสื่อสาร ไม่ใช่ซอฟต์แวร์อย่างเดียว <b>2. ซอฟต์แวร์ทำร้ายคนได้จริง:</b> เมื่อซอฟต์แวร์ควบคุมรถยนต์ เครื่องมือแพทย์ หรือระบบ AI ความผิดพลาดไม่ได้แค่ทำให้แอปค้าง แต่ทำให้คนบาดเจ็บได้ จึงต้องนับ Safety เป็นคุณภาพด้านหนึ่ง (เทียบเคส Therac-25 ใน Ch10) <b>3. ผู้ใช้หลากหลายขึ้น:</b> "Interaction capability" ครอบคลุมผู้ใช้ทุกกลุ่ม รวมผู้สูงอายุและผู้พิการ (inclusivity) มากกว่าคำว่า usability เดิม <b>4. ระบบโตเร็ว:</b> Flexibility เพิ่ม scalability เพราะระบบบนคลาวด์ต้องขยายรับผู้ใช้ได้</span>
+    <span class="l-en"><b>1. Wider scope:</b> the 2023 edition applies to whole <b>ICT products</b>, which the standard says include software, hardware, firmware, data and communication infrastructure, not just software. <b>2. Software can hurt people:</b> when software drives cars, medical devices or AI, a failure is not just a frozen app but possible injury, so Safety counts as quality (compare Therac-25 in Ch10). <b>3. More kinds of users:</b> "interaction capability" covers every user group, including older and disabled users (inclusivity), more than "usability" did. <b>4. Systems grow fast:</b> Flexibility adds scalability because cloud systems must grow with their users.</span>
+  </div>
+  <p style="font-size:14.5px;color:var(--muted)"><span class="l-th">อ้างอิง: ISO/IEC 25010:2023 Systems and software engineering, SQuaRE, Product quality model (Edition 2, 2023-11) https://www.iso.org/standard/78176.html; ฉบับก่อนหน้า ISO/IEC 25010:2011 (ยกเลิกแล้ว); Sommerville 9e บทที่ 24 ใช้ฉบับ 2011 ข้อ 1 และ 2 ของเหตุผลมาจากขอบเขตที่มาตรฐานระบุ ส่วนข้อ 3 และ 4 เป็นคำอธิบายประกอบการสอน</span><span class="l-en">Reference: ISO/IEC 25010:2023 Systems and software engineering, SQuaRE, Product quality model (Edition 2, 2023-11), https://www.iso.org/standard/78176.html; previous edition ISO/IEC 25010:2011 (withdrawn); Sommerville 9e Ch24 uses the 2011 edition. Reasons 1 and 2 follow the scope stated in the standard; 3 and 4 are teaching explanations.</span></p>
+
+  <div class="callout exam">
+    <span class="lab"><span class="l-th">แนวข้อสอบ</span><span class="l-en">Exam angle</span></span>
+    <span class="l-th">มักให้สถานการณ์แล้วถามว่าเป็น attribute ไหน ถามว่าฉบับ 2023 <b>เพิ่ม</b> อะไร (Safety) หรือถามว่าข้อใด <b>ไม่ใช่</b> characteristic (ตัวลวงที่พบบ่อยคือคำที่ฟังดูดีแต่ไม่ใช่คุณภาพของ product เช่น profitability) ควรรู้ทั้งชื่อใหม่และชื่อเดิม: Interaction capability (เดิม Usability), Flexibility (เดิม Portability)</span>
+    <span class="l-en">Usually a scenario asking which attribute it is, what the 2023 edition <b>added</b> (Safety), or which option is <b>not</b> a characteristic (distractors such as profitability). Know both the new and old names: Interaction capability (was Usability), Flexibility (was Portability).</span>
+  </div>
+
+  <details class="check">
+    <summary><span class="l-th">ทดสอบตัวเอง 01</span><span class="l-en">Self-check 01</span></summary>
+    <div class="qs">
+      <div class="qa"><span class="l-th">1. "แอปค้างเมื่อเปิดในมือถือรุ่นเก่า แต่เปิดในเครื่องใหม่ได้" ใกล้กับ characteristic ไหนใน ISO/IEC 25010 มากที่สุด</span><span class="l-en">1. "The app freezes on older phones but runs on new ones." Which ISO/IEC 25010 characteristic is closest?</span>
+        <span class="ans"><span class="l-th">Flexibility (เดิมชื่อ portability) <span>เพราะเป็นเรื่องการทำงานในสภาพแวดล้อมที่ต่างกัน</span></span><span class="l-en">Flexibility (formerly portability) <span>because it is about running in a different environment.</span></span></span></div>
+      <div class="qa"><span class="l-th">3. ทำไมฉบับ 2023 จึงเพิ่ม Safety</span><span class="l-en">3. Why did the 2023 edition add Safety?</span>
+        <span class="ans"><span class="l-th">มาตรฐานครอบคลุม ICT product ทั้งระบบ และซอฟต์แวร์ที่ควบคุมอุปกรณ์จริงทำให้คนบาดเจ็บได้ <span>คุณภาพจึงรวมถึงการไม่ทำให้ชีวิต ทรัพย์สิน หรือสิ่งแวดล้อมตกอยู่ในอันตราย</span></span><span class="l-en">The standard covers whole ICT products, and software that controls real devices can injure people. <span>So quality now includes not endangering life, property or the environment.</span></span></span></div>
+      <div class="qa"><span class="l-th">2. NFR "ระบบต้องใช้ง่าย" มีปัญหาอะไร</span><span class="l-en">2. What is wrong with the NFR "the system must be easy to use"?</span>
+        <span class="ans"><span class="l-th">ตรวจไม่ได้ <span>ควรเขียนให้วัดได้ เช่น "ผู้ใช้ใหม่ 4 ใน 5 คนเพิ่มงานแรกได้ภายใน 1 นาทีโดยไม่มีคนช่วย"</span></span><span class="l-en">It cannot be checked. <span>Make it measurable, for example "4 of 5 new users add their first task within 1 minute without help".</span></span></span></div>
+    </div>
+  </details>
+</div></section>
+
+<!-- A2 -->
+<section id="a2"><div class="wrap">
+  <p class="kicker">02 Review &amp; lint <span class="en">/ ตรวจโค้ด</span></p>
+  <h2 class="sec"><span class="l-th">Code review และ linter: เครื่องมือคุณภาพที่ถูกที่สุด</span><span class="l-en">Code review and the linter: the cheapest quality tools</span></h2>
+  <div class="grid2">
+    <div class="card">
+      <span class="tag brand"><span class="l-th">ใช้คน</span><span class="l-en">Human</span></span>
+      <h4>Code review</h4>
+      <p><span class="l-th">เพื่อนในทีมอ่านโค้ดของเราก่อนรวมเข้า <code>main</code> ซึ่งก็คือหน้าที่ของ Pull Request ที่เรียนใน Ch6 จับได้ทั้งบั๊กเชิงตรรกะ ชื่อที่อ่านแล้วงง และกรณีที่ลืม และยังทำให้ความรู้กระจายในทีม ไม่ติดอยู่กับคนเดียว</span><span class="l-en">A teammate reads your code before it is merged into <code>main</code>, which is what a Pull Request is for (Ch6). It catches logic bugs, confusing names and missing cases, and spreads knowledge so it does not live in one head.</span></p>
+    </div>
+    <div class="card">
+      <span class="tag accent"><span class="l-th">ใช้เครื่องมือ</span><span class="l-en">Tool</span></span>
+      <h4>Linter (static analysis)</h4>
+      <p><span class="l-th">โปรแกรมที่อ่านโค้ด <b>โดยไม่ต้องรัน</b> แล้วเตือนเรื่อง style ตัวแปรที่ประกาศแต่ไม่ใช้ และรูปแบบที่มักเป็นบั๊ก ทำงานเร็ว สม่ำเสมอ และรันได้ทุก commit ตัวอย่างเช่น ESLint สำหรับ JavaScript หรือ Ruff สำหรับ Python</span><span class="l-en">A program that reads code <b>without running it</b> and flags style issues, unused variables and patterns that are often bugs. Fast, consistent, and it runs on every commit. Examples: ESLint for JavaScript, Ruff for Python.</span></p>
+    </div>
+  </div>
+  <div class="callout info">
+    <span class="lab"><span class="l-th">จำง่ายๆ</span><span class="l-en">In plain terms</span></span>
+    <span class="l-th">linter คือ spell-check ของโค้ด ส่วน code review คือให้เพื่อนพิสูจน์อักษรเรียงความ สองอย่างนี้ไม่ได้แทนกัน spell-check ไม่รู้ว่าเนื้อหาผิด และเพื่อนอาจมองข้ามคำสะกดผิด ยิ่งใช้ AI เขียนโค้ด ยิ่งต้องมีทั้งสองอย่าง เพราะ AI เขียนได้เร็วกว่าที่คนจะอ่านทัน</span>
+    <span class="l-en">A linter is spell-check for code; a code review is a classmate proof-reading your essay. They do not replace each other: spell-check cannot tell the argument is wrong, and a reader may miss a typo. With AI-written code you need both even more, because AI writes faster than people can read.</span>
+  </div>
+  <details class="check">
+    <summary><span class="l-th">ทดสอบตัวเอง 02</span><span class="l-en">Self-check 02</span></summary>
+    <div class="qs">
+      <div class="qa"><span class="l-th">1. ความต่างหลักระหว่าง code review กับ linter คืออะไร</span><span class="l-en">1. What is the main difference between code review and a linter?</span>
+        <span class="ans"><span class="l-th">review ใช้คนอ่านและเข้าใจเจตนา linter เป็นเครื่องมืออ่านโค้ดโดยไม่รัน (static analysis) <span>คนจับเรื่องตรรกะและการออกแบบ เครื่องมือจับรูปแบบที่ตรวจด้วยกฎได้</span></span><span class="l-en">Review is a person reading for intent; a linter is a tool reading code without running it (static analysis). <span>People catch logic and design; tools catch rule-checkable patterns.</span></span></span></div>
+      <div class="qa"><span class="l-th">2. ทำไม linter รันได้ทุก commit แต่ review ทำแบบนั้นยาก</span><span class="l-en">2. Why can a linter run on every commit while a review usually cannot?</span>
+        <span class="ans"><span class="l-th">linter อัตโนมัติและใช้เวลาไม่กี่วินาที <span>review ต้องใช้เวลาของคน จึงทำตอนเปิด Pull Request</span></span><span class="l-en">A linter is automatic and takes seconds. <span>A review costs human time, so it happens at the Pull Request.</span></span></span></div>
+    </div>
+  </details>
+</div></section>
+
+<!-- A3 -->
+<section id="a3"><div class="wrap">
+  <p class="kicker">03 Cost of defects <span class="en">/ ต้นทุนการแก้บั๊ก</span></p>
+  <h2 class="sec"><span class="l-th">ยิ่งเจอ defect ช้า ยิ่งแพง</span><span class="l-en">The later you find a defect, the more it costs</span></h2>
+  <p class="sub"><span class="l-th">Boehm (1981) แสดงว่าต้นทุนการแก้ข้อบกพร่องเพิ่มขึ้นมากตามระยะที่เจอ ตัวเลขด้านล่างเป็นสเกลประกอบการอธิบาย ไม่ใช่ค่าที่แม่นยำ แต่ทิศทางชัดเจน</span><span class="l-en">Boehm (1981) showed the cost of fixing a defect rises sharply with the phase in which it is found. The numbers below are an illustrative scale, not exact values, but the direction is clear.</span></p>
+  <div class="card">
+    <div class="bars">
+      <div class="bar"><span>Requirements</span><div class="t" style="width:1%"></div><span class="v">~1x</span></div>
+      <div class="bar"><span>Design</span><div class="t" style="width:5%"></div><span class="v">~5x</span></div>
+      <div class="bar"><span>Code</span><div class="t" style="width:10%"></div><span class="v">~10x</span></div>
+      <div class="bar"><span>Test</span><div class="t" style="width:25%"></div><span class="v">~25x</span></div>
+      <div class="bar"><span>Production</span><div class="t" style="width:100%;background:var(--bad)"></div><span class="v">~100x</span></div>
+    </div>
+  </div>
+  <p><span class="l-th">ทำไมแพงขึ้น เพราะยิ่งช้า ยิ่งมีของที่สร้างทับบนความผิดพลาดนั้นมากขึ้น บั๊กใน requirement ที่เจอตอน production อาจต้องแก้ทั้ง design โค้ด test และข้อมูลของผู้ใช้ที่เสียหายไปแล้ว เหมือนคำพิมพ์ผิดที่เจอตอนเขียนแก้ได้ฟรี แต่ถ้าเจอหลังหนังสือพิมพ์ออกมาแล้ว ต้องพิมพ์ใหม่ทั้งเล่ม</span><span class="l-en">Why does it grow? Because the later you are, the more work has been built on top of the mistake. A requirement bug found in production may mean fixing the design, the code, the tests and users' already-damaged data. A typo caught while writing costs nothing; the same typo found after printing means a reprint.</span></p>
+  <div class="callout exam">
+    <span class="lab"><span class="l-th">แนวข้อสอบ</span><span class="l-en">Exam angle</span></span>
+    <span class="l-th">"แก้ที่ระยะไหนถูกที่สุด" ตอบ requirements; "ทำไม review และ unit test คุ้มค่า" ตอบ เพราะดึงการเจอ defect มาไว้ระยะต้นที่ต้นทุนต่ำ</span>
+    <span class="l-en">"Where is a defect cheapest to fix?" Requirements. "Why are reviews and unit tests worth it?" Because they move the catch to an early, cheap phase.</span>
+  </div>
+</div></section>
+
+<!-- A4 -->
+<section id="a4"><div class="wrap">
+  <p class="kicker">04 Big three <span class="en">/ นิสัยความปลอดภัย 3 ข้อ</span></p>
+  <h2 class="sec"><span class="l-th">Security: นิสัย 3 ข้อที่กันความผิดพลาดของมือใหม่ได้เกือบหมด</span><span class="l-en">Security: three habits that stop most beginner mistakes</span></h2>
+  <div class="grid3">
+    <div class="card">
+      <span class="tag accent">#1</span>
+      <h4>Validate input</h4>
+      <p><span class="l-th">อย่าเชื่อข้อมูลจากผู้ใช้หรือ browser ตรวจชนิด ความยาว และช่วงค่า <b>ที่ฝั่ง server</b> ก่อนใช้หรือบันทึก</span><span class="l-en">Never trust data from the user or the browser. Check type, length and range <b>on the server</b> before using or storing it.</span></p>
+      <p style="font-size:14.5px;color:var(--muted);margin:0"><span class="l-th">ทำไมต้อง server: ผู้ใช้ปิด JavaScript หรือส่ง request ตรงโดยไม่ผ่านหน้าเว็บได้เสมอ การตรวจใน browser ช่วยเรื่องความสะดวก แต่ไม่ใช่ความปลอดภัย</span><span class="l-en">Why the server: users can switch off JavaScript or send requests directly, skipping the page. Browser checks are for convenience, not security.</span></p>
+    </div>
+    <div class="card">
+      <span class="tag brand">#2</span>
+      <h4>Access control</h4>
+      <p><span class="l-th">ผู้ใช้ที่ login แล้วเห็นได้เฉพาะข้อมูลของตัวเอง ทุก request ต้องถามสองคำถาม "คุณเป็นใคร" และ "ข้อมูลนี้ของคุณไหม"</span><span class="l-en">A logged-in user may see only their own data. Every request must ask two questions: "who are you?" and "is this yours?"</span></p>
+      <p style="font-size:14.5px;color:var(--muted);margin:0"><span class="l-th">การ login (authentication) ตอบคำถามแรก ส่วน access control (authorization) ตอบคำถามที่สอง ระบบที่มีแค่ login ยังไม่ปลอดภัย</span><span class="l-en">Login (authentication) answers the first question; access control (authorization) answers the second. Login alone is not enough.</span></p>
+    </div>
+    <div class="card">
+      <span class="tag warn">#3</span>
+      <h4>No secrets in the repo</h4>
+      <p><span class="l-th">password, API key และ token ห้ามอยู่ในโค้ดหรือใน Git history ให้เก็บใน <code>.env</code> และใส่ <code>.env</code> ไว้ใน <code>.gitignore</code></span><span class="l-en">Passwords, API keys and tokens never go in the code or the Git history. Keep them in <code>.env</code> and list <code>.env</code> in <code>.gitignore</code>.</span></p>
+      <p style="font-size:14.5px;color:var(--muted);margin:0"><span class="l-th">ถ้าเผลอ commit ไปแล้ว ลบออกจากโค้ดไม่พอ เพราะ history ยังเก็บไว้ ต้อง revoke key นั้นที่ผู้ให้บริการแล้วออก key ใหม่</span><span class="l-en">If one was committed, deleting it is not enough because history keeps it. Revoke the key at the provider and issue a new one.</span></p>
+    </div>
+  </div>
+  <div class="callout info">
+    <span class="lab"><span class="l-th">จำง่ายๆ</span><span class="l-en">In plain terms</span></span>
+    <span class="l-th">นึกถึงร้านค้า ตรวจของที่เข้าประตู (validate input) เฉพาะพนักงานเปิดลิ้นชักเงินได้ (access control) และอย่าแปะกุญแจไว้ที่ประตู (no secrets in the repo)</span>
+    <span class="l-en">Picture a shop: check what comes through the door (validate input), only staff can open the till (access control), and never tape the keys to the door (no secrets in the repo).</span>
+  </div>
+  <details class="check">
+    <summary><span class="l-th">ทดสอบตัวเอง 04: เป็น big three ข้อไหน</span><span class="l-en">Self-check 04: which of the big three?</span></summary>
+    <div class="qs">
+      <div class="qa"><span class="l-th">1. ช่องอายุกรอก -5 แล้วระบบบันทึกได้</span><span class="l-en">1. The age field accepts -5 and saves it.</span><span class="ans">Validate input</span></div>
+      <div class="qa"><span class="l-th">2. เปลี่ยน <code>order_id</code> ใน URL แล้วเห็นใบสั่งซื้อของคนอื่น</span><span class="l-en">2. Changing <code>order_id</code> in the URL shows someone else's order.</span><span class="ans">Access control <span>(IDOR)</span></span></div>
+      <div class="qa"><span class="l-th">3. ไฟล์ <code>config.js</code> ใน repo Public มี API key</span><span class="l-en">3. <code>config.js</code> in a public repo contains an API key.</span><span class="ans">No secrets in the repo</span></div>
+      <div class="qa"><span class="l-th">4. ตรวจความยาวรหัสผ่านเฉพาะใน browser แต่ server รับทุกค่า</span><span class="l-en">4. Password length is checked only in the browser; the server accepts anything.</span><span class="ans">Validate input <span class="l-th">(ต้องตรวจที่ server)</span><span class="l-en">(must be checked on the server)</span></span></div>
+    </div>
+  </details>
+</div></section>
+
+<!-- A5 -->
+<section id="a5"><div class="wrap">
+  <p class="kicker">05 IDOR <span class="en">/ ช่องโหว่ที่เจอบ่อย</span></p>
+  <h2 class="sec"><span class="l-th">ถ้าผู้ใช้เปลี่ยน id ได้ เขาก็อ่านข้อมูลของคนอื่นได้</span><span class="l-en">If the user can change the id, they can read your data</span></h2>
+  <p class="sub"><span class="l-th">IDOR ย่อมาจาก Insecure Direct Object Reference เป็นรูปแบบหนึ่งของ <b>broken access control</b> ซึ่ง OWASP Top 10 ปี 2021 จัดเป็นความเสี่ยงอันดับ 1 ของ web application</span><span class="l-en">IDOR stands for Insecure Direct Object Reference. It is a form of <b>broken access control</b>, which the OWASP Top 10 (2021) ranks as the number one web-application risk.</span></p>
+  <div class="flip">
+    <div class="side before">
+      <h5><span class="l-th">ผิด: server เชื่อ id จาก URL</span><span class="l-en">Wrong: the server trusts an id from the URL</span></h5>
+<pre class="code"><span class="c"># anyone logged in can swap the number</span>
+GET /api/notes?user_id=<span class="hl">1042</span>
+
+def get_notes(user_id):
+    return db.notes.where(owner=user_id)
+<span class="c"># whose id is this? nobody checked</span></pre>
+      <p><span class="l-th">ผู้ใช้ 1042 แก้เลขเป็น 1043 แล้วได้โน้ตของอีกคนทันที</span><span class="l-en">User 1042 changes it to 1043 and gets someone else's notes.</span></p>
+    </div>
+    <div class="side after">
+      <h5><span class="l-th">ถูก: เอาตัวตนจาก session</span><span class="l-en">Right: take identity from the session</span></h5>
+<pre class="code"><span class="c"># the id comes from WHO is logged in</span>
+GET /api/notes
+
+def get_notes(session):
+    <span class="ok">me = session.user</span>
+    return db.notes.where(owner=me.id)</pre>
+      <p><span class="l-th">ผู้ใช้ไม่มีช่องให้แก้ว่าเป็นใคร เพราะ server รู้เองจากการ login</span><span class="l-en">There is nothing for the user to edit; the server already knows who they are from the login.</span></p>
+    </div>
+  </div>
+  <ol class="biglist">
+    <li><b><span class="l-th">มันคืออะไร</span><span class="l-en">What it is</span></b><span class="l-th">server ตัดสินว่าข้อมูลเป็นของใครจากค่าที่ผู้ใช้แก้ได้ เช่น id ใน URL ฟอร์ม หรือ request</span><span class="l-en">The server decides whose data it is from a value the user can edit, such as an id in the URL, a form or the request.</span></li>
+    <li><b><span class="l-th">ทำไมอันตราย</span><span class="l-en">Why it is dangerous</span></b><span class="l-th">ใครก็ได้ที่ login แล้วเปลี่ยนตัวเลขเดียว ก็อ่านหรือแก้ข้อมูลของคนอื่นได้ "ผ่านเทสต์" ได้ด้วยถ้าเทสต์ลองแค่กรณีผู้ใช้สุจริต</span><span class="l-en">Anyone logged in can change one number and read or edit another person's data. It can even "pass the tests" if the tests only try honest users.</span></li>
+    <li><b><span class="l-th">แก้อย่างไร</span><span class="l-en">How to fix it</span></b><span class="l-th">เอาตัวตนจาก session ที่ login และตรวจทุก request ว่าข้อมูลนั้นเป็นของผู้ใช้คนนี้</span><span class="l-en">Take identity from the authenticated session and check on every request that the data belongs to this user.</span></li>
+  </ol>
+  <div class="callout exam">
+    <span class="lab"><span class="l-th">แนวข้อสอบ</span><span class="l-en">Exam angle</span></span>
+    <span class="l-th">short answer "อธิบาย IDOR และวิธีแก้" ต้องตอบให้ครบ 3 ส่วนข้างบน คำตอบ "ซ่อน id ไม่ให้เห็น" หรือ "เช็กว่า id เป็นตัวเลข" ยังไม่แก้ปัญหา เพราะผู้ใช้ยังส่ง id ของคนอื่นมาได้</span>
+    <span class="l-en">For the short answer "explain IDOR and how to fix it", cover all three parts above. "Hide the id" or "check the id is a number" does not fix it, because the user can still send someone else's id.</span>
+  </div>
+</div></section>
+
+<!-- A6 -->
+<section id="a6"><div class="wrap">
+  <p class="kicker">06 Privacy <span class="en">/ ข้อมูลส่วนบุคคล</span></p>
+  <h2 class="sec"><span class="l-th">ข้อมูลส่วนบุคคลเป็นหน้าที่ตามกฎหมาย: PDPA</span><span class="l-en">Personal data is a legal duty: PDPA</span></h2>
+  <p class="sub"><span class="l-th">พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA) มีผลบังคับใช้เต็มรูปแบบตั้งแต่ปี 2565 ใครเก็บข้อมูลที่ระบุตัวคนได้ เช่น ชื่อ เบอร์โทร อีเมล รูปหน้า ตำแหน่ง มีหน้าที่ตามกฎหมาย หัวใจที่ต้องจำมี 3 คำ</span><span class="l-en">Thailand's Personal Data Protection Act B.E. 2562 (2019), fully in force since 2022. Anyone holding data that identifies a person, such as name, phone, email, face or location, has legal duties. Remember three words.</span></p>
+  <div class="grid3">
+    <div class="card"><span class="tag accent">Consent</span><h4><span class="l-th">ขอก่อน และบอกว่าเอาไปทำอะไร</span><span class="l-en">Ask first, and say why</span></h4><span class="l-th">เก็บเมื่อเจ้าของข้อมูลยินยอม โดยรู้วัตถุประสงค์ชัดเจนด้วยภาษาที่เข้าใจง่าย</span><span class="l-en">Collect with the person's informed consent, for a stated purpose, in plain language.</span></div>
+    <div class="card"><span class="tag brand">Minimise</span><h4><span class="l-th">เก็บให้น้อยที่สุด</span><span class="l-en">Collect the least</span></h4><span class="l-th">ฟีเจอร์ไม่ต้องใช้ ก็ไม่ต้องเก็บ ทุกช่องที่เกินมาคือภาระที่ต้องปกป้อง</span><span class="l-en">If the feature does not need it, do not store it. Every extra field is a liability.</span></div>
+    <div class="card"><span class="tag good">Protect</span><h4><span class="l-th">ดูแล และเคารพสิทธิ</span><span class="l-en">Guard it and honour rights</span></h4><span class="l-th">เก็บอย่างปลอดภัย จำกัดคนเห็น และให้เจ้าของข้อมูลขอดู แก้ไข หรือลบได้</span><span class="l-en">Store it securely, limit who sees it, and let people see, correct or delete their data.</span></div>
+  </div>
+  <div class="callout warn">
+    <span class="lab"><span class="l-th">สำหรับโปรเจกต์ของเรา</span><span class="l-en">For your project</span></span>
+    <span class="l-th">prototype ใช้ <b>ข้อมูลจำลอง</b> เท่านั้น ห้ามมีชื่อ เบอร์ อีเมล หรือรูปของคนจริงใน repo และใน Git history</span>
+    <span class="l-en">Prototypes use <b>fake data</b> only. No real names, phone numbers, emails or photos of real people in the repo or its Git history.</span>
+  </div>
+
+  <h3><span class="l-th">ภาพรวม Ch8: คุณภาพเป็นชั้น ไม่ใช่ขั้นสุดท้าย</span><span class="l-en">Ch8 at a glance: quality is layers, not a final step</span></h3>
+  <div class="stack">
+    <div class="ly"><div class="h"><span class="l-th">เขียนโค้ดให้อ่านง่าย (Ch6)</span><span class="l-en">Write readable code (Ch6)</span></div></div>
+    <div class="ly l2"><div class="h"><span class="l-th">unit test พิสูจน์ว่าทำงานถูก (Ch7)</span><span class="l-en">Unit tests prove it works (Ch7)</span></div></div>
+    <div class="ly l3"><div class="h"><span class="l-th">review และ linter จับสิ่งที่เหลือ (Ch8)</span><span class="l-en">Review and linter catch the rest (Ch8)</span></div></div>
+    <div class="ly l4"><div class="h"><span class="l-th">validate input, access control, ปกป้องข้อมูล (Ch8)</span><span class="l-en">Validate input, access control, protect data (Ch8)</span></div><div class="d"><span class="l-th">แต่ละชั้นจับสิ่งที่ชั้นบนปล่อยหลุดมา ความน่าไว้ใจสร้างขึ้นทีละชั้น</span><span class="l-en">Each layer catches what the one above let through. Trust is built up, not bolted on.</span></div></div>
+  </div>
+
+  <details class="check">
+    <summary><span class="l-th">ทดสอบตัวเอง 06: หลัก PDPA ข้อไหน</span><span class="l-en">Self-check 06: which PDPA principle?</span></summary>
+    <div class="qs">
+      <div class="qa"><span class="l-th">1. แอปจดโน้ตขอสิทธิ์อ่านรายชื่อติดต่อทั้งหมด ทั้งที่ไม่มีฟีเจอร์ที่ใช้</span><span class="l-en">1. A note-taking app asks to read all your contacts, though no feature uses them.</span><span class="ans">Minimise</span></div>
+      <div class="qa"><span class="l-th">2. แอปเก็บรูปหน้าผู้ใช้โดยไม่บอกว่าเก็บไปทำอะไร</span><span class="l-en">2. An app stores users' face photos without saying what for.</span><span class="ans">Consent <span class="l-th">(ต้องบอกวัตถุประสงค์และได้รับความยินยอม)</span><span class="l-en">(state the purpose and get agreement)</span></span></div>
+      <div class="qa"><span class="l-th">3. ผู้ใช้ขอลบบัญชี แต่ระบบไม่มีทางลบข้อมูล</span><span class="l-en">3. A user asks to delete their account, but the system has no way to delete data.</span><span class="ans">Protect <span class="l-th">(สิทธิของเจ้าของข้อมูล: ดู แก้ ลบ)</span><span class="l-en">(the data subject's rights: see, correct, delete)</span></span></div>
+    </div>
+  </details>
+</div></section>
+
+<!-- A7 -->
+<section id="a7"><div class="wrap">
+  <p class="kicker">07 Case study <span class="en">/ กรณีศึกษา</span></p>
+  <h2 class="sec"><span class="l-th">CareFlow OPD: ทุกข้อของ Ch8 พังได้ในระบบเล็กๆ ระบบเดียว</span><span class="l-en">CareFlow OPD: every Ch8 rule can break in one small system</span></h2>
+  <p class="sub"><span class="l-th">ไม่ต้องเป็นบริษัทใหญ่ก็ทำข้อมูลรั่วได้ กรณีนี้เป็น <b>สถานการณ์สมมติ</b> ที่ต่อยอดจากไอเดียโปรเจกต์ของนักศึกษาในวิชานี้ คือระบบจองคิวผู้ป่วยนอก (ลงทะเบียน ดูเวลาว่างของแพทย์ จองนัด รับเลขคิว ยกเลิกหรือเลื่อนนัด) ไม่ได้บรรยายงานจริงของทีมใด</span><span class="l-en">You don't need a giant company to leak data. This is a <b>what-if scenario</b> built on a student project idea from this course: an outpatient queue booking system (register, see doctors' free times, book, get a queue number, cancel or reschedule). It does not describe any team's actual work.</span></p>
+
+  <div class="callout warn">
+    <span class="lab"><span class="l-th">เหตุการณ์ (สมมติ)</span><span class="l-en">What happened (what-if)</span></span>
+    <span class="l-th">CareFlow OPD เปิดใช้จริงในโรงพยาบาลมา 1 เดือน มีผู้ป่วยโพสต์ใน Facebook ว่า "ลองเปลี่ยนเลขนัดในลิงก์ดู จะเห็นชื่อ เบอร์โทร และอาการของผู้ป่วยคนอื่น ผมยังยกเลิกนัดของคนอื่นได้ด้วย" ทีมบอกว่าทดสอบทุก FR แล้วและเทสต์ผ่านหมด repo ของโปรเจกต์เป็น Public และไฟล์ <code>config.js</code> มีรหัสผ่านฐานข้อมูลอยู่</span>
+    <span class="l-en">CareFlow OPD has been live at a hospital for one month. A patient posts on Facebook: "Change the appointment number in the link and you can see other patients' names, phone numbers and symptoms. I even cancelled someone else's appointment." The team says every FR was tested and all tests passed. The repo is public, and <code>config.js</code> contains the database password.</span>
+  </div>
+
+  <p><span class="l-th">ลองตั้งคำถามกับเหตุการณ์นี้ในใจก่อนอย่างน้อย 3 ข้อ แล้วค่อยอ่านตารางด้านล่าง ว่าคำถามของเราโยงกับ concept ไหนของ Ch8</span><span class="l-en">Before reading the table, ask at least three questions about this event yourself, then see which Ch8 concept each one leads to.</span></p>
+
+  <div class="scroll"><table>
+    <tr><th><span class="l-th">สิ่งที่พลาด</span><span class="l-en">What failed</span></th><th><span class="l-th">concept ใน Ch8</span><span class="l-en">Ch8 concept</span></th><th><span class="l-th">ควรทำอย่างไร</span><span class="l-en">What should have happened</span></th></tr>
+    <tr><td><span class="l-th">เปลี่ยนเลขนัดในลิงก์แล้วเห็นและยกเลิกนัดของคนอื่นได้</span><span class="l-en">Changing the appointment number shows, and cancels, other people's appointments</span></td><td class="k">Access control (IDOR)</td><td><span class="l-th">เอาตัวตนผู้ป่วยจาก session ที่ login และตรวจว่านัดนั้นเป็นของผู้ป่วยคนนี้ ทั้งตอนดูและตอนยกเลิก</span><span class="l-en">Take the patient from the login session and check the appointment is theirs, both when viewing and when cancelling</span></td></tr>
+    <tr><td><span class="l-th">ชื่อ เบอร์โทร และอาการของผู้ป่วยเห็นได้จากลิงก์</span><span class="l-en">Names, phone numbers and symptoms are visible from a link</span></td><td class="k"><span class="l-th">PDPA: minimise, protect</span><span class="l-en">PDPA: minimise, protect</span></td><td><span class="l-th">อาการเป็นข้อมูลสุขภาพ ซึ่ง PDPA มาตรา 26 จัดเป็นข้อมูลอ่อนไหวที่ต้องได้รับความยินยอมโดยชัดแจ้ง ถามก่อนว่าหน้าจองนัดต้องใช้อาการจริงไหม แสดงให้น้อยที่สุด และปกป้องส่วนที่เหลือ</span><span class="l-en">Symptoms are health data, which PDPA Section 26 treats as sensitive and requiring explicit consent. Ask whether the booking page needs symptoms at all; show the least and protect the rest</span></td></tr>
+    <tr><td><span class="l-th">"ทดสอบทุก FR แล้ว เทสต์ผ่านหมด"</span><span class="l-en">"Every FR tested, all tests passed"</span></td><td class="k"><span class="l-th">คุณภาพต้องตรวจ ไม่ใช่หวัง</span><span class="l-en">Quality: check, don't hope</span></td><td><span class="l-th">เทสต์ลองแค่ผู้ใช้สุจริต ต้องเพิ่มกรณีผู้ไม่หวังดี เช่น ผู้ป่วย A ขอดูนัดของผู้ป่วย B แล้วระบบต้องปฏิเสธ</span><span class="l-en">The tests only tried honest users. Add the attacker's case: patient A asks for patient B's appointment, and the system must refuse</span></td></tr>
+    <tr><td><span class="l-th">รหัสผ่านฐานข้อมูลอยู่ใน <code>config.js</code> ใน repo Public</span><span class="l-en">The database password is in <code>config.js</code> in a public repo</span></td><td class="k">No secrets in the repo</td><td><span class="l-th">เปลี่ยนรหัสผ่านทันที (revoke) แล้วเก็บใน <code>.env</code> ที่อยู่ใน <code>.gitignore</code> การลบบรรทัดออกไม่พอ เพราะ Git history ยังเก็บไว้</span><span class="l-en">Revoke the password, then keep secrets in <code>.env</code> listed in <code>.gitignore</code>. Deleting the line is not enough: Git history keeps it</span></td></tr>
+    <tr><td><span class="l-th">มาแก้หลังเปิดใช้จริงไปแล้ว</span><span class="l-en">Fixing it after launch</span></td><td class="k">Cost of defects</td><td><span class="l-th">ถ้าคิดเรื่องสิทธิ์ตั้งแต่ตอนออกแบบ แก้แค่เอกสาร แต่หลังเปิดใช้ต้องแก้โค้ด ตรวจว่าข้อมูลใครรั่วไปบ้าง และแจ้งผู้ป่วย</span><span class="l-en">At design time it is a document change; after launch it means a code fix, a review of whose data leaked, and telling patients</span></td></tr>
+  </table></div>
+
+  <div class="callout brand">
+    <span class="lab"><span class="l-th">บทเรียน</span><span class="l-en">The lesson</span></span>
+    <span class="l-th">ระบบขนาดโปรเจกต์นักศึกษาที่มีผู้ใช้จริง ก็ต้องใช้ big three และ PDPA ตั้งแต่วันแรก คำถามที่ดีที่สุดมักเป็นคำถามที่ตารางนี้ยังไม่ได้ตอบ เช่น "ใครในทีมควรตรวจกฎเรื่องสิทธิ์ก่อนเปิดใช้งาน"</span>
+    <span class="l-en">A student-sized system with real users needs the big three and PDPA from day one. The best question is often the one this table does not answer yet, such as "Who in the team should check the access rules before launch?"</span>
+  </div>
+
+  <details class="check">
+    <summary><span class="l-th">ทดสอบตัวเอง 07: ลองกับโปรเจกต์ของเรา</span><span class="l-en">Self-check 07: try it on your own project</span></summary>
+    <div class="qs">
+      <div class="qa"><span class="l-th">1. ใน prototype ของทีมเรา มีหน้าไหนที่ใช้ id ในลิงก์เพื่อเลือกข้อมูลของผู้ใช้บ้าง ถ้าต่อ backend จริงจะต้องตรวจอะไร</span><span class="l-en">1. Which screens in your prototype pick a user's data by an id in the link? If you connected a real backend, what would you have to check?</span><span class="ans"><span class="l-th">ตรวจว่าข้อมูลนั้นเป็นของผู้ใช้ที่ login อยู่ (access control) ทุก request</span><span class="l-en">That the data belongs to the logged-in user (access control), on every request</span></span></div>
+      <div class="qa"><span class="l-th">2. ข้อมูลส่วนบุคคลช่องไหนในโปรเจกต์ของเราที่ตัดออกได้</span><span class="l-en">2. Which personal-data field in your project could you remove?</span><span class="ans"><span class="l-th">ช่องที่ไม่มี FR ไหนใช้ ตามหลัก minimise</span><span class="l-en">Any field no FR uses, following minimise</span></span></div>
+      <div class="qa"><span class="l-th">3. เทสต์ของเรามีกรณี "ผู้ใช้ที่ไม่หวังดี" สักข้อไหม</span><span class="l-en">3. Do your tests include even one "dishonest user" case?</span><span class="ans"><span class="l-th">ถ้าไม่มี ให้เพิ่ม เช่น ผู้ใช้ A ขอข้อมูลของผู้ใช้ B แล้วต้องถูกปฏิเสธ</span><span class="l-en">If not, add one: user A asks for user B's data and must be refused</span></span></div>
+    </div>
+  </details>
+  <p style="font-size:14px;color:var(--muted)"><span class="l-th">สถานการณ์สมมติจากไอเดียโปรเจกต์ ไม่ได้บรรยาย prototype จริงของทีมใด; อ้างอิง PDPA พ.ศ. 2562 มาตรา 26 (ข้อมูลส่วนบุคคลอ่อนไหว รวมข้อมูลสุขภาพ)</span><span class="l-en">What-if built on a project idea; it does not describe any team's actual prototype. Reference: PDPA B.E. 2562, Section 26 (sensitive personal data, including health data).</span></p>
+</div></section>
+
+<!-- ================= PART B ================= -->
+<div class="wrap">
+  <div class="partban">
+    <div class="pk">Part B — Chapter 9</div>
+    <h2><span class="l-th">Project Management: ทีมเล็กทำงานให้เสร็จได้อย่างไร</span><span class="l-en">Project Management: how a small team actually gets it done</span></h2>
+    <p><span class="l-th">Sommerville 9e บทที่ 22 Project management (§22.1 Risk management) และบทที่ 23 Project planning; The Scrum Guide (2020); Cohn (2005)</span><span class="l-en">Sommerville 9e, Ch22 Project management (§22.1 Risk management) and Ch23 Project planning; The Scrum Guide (2020); Cohn (2005)</span></p>
+  </div>
+</div>
+
+<!-- B1 -->
+<section id="b1"><div class="wrap">
+  <p class="kicker">08 Plan &amp; estimate <span class="en">/ แตกงานและประมาณขนาด</span></p>
+  <h2 class="sec"><span class="l-th">แตกงานจนแต่ละชิ้นประเมินได้ง่าย</span><span class="l-en">Break work down until each piece is easy to judge</span></h2>
+  <p class="sub"><span class="l-th">งานชิ้นใหญ่อย่าง "ทำแอปให้เสร็จ" ประมาณไม่ได้ ติดตามไม่ได้ และแบ่งให้ใครไม่ได้ วิธีแก้คือแตก FR หนึ่งข้อให้เป็นหลาย task เล็กๆ</span><span class="l-en">A big item like "finish the app" cannot be estimated, tracked or shared. The fix is to split one FR into several small tasks.</span></p>
+
+  <div class="card">
+    <h4><span class="l-th">ตัวอย่าง: FR "นักศึกษาจองห้องติวได้"</span><span class="l-en">Example: FR "A student can book a tutoring room"</span></h4>
+    <div class="scroll" style="margin:10px 0 0"><table>
+      <tr><th>Task</th><th><span class="l-th">ขนาด</span><span class="l-en">Size</span></th><th>Story points</th></tr>
+      <tr><td><span class="l-th">หน้าเลือกวันและเวลา</span><span class="l-en">Date and time picker screen</span></td><td>M</td><td>3</td></tr>
+      <tr><td><span class="l-th">ตรวจว่าห้องว่างไหม (logic)</span><span class="l-en">Check whether the room is free (logic)</span></td><td>L</td><td>5</td></tr>
+      <tr><td><span class="l-th">บันทึกการจอง</span><span class="l-en">Save the booking</span></td><td>S</td><td>2</td></tr>
+      <tr><td><span class="l-th">หน้ายืนยันและยกเลิก</span><span class="l-en">Confirm and cancel screen</span></td><td>M</td><td>3</td></tr>
+      <tr><td><span class="l-th">test กรณีจองซ้อน</span><span class="l-en">Test for double booking</span></td><td>S</td><td>2</td></tr>
+    </table></div>
+  </div>
+
+  <div class="callout info">
+    <span class="lab"><span class="l-th">ประโยคที่ต้องจำ</span><span class="l-en">The sentence to remember</span></span>
+    <span class="l-th">task ที่ประมาณขนาดไม่ได้ คือ task ที่เรายังไม่เข้าใจ ให้แตกต่อจนประมาณได้</span>
+    <span class="l-en">A task you cannot estimate is a task you do not understand yet. Split it until you can.</span>
+  </div>
+
+  <h3><span class="l-th">ประมาณขนาดแบบเทียบกัน: story points</span><span class="l-en">Relative sizing: story points</span></h3>
+  <div class="grid3">
+    <div class="card"><span class="tag accent">Story points</span><h4><span class="l-th">เทียบขนาด ไม่ใช่นับชั่วโมง</span><span class="l-en">Compare size, don't count hours</span></h4><span class="l-th">ให้คะแนนงานเทียบกันเอง เช่น 1, 2, 3, 5, 8 งาน 5 points ใหญ่กว่างาน 2 points ราวสองเท่า คนเดาชั่วโมงแม่นๆ ไม่ได้ แต่บอกได้ว่างานไหนใหญ่กว่า</span><span class="l-en">Score tasks against each other, for example 1, 2, 3, 5, 8. A 5-point task is roughly twice a 2-point one. People cannot guess exact hours, but they can tell which task is bigger.</span></div>
+    <div class="card"><span class="tag brand">Planning poker</span><h4><span class="l-th">ประมาณพร้อมกันทั้งทีม</span><span class="l-en">Estimate together</span></h4><span class="l-th">ทุกคนเลือกตัวเลขในใจแล้วเปิดพร้อมกัน คนที่ให้ต่างจากกลุ่มมากต้องอธิบาย บทสนทนาตรงนั้นทำให้เจอความซับซ้อนที่ซ่อนอยู่ แล้วโหวตใหม่</span><span class="l-en">Everyone picks a number privately and reveals at once. Outliers explain their reasoning; that conversation surfaces hidden complexity. Then vote again.</span></div>
+    <div class="card"><span class="tag good">Velocity</span><h4><span class="l-th">points ที่ทำเสร็จต่อ sprint</span><span class="l-en">Points finished per sprint</span></h4><span class="l-th">หลังทำไป 1 ถึง 2 sprint ทีมจะรู้ velocity ของตัวเอง แล้วใช้คาดการณ์ว่ารอบต่อไปรับงานได้เท่าไร</span><span class="l-en">After a sprint or two the team knows its velocity and can forecast what it can take on next.</span></div>
+  </div>
+
+  <div class="card" style="border-left:5px solid var(--accent)">
+    <h4><span class="l-th">ตัวอย่างคำนวณ velocity</span><span class="l-en">Worked velocity example</span></h4>
+    <p style="margin:0"><span class="l-th">sprint 1 ทำเสร็จ 18 points, sprint 2 ทำเสร็จ 22 points ดังนั้น velocity เฉลี่ย = (18 + 22) หาร 2 = <b>20 points ต่อ sprint</b> ถ้างานที่เหลือมี 60 points จะใช้ประมาณ 60 หาร 20 = <b>3 sprints</b></span><span class="l-en">Sprint 1 finished 18 points and sprint 2 finished 22, so average velocity = (18 + 22) divided by 2 = <b>20 points per sprint</b>. With 60 points left, expect about 60 divided by 20 = <b>3 sprints</b>.</span></p>
+  </div>
+
+  <details class="check">
+    <summary><span class="l-th">ทดสอบตัวเอง 08</span><span class="l-en">Self-check 08</span></summary>
+    <div class="qs">
+      <div class="qa"><span class="l-th">1. ทำไมทีม agile ใช้ story points แทนชั่วโมง</span><span class="l-en">1. Why do agile teams use story points instead of hours?</span><span class="ans"><span class="l-th">การเทียบขนาดง่ายกว่าและซื่อตรงกว่าการเดาเวลาแม่นๆ <span>เมื่อรวมหลาย task ค่าเฉลี่ยจะใกล้ความจริงกว่า</span></span><span class="l-en">Comparing size is easier and more honest than guessing exact time. <span>Across many tasks the total comes out closer to reality.</span></span></span></div>
+      <div class="qa"><span class="l-th">2. velocity 15 points ต่อ sprint งานเหลือ 45 points ใช้กี่ sprint</span><span class="l-en">2. Velocity is 15 points per sprint and 45 points remain. How many sprints?</span><span class="ans"><span class="l-th">ประมาณ 3 sprints</span><span class="l-en">About 3 sprints</span></span></div>
+      <div class="qa"><span class="l-th">3. ใน planning poker ทำไมต้องเปิดตัวเลขพร้อมกัน</span><span class="l-en">3. In planning poker, why reveal numbers at the same time?</span><span class="ans"><span class="l-th">กันไม่ให้คนคล้อยตามคนที่พูดก่อน <span>แต่ละคนต้องคิดเอง ความเห็นที่ต่างจึงโผล่ออกมา</span></span><span class="l-en">So nobody just follows whoever spoke first. <span>Each person thinks independently, so real disagreements surface.</span></span></span></div>
+    </div>
+  </details>
+</div></section>
+
+<!-- B2 -->
+<section id="b2"><div class="wrap">
+  <p class="kicker">09 Sprint &amp; board <span class="en">/ รอบสั้นและบอร์ดงาน</span></p>
+  <h2 class="sec"><span class="l-th">ทำงานเป็นรอบสั้น และทำให้ทุกคนเห็นความคืบหน้า</span><span class="l-en">Work in short cycles and make progress visible</span></h2>
+  <p class="sub"><span class="l-th"><b>Sprint</b> คือรอบการทำงานสั้นๆ ที่กำหนดเวลาตายตัว เช่น 1 ถึง 2 สัปดาห์ ทุก sprint ต้องได้ของที่ใช้งานได้จริงออกมาหนึ่งชิ้น ส่วน <b>task board</b> คือกระดานที่บอกได้ในแวบเดียวว่าใครทำอะไรอยู่</span><span class="l-en">A <b>sprint</b> is a short, fixed-length cycle, for example 1 to 2 weeks, that must produce a usable piece of work. A <b>task board</b> shows at a glance who is doing what.</span></p>
+  <div class="board">
+    <div class="col"><div class="ch">TO-DO</div>
+      <div class="tk"><span class="sz">3</span><span class="l-th">หน้ายืนยันและยกเลิก</span><span class="l-en">Confirm and cancel screen</span><span class="who">FR-2</span></div>
+      <div class="tk"><span class="sz">2</span><span class="l-th">test กรณีจองซ้อน</span><span class="l-en">Double-booking test</span><span class="who">FR-1</span></div>
+    </div>
+    <div class="col"><div class="ch">DOING <span class="lim">max 2</span></div>
+      <div class="tk"><span class="sz">5</span><span class="l-th">ตรวจห้องว่าง</span><span class="l-en">Room availability check</span><span class="who"><span class="l-th">เจ้าของ: มิน</span><span class="l-en">Owner: Min</span></span></div>
+      <div class="tk"><span class="sz">3</span><span class="l-th">หน้าเลือกวันและเวลา</span><span class="l-en">Date and time picker</span><span class="who"><span class="l-th">เจ้าของ: ฟ้า</span><span class="l-en">Owner: Fah</span></span></div>
+    </div>
+    <div class="col"><div class="ch">DONE</div>
+      <div class="tk"><span class="sz">2</span><span class="l-th">บันทึกการจอง</span><span class="l-en">Save the booking</span><span class="who"><span class="l-th">merged แล้ว</span><span class="l-en">merged</span></span></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h4><span class="l-th">ทำไมต้องจำกัด Doing</span><span class="l-en">Why limit Doing</span></h4><span class="l-th">ถ้ามีงานค้างครึ่งๆ กลางๆ เต็มไปหมด สุดท้ายไม่มีอะไรเสร็จสักชิ้น การจำกัดจำนวนงานใน Doing บังคับให้ทำให้เสร็จก่อนเริ่มชิ้นใหม่ (finish before you start)</span><span class="l-en">With many half-done items, nothing gets finished. A limit on Doing forces you to finish before you start something new.</span></div>
+    <div class="card"><h4><span class="l-th">"Done" แปลว่าอะไร</span><span class="l-en">What "Done" means</span></h4><span class="l-th">task จะ done ก็ต่อเมื่อ merge เข้า main แล้วเท่านั้น ไม่ใช่ "เกือบเสร็จ" หรือ "อยู่ในเครื่องผม" board ต้องสะท้อนความจริงเสมอ</span><span class="l-en">A task is done only when it is merged into main, not "nearly there" or "on my laptop". The board must always tell the truth.</span></div>
+  </div>
+</div></section>
+
+<!-- B3 -->
+<section id="b3"><div class="wrap">
+  <p class="kicker">10 Scrum <span class="en">/ สกรัม</span></p>
+  <h2 class="sec"><span class="l-th">Scrum ในหน้าเดียว: 3 roles, 5 events, 3 artifacts</span><span class="l-en">Scrum on one page: 3 roles, 5 events, 3 artifacts</span></h2>
+  <p class="sub"><span class="l-th">Scrum คือกรอบการทำงานแบบเบาที่ห่อ sprint ไว้ ตาม The Scrum Guide (Schwaber และ Sutherland, 2020) ภาพรวมคือจังหวะ วางแผนนิดหนึ่ง ทำช่วงสั้น โชว์ผลงาน คุยว่าเป็นอย่างไร แล้ววนใหม่</span><span class="l-en">Scrum is a light framework around the sprint, defined in The Scrum Guide (Schwaber and Sutherland, 2020). The big picture is a rhythm: plan a little, work a short burst, show the result, talk about how it went, repeat.</span></p>
+  <div class="rail">
+    <span class="stepchip"><b>Artifact</b>Product Backlog</span><span class="arw">→</span>
+    <span class="stepchip"><b>Event</b>Sprint Planning</span><span class="arw">→</span>
+    <span class="stepchip"><b>Event</b>Sprint + Daily Scrum</span><span class="arw">→</span>
+    <span class="stepchip"><b>Event</b>Sprint Review</span><span class="arw">→</span>
+    <span class="stepchip"><b>Event</b>Sprint Retrospective</span>
+  </div>
+  <div class="scroll"><table>
+    <tr><th><span class="l-th">กลุ่ม</span><span class="l-en">Group</span></th><th><span class="l-th">ชื่อ</span><span class="l-en">Name</span></th><th><span class="l-th">หน้าที่</span><span class="l-en">What it is</span></th></tr>
+    <tr><td class="k" rowspan="3">Roles</td><td>Product Owner</td><td><span class="l-th">ตัดสินว่าทำอะไร และเรียงลำดับความสำคัญของ backlog</span><span class="l-en">Decides what to build and orders the backlog</span></td></tr>
+    <tr><td>Scrum Master</td><td><span class="l-th">ดูแลให้ทีมทำตาม process และช่วยเอาอุปสรรคออก</span><span class="l-en">Keeps the process working and removes blockers</span></td></tr>
+    <tr><td>Developers</td><td><span class="l-th">ลงมือสร้างงานในแต่ละ sprint</span><span class="l-en">Build the work in each sprint</span></td></tr>
+    <tr><td class="k" rowspan="5">Events</td><td>Sprint</td><td><span class="l-th">รอบเวลาตายตัวที่ห่อทุก event</span><span class="l-en">The fixed time box that holds every event</span></td></tr>
+    <tr><td>Sprint Planning</td><td><span class="l-th">เลือกงานที่จะทำใน sprint นี้</span><span class="l-en">Choose the work for this sprint</span></td></tr>
+    <tr><td>Daily Scrum</td><td><span class="l-th">คุยสั้นๆ ทุกวัน เสร็จอะไร ทำอะไร ติดอะไร</span><span class="l-en">A short daily sync: done, doing, blocked</span></td></tr>
+    <tr><td>Sprint Review</td><td><span class="l-th">โชว์ของที่ทำเสร็จให้ผู้เกี่ยวข้องดู</span><span class="l-en">Show the finished work to stakeholders</span></td></tr>
+    <tr><td>Sprint Retrospective</td><td><span class="l-th">ทบทวนวิธีทำงานของทีม (ดูหัวข้อ 13)</span><span class="l-en">Review how the team worked (see topic 13)</span></td></tr>
+    <tr><td class="k" rowspan="3">Artifacts</td><td>Product Backlog</td><td><span class="l-th">รายการงานทั้งหมด เรียงตามความสำคัญ</span><span class="l-en">All the work, ranked</span></td></tr>
+    <tr><td>Sprint Backlog</td><td><span class="l-th">งานที่เลือกมาทำใน sprint นี้</span><span class="l-en">The work picked for this sprint</span></td></tr>
+    <tr><td>Increment</td><td><span class="l-th">ชิ้นงานที่ใช้งานได้จริงซึ่งได้จาก sprint</span><span class="l-en">The usable piece of product the sprint produces</span></td></tr>
+  </table></div>
+  <p style="font-size:14.5px;color:var(--muted)"><span class="l-th">หมายเหตุ: Scrum Guide ฉบับ 2020 เรียก role ว่า "accountabilities" แต่ความหมายเหมือนกัน</span><span class="l-en">Note: the 2020 Scrum Guide calls the roles "accountabilities"; the meaning is the same.</span></p>
+  <div class="callout exam">
+    <span class="lab"><span class="l-th">แนวข้อสอบ</span><span class="l-en">Exam angle</span></span>
+    <span class="l-th">ให้คำมาแล้วถามว่าเป็น role, event หรือ artifact หรือถามว่า "ใครเรียงลำดับ backlog" (Product Owner) ให้จำเป็น 3 กลุ่มตามตารางนี้</span>
+    <span class="l-en">You may get a term and be asked whether it is a role, event or artifact, or "who orders the backlog?" (the Product Owner). Memorise the three groups in this table.</span>
+  </div>
+  <details class="check">
+    <summary><span class="l-th">ทดสอบตัวเอง 10: role, event หรือ artifact</span><span class="l-en">Self-check 10: role, event or artifact?</span></summary>
+    <div class="qs">
+      <div class="qa">Daily Scrum<span class="ans">Event</span></div>
+      <div class="qa">Sprint Backlog<span class="ans">Artifact</span></div>
+      <div class="qa">Scrum Master<span class="ans">Role</span></div>
+      <div class="qa">Increment<span class="ans">Artifact</span></div>
+      <div class="qa">Retrospective<span class="ans">Event</span></div>
+    </div>
+  </details>
+</div></section>
+
+<!-- B4 -->
+<section id="b4"><div class="wrap">
+  <p class="kicker">11 Burndown <span class="en">/ กราฟงานที่เหลือ</span></p>
+  <h2 class="sec"><span class="l-th">Burndown chart: งานที่เหลือควรลดลงถึงศูนย์</span><span class="l-en">Burndown chart: work remaining should fall to zero</span></h2>
+  <p class="sub"><span class="l-th">แกนตั้งคืองานที่เหลือ (points) แกนนอนคือวันใน sprint เส้นประคือเส้นในอุดมคติ เส้นทึบคืองานที่เหลือจริง คิดว่าเป็นมาตรวัดน้ำมันของงาน</span><span class="l-en">The vertical axis is work left (points); the horizontal axis is days of the sprint. The dashed line is the ideal; the solid line is what is really left. Think of it as a fuel gauge for the work.</span></p>
+  <div class="fig">
+    <p class="cap"><span class="l-th">ตัวอย่าง sprint 10 วัน งาน 40 points</span><span class="l-en">Example: 10-day sprint, 40 points</span></p>
+    <svg class="bd" viewBox="0 0 620 300" role="img" aria-label="Burndown chart: ideal line from 40 to 0 over 10 days; actual line stays above it">
+      <line class="gr" x1="60" y1="75" x2="590" y2="75"/><line class="gr" x1="60" y1="130" x2="590" y2="130"/><line class="gr" x1="60" y1="185" x2="590" y2="185"/>
+      <line class="ax" x1="60" y1="20" x2="60" y2="240"/><line class="ax" x1="60" y1="240" x2="590" y2="240"/>
+      <text class="lb" x="50" y="244" text-anchor="end">0</text><text class="lb" x="50" y="189" text-anchor="end">10</text><text class="lb" x="50" y="134" text-anchor="end">20</text><text class="lb" x="50" y="79" text-anchor="end">30</text><text class="lb" x="50" y="24" text-anchor="end">40</text>
+      <text class="lb" x="60" y="262" text-anchor="middle">0</text><text class="lb" x="325" y="262" text-anchor="middle">5</text><text class="lb" x="590" y="262" text-anchor="middle">10</text>
+      <text class="lb" x="325" y="290" text-anchor="middle">days / วัน</text>
+      <polyline class="ideal" points="60,20 590,240"/>
+      <polyline class="act" points="60,20 113,20 166,32 219,44 272,62 325,86 378,104 431,128 484,160 537,200 590,228"/>
+      <circle class="pt" cx="325" cy="86" r="5"/>
+      <circle cx="325" cy="130" r="4" fill="var(--muted)"/>
+      <text class="lbr" x="335" y="78">day 5: 28 pts left (actual)</text>
+      <text class="lbk" x="316" y="152" text-anchor="end">day 5: 20 pts (ideal)</text>
+    </svg>
+  </div>
+  <div class="grid2">
+    <div class="card"><h4><span class="l-th">อ่านอย่างไร</span><span class="l-en">How to read it</span></h4><span class="l-th">เส้นจริงอยู่ <b>เหนือ</b> เส้นประ = ช้ากว่าแผน, อยู่ <b>ใต้</b> = เร็วกว่าแผน ในตัวอย่าง วันที่ 5 ควรเหลือ 20 points แต่เหลือจริง 28 แปลว่าช้ากว่าแผน</span><span class="l-en">Actual line <b>above</b> the dashed line = behind schedule; <b>below</b> = ahead. In the example, 20 points should be left on day 5 but 28 are, so the team is behind.</span></div>
+    <div class="card"><h4><span class="l-th">ประโยชน์จริง</span><span class="l-en">The real value</span></h4><span class="l-th">ไม่ได้มีไว้จับผิด แต่ให้ทีม <b>เห็นปัญหาเร็วพอจะปรับทัน</b> เช่น ตัด scope ขอความช่วยเหลือ หรือแตกงานที่ติดอยู่ ตั้งแต่กลาง sprint ไม่ใช่วันสุดท้าย</span><span class="l-en">It is not for blaming; it lets the team <b>see trouble early enough to react</b>, for example cut scope, ask for help or split a stuck task mid-sprint, not on the last day.</span></div>
+  </div>
+</div></section>
+
+<!-- B5 -->
+<section id="b5"><div class="wrap">
+  <p class="kicker">12 Risk <span class="en">/ ความเสี่ยง</span></p>
+  <h2 class="sec"><span class="l-th">ตั้งชื่อความเสี่ยงก่อนมันเกิด</span><span class="l-en">Name the risk before it bites</span></h2>
+  <p class="sub"><span class="l-th">risk คือสิ่งที่ <b>อาจ</b> ผิดพลาดในอนาคต ยังไม่ใช่ปัญหาที่เกิดแล้ว Sommerville หัวข้อ 22.1 อธิบายการจัดการ risk เป็น 4 ขั้น เหมือนพยากรณ์อากาศ เห็นพายุ ประเมินว่าแรงแค่ไหน เตรียมร่ม แล้วเฝ้าดูท้องฟ้าต่อ</span><span class="l-en">A risk is something that <b>might</b> go wrong, not a problem that has already happened. Sommerville §22.1 describes risk management in four steps, like weather forecasting: spot the storm, judge how bad, pack an umbrella, keep watching the sky.</span></p>
+  <div class="rail">
+    <span class="stepchip"><b>1 Identify</b><span class="l-th">อะไรผิดพลาดได้บ้าง</span><span class="l-en">What could go wrong?</span></span><span class="arw">→</span>
+    <span class="stepchip"><b>2 Analyse</b><span class="l-th">โอกาสเกิด x ผลกระทบ</span><span class="l-en">Likelihood x impact</span></span><span class="arw">→</span>
+    <span class="stepchip"><b>3 Plan</b><span class="l-th">จะรับมืออย่างไร</span><span class="l-en">How will we respond?</span></span><span class="arw">→</span>
+    <span class="stepchip"><b>4 Monitor</b><span class="l-th">ตรวจซ้ำทุก sprint</span><span class="l-en">Re-check every sprint</span></span>
+  </div>
+
+  <h3><span class="l-th">3 ประเภทของ risk (Sommerville §22.1)</span><span class="l-en">Three kinds of risk (Sommerville §22.1)</span></h3>
+  <div class="grid3">
+    <div class="card"><span class="tag warn">Project risk</span><h4><span class="l-th">กระทบตารางเวลาหรือทรัพยากร</span><span class="l-en">Hits schedule or resources</span></h4><span class="l-th">เช่น สมาชิกถอนวิชากลางเทอม, คนเขียนโค้ดหลักป่วยก่อน demo</span><span class="l-en">For example, a member drops the course mid-term, or the main coder is ill before the demo.</span></div>
+    <div class="card"><span class="tag bad">Product risk</span><h4><span class="l-th">กระทบคุณภาพหรือประสิทธิภาพ</span><span class="l-en">Hits quality or performance</span></h4><span class="l-th">เช่น หน้าค้นหาช้ามากเมื่อข้อมูลเยอะ, ฟีเจอร์ยากทำไม่ได้ตามที่ออกแบบ</span><span class="l-en">For example, search becomes very slow with a lot of data, or a hard feature cannot be built as designed.</span></div>
+    <div class="card"><span class="tag brand">Business risk</span><h4><span class="l-th">กระทบเป้าหมายใหญ่ขององค์กร</span><span class="l-en">Hits the wider goal</span></h4><span class="l-th">เช่น ทำเสร็จแล้วแต่ไม่มีใครอยากใช้, คู่แข่งออกของเหมือนกันก่อน</span><span class="l-en">For example, nobody wants it once it is built, or a competitor ships the same thing first.</span></div>
+  </div>
+
+  <h3><span class="l-th">Analyse: โอกาสเกิด x ผลกระทบ</span><span class="l-en">Analyse: likelihood x impact</span></h3>
+  <div class="rmx">
+    <div></div><div class="hd"><span class="l-th">ผลกระทบต่ำ</span><span class="l-en">Low impact</span></div><div class="hd"><span class="l-th">กลาง</span><span class="l-en">Medium</span></div><div class="hd"><span class="l-th">สูง</span><span class="l-en">High</span></div>
+    <div class="rh"><span class="l-th">โอกาสสูง</span><span class="l-en">High likelihood</span></div><div class="cell md"><span class="l-th">กลาง</span><span class="l-en">Medium</span></div><div class="cell hi"><span class="l-th">สูง</span><span class="l-en">High</span></div><div class="cell hi"><span class="l-th">จัดการก่อน</span><span class="l-en">Act first</span></div>
+    <div class="rh"><span class="l-th">กลาง</span><span class="l-en">Medium</span></div><div class="cell lo"><span class="l-th">ต่ำ</span><span class="l-en">Low</span></div><div class="cell md"><span class="l-th">กลาง</span><span class="l-en">Medium</span></div><div class="cell hi"><span class="l-th">สูง</span><span class="l-en">High</span></div>
+    <div class="rh"><span class="l-th">โอกาสต่ำ</span><span class="l-en">Low likelihood</span></div><div class="cell lo"><span class="l-th">ต่ำ</span><span class="l-en">Low</span></div><div class="cell lo"><span class="l-th">ต่ำ</span><span class="l-en">Low</span></div><div class="cell md"><span class="l-th">กลาง</span><span class="l-en">Medium</span></div>
+  </div>
+
+  <h3><span class="l-th">Plan: เลือกวิธีรับมือ</span><span class="l-en">Plan: choose a response</span></h3>
+  <div class="scroll"><table>
+    <tr><th><span class="l-th">วิธีรับมือ</span><span class="l-en">Response</span></th><th><span class="l-th">ความหมาย</span><span class="l-en">Meaning</span></th><th><span class="l-th">ตัวอย่าง</span><span class="l-en">Example</span></th></tr>
+    <tr><td class="k">Avoid</td><td><span class="l-th">เปลี่ยนแผนให้ risk ไม่เกิดเลย</span><span class="l-en">Change the plan so the risk cannot happen</span></td><td><span class="l-th">ตัดฟีเจอร์ที่เสี่ยงที่สุดออกจาก scope</span><span class="l-en">Drop the riskiest feature from scope</span></td></tr>
+    <tr><td class="k">Reduce</td><td><span class="l-th">ลดโอกาสเกิดหรือลดผลกระทบ</span><span class="l-en">Lower the likelihood or the impact</span></td><td><span class="l-th">จับคู่ทำงานและ commit ทุกวัน งานไม่ติดอยู่กับคนเดียว</span><span class="l-en">Pair up and commit daily so work is not stuck with one person</span></td></tr>
+    <tr><td class="k">Accept</td><td><span class="l-th">ยอมรับเพราะผลกระทบต่ำ แต่ยังเฝ้าดู</span><span class="l-en">Accept because the impact is low, but keep watching</span></td><td><span class="l-th">สีหน้าตั้งค่าอาจไม่สวยที่สุด</span><span class="l-en">The settings page colours may not be perfect</span></td></tr>
+  </table></div>
+  <p style="font-size:14.5px;color:var(--muted)"><span class="l-th">Sommerville ใช้คำว่า avoidance, minimisation และ contingency plan (แผนสำรองเมื่อ risk เกิดขึ้นจริง เช่น มีทางเลือกที่ง่ายกว่าเตรียมไว้) ความหมายตรงกับ avoid และ reduce และเพิ่มเรื่องแผนสำรอง</span><span class="l-en">Sommerville's terms are avoidance, minimisation and contingency plans (a fallback ready for when the risk happens, such as a simpler option prepared in advance). They match avoid and reduce, plus the idea of a fallback.</span></p>
+
+  <details class="check">
+    <summary><span class="l-th">ทดสอบตัวเอง 12</span><span class="l-en">Self-check 12</span></summary>
+    <div class="qs">
+      <div class="qa"><span class="l-th">1. "เพื่อนในทีมคนหนึ่งได้งาน part-time และมีเวลาน้อยลง" เป็น risk ประเภทไหน</span><span class="l-en">1. "A teammate took a part-time job and has less time." Which kind of risk?</span><span class="ans">Project risk <span class="l-th">(ทรัพยากรคน)</span><span class="l-en">(people resources)</span></span></div>
+      <div class="qa"><span class="l-th">2. "ระบบแนะนำให้ผลไม่แม่นจนผู้ใช้ไม่เชื่อ" เป็น risk ประเภทไหน</span><span class="l-en">2. "The recommendations are so inaccurate that users stop trusting them." Which kind?</span><span class="ans">Product risk <span class="l-th">(คุณภาพของ product)</span><span class="l-en">(product quality)</span></span></div>
+      <div class="qa"><span class="l-th">3. risk 4 ขั้นเรียงอย่างไร</span><span class="l-en">3. What is the order of the four risk steps?</span><span class="ans">Identify, Analyse, Plan, Monitor</span></div>
+    </div>
+  </details>
+</div></section>
+
+<!-- B6 -->
+<section id="b6"><div class="wrap">
+  <p class="kicker">13 Roles &amp; retro <span class="en">/ บทบาทและการทบทวน</span></p>
+  <h2 class="sec"><span class="l-th">ทุกคนเป็นเจ้าของอะไรสักอย่าง และทีมเก่งขึ้นได้ทุกรอบ</span><span class="l-en">Everyone owns something, and the team improves every cycle</span></h2>
+  <div class="grid4">
+    <div class="card"><span class="tag accent">Coordinator</span><p style="margin:8px 0 0;font-size:15px"><span class="l-th">ดูแล board ให้ตรงความจริง และนัด check-in</span><span class="l-en">Keeps the board current and runs the check-in</span></p></div>
+    <div class="card"><span class="tag accent">Repo owner</span><p style="margin:8px 0 0;font-size:15px"><span class="l-th">ดูแล main ตรวจ Pull Request</span><span class="l-en">Guards main and reviews Pull Requests</span></p></div>
+    <div class="card"><span class="tag accent">Quality</span><p style="margin:8px 0 0;font-size:15px"><span class="l-th">ดูแลให้ linter และ test ผ่านเสมอ</span><span class="l-en">Keeps the linter and tests green</span></p></div>
+    <div class="card"><span class="tag accent">Demo / docs</span><p style="margin:8px 0 0;font-size:15px"><span class="l-th">ดูแล walkthrough และ README</span><span class="l-en">Owns the walkthrough and the README</span></p></div>
+  </div>
+  <p style="margin-top:14px"><span class="l-th">role หมุนเวียนได้ทุก sprint เพื่อให้ทุกคนได้ฝึกทุกด้าน แต่ <b>ความรับผิดชอบเป็นรายบุคคลเสมอ</b> แม้จะทำเป็นทีม task และ commit ของแต่ละคนคือหลักฐาน</span><span class="l-en">Roles can rotate each sprint so everyone practises every part, but <b>responsibility is always individual</b>, even in a team. Each person's tasks and commits are the evidence.</span></p>
+
+  <h3><span class="l-th">Retrospective: 3 คำถามท้ายทุก sprint</span><span class="l-en">Retrospective: three questions at the end of every sprint</span></h3>
+  <div class="grid3">
+    <div class="card"><span class="tag good">Keep</span><h4><span class="l-th">อะไรดี</span><span class="l-en">What went well?</span></h4><span class="l-th">ตั้งชื่อให้ชัด เพื่อทำอีกโดยตั้งใจ ไม่ใช่บังเอิญ</span><span class="l-en">Name it so you repeat it on purpose, not by luck.</span></div>
+    <div class="card"><span class="tag bad">Drop</span><h4><span class="l-th">อะไรไม่ดี</span><span class="l-en">What didn't?</span></h4><span class="l-th">พูดให้เจาะจง และไม่โทษตัวบุคคล (blameless)</span><span class="l-en">Be specific and blameless.</span></div>
+    <div class="card"><span class="tag brand">Change</span><h4><span class="l-th">รอบหน้าจะเปลี่ยนอะไร</span><span class="l-en">What will we change?</span></h4><span class="l-th">เลือกเปลี่ยนจริง 1 อย่าง ดีกว่าอยากเปลี่ยน 10 อย่าง</span><span class="l-en">One real change beats ten wishes.</span></div>
+  </div>
+  <div class="flip">
+    <div class="side before"><h5><span class="l-th">โทษคน</span><span class="l-en">Blaming a person</span></h5><p><span class="l-th">"เพราะต้นทำงานช้า ทีมเลยส่งไม่ทัน"</span><span class="l-en">"Ton was slow, so the team missed the deadline."</span></p></div>
+    <div class="side after"><h5>Blameless</h5><p><span class="l-th">"task หน้าค้นหาใหญ่เกินไป และไม่มีใครเห็นว่าติดจนวันสุดท้าย sprint หน้าเราจะแตก task ให้เล็กลงและ check-in ทุกวัน"</span><span class="l-en">"The search task was too big and nobody saw it was stuck until the last day. Next sprint we will split tasks smaller and check in daily."</span></p></div>
+  </div>
+  <div class="callout info">
+    <span class="lab"><span class="l-th">ทำไม blameless</span><span class="l-en">Why blameless</span></span>
+    <span class="l-th">ถ้าโทษคน คนจะซ่อนปัญหา ถ้าพูดถึง process ทีมจะแก้ที่ต้นเหตุได้ และประโยคที่ดีต้องจบด้วยสิ่งที่จะเปลี่ยน 1 อย่างเสมอ</span>
+    <span class="l-en">Blame makes people hide problems; talking about the process lets the team fix the cause. A good retro sentence always ends with one change.</span>
+  </div>
+</div></section>
+
+<!-- B7 -->
+<section id="b7"><div class="wrap">
+  <p class="kicker">14 Case study <span class="en">/ กรณีศึกษา</span></p>
+  <h2 class="sec"><span class="l-th">Denver Airport: ใหญ่เกิน ใหม่เกิน ทำพร้อมกันทั้งหมด</span><span class="l-en">Denver Airport: too much, too new, all at once</span></h2>
+  <p><span class="l-th">ช่วงต้นทศวรรษ 1990 สนามบิน Denver สหรัฐอเมริกา สร้างระบบสายพานลำเลียงกระเป๋าอัตโนมัติสำหรับทั้งสนามบินพร้อมกัน เป็นระบบแบบแรกที่ยังไม่เคยมีใครทำ ความซับซ้อนถูกประเมินต่ำไปมากและไม่มีแผนสำรองที่ใช้งานได้ สนามบินเปิดช้าไปราว 16 เดือน งบบานปลายหลายร้อยล้านดอลลาร์ และสุดท้ายระบบอัตโนมัติถูกเลิกใช้เกือบทั้งหมด</span><span class="l-en">In the early 1990s, Denver airport built an automated baggage system for the whole airport at once, a first of its kind. Complexity was badly underestimated and there was no working fallback. The opening slipped by about 16 months, costs overran by hundreds of millions of dollars, and the automated system was largely abandoned.</span></p>
+  <div class="scroll"><table>
+    <tr><th><span class="l-th">สิ่งที่พลาด</span><span class="l-en">What failed</span></th><th><span class="l-th">concept ใน Ch9</span><span class="l-en">Ch9 concept</span></th></tr>
+    <tr><td><span class="l-th">ประเมินความซับซ้อนต่ำเกินไป</span><span class="l-en">Complexity was underestimated</span></td><td><span class="l-th">Estimation: งานที่ประมาณไม่ได้ต้องแตกให้เล็กลง</span><span class="l-en">Estimation: work you cannot size must be split</span></td></tr>
+    <tr><td><span class="l-th">ทำทั้งสนามบินพร้อมกัน ไม่ทดลองส่วนเล็กก่อน</span><span class="l-en">The whole airport at once, no small pilot</span></td><td><span class="l-th">Sprint และ increment: ส่งมอบทีละส่วน (ควร pilot แค่ 1 concourse)</span><span class="l-en">Sprints and increments: deliver piece by piece (pilot one concourse)</span></td></tr>
+    <tr><td><span class="l-th">ไม่มีแผนสำรองที่ใช้งานได้</span><span class="l-en">No working fallback</span></td><td><span class="l-th">Risk management: plan และ contingency plan</span><span class="l-en">Risk management: plan and contingency plan</span></td></tr>
+    <tr><td><span class="l-th">ปัญหามองไม่เห็นจนสายเกินไป</span><span class="l-en">Trouble stayed invisible until too late</span></td><td><span class="l-th">Board, burndown และ monitor risk ทำให้ความคืบหน้ามองเห็นได้</span><span class="l-en">Board, burndown and risk monitoring make progress visible</span></td></tr>
+  </table></div>
+  <div class="callout brand">
+    <span class="lab"><span class="l-th">บทเรียน</span><span class="l-en">The lesson</span></span>
+    <span class="l-th">แตกงาน ส่งมอบทีละส่วน ตั้งชื่อ risk และมีแผนสำรอง คือทั้งบท Ch9 ความทะเยอทะยานที่ไม่มี process คือวิธีที่โปรเจกต์ใหญ่ล้มเหลว</span>
+    <span class="l-en">Break it down, deliver incrementally, name the top risk and keep a fallback: that is all of Ch9. Ambition without process is how big projects fail.</span>
+  </div>
+  <p style="font-size:14px;color:var(--muted)"><span class="l-th">ที่มา: US GAO/T-RCED-95-230 (1995); Montealegre และ Keil, MIS Quarterly (2000)</span><span class="l-en">Sources: US GAO/T-RCED-95-230 (1995); Montealegre and Keil, MIS Quarterly (2000)</span></p>
+</div></section>
+
+<!-- ================= PART C ================= -->
+<div class="wrap">
+  <div class="partban" style="background:var(--accent-soft)">
+    <div class="pk" style="color:var(--accent-2)">Part C — Exam prep</div>
+    <h2><span class="l-th">เตรียมสอบปลายภาค</span><span class="l-en">Getting ready for the final exam</span></h2>
+    <p><span class="l-th">ข้อสอบปลายภาคครอบคลุม Ch1 ถึง Ch10 เป็น MCQ ภาษาอังกฤษแบบ 4 ตัวเลือก และ short answer ถามให้ <b>อธิบาย เลือก หรือจำแนก</b> ไม่ได้ให้ออกแบบระบบเอง</span><span class="l-en">The final covers Ch1 to Ch10: English 4-option MCQs plus short answers that ask you to <b>explain, choose or classify</b>, not to design a system from scratch.</span></p>
+  </div>
+</div>
+
+<!-- C1 -->
+<section id="c1"><div class="wrap">
+  <p class="kicker">15 Summary <span class="en">/ สรุป</span></p>
+  <h2 class="sec"><span class="l-th">สองบทในหน้าเดียว</span><span class="l-en">Both chapters on one page</span></h2>
+  <div class="grid2">
+    <div class="card" style="border-top:5px solid var(--accent)">
+      <h4>Ch8 Quality &amp; Security</h4>
+      <ul class="clean">
+        <li><b>Quality</b> <span class="l-th">5 attribute ที่ตรวจได้ โยงกับ NFR; ISO/IEC 25010:2023 มี 9 characteristic (เพิ่ม Safety)</span><span class="l-en">5 checkable attributes tied to NFRs; ISO/IEC 25010:2023 has 9 characteristics (Safety added)</span></li>
+        <li><b>Review + linter</b> <span class="l-th">คนอ่าน และเครื่องมืออ่านโค้ดโดยไม่รัน</span><span class="l-en">A person reading, and a tool reading code without running it</span></li>
+        <li><b>Cost of defects</b> <span class="l-th">ถูกที่สุดตอน requirements แพงที่สุดตอน production</span><span class="l-en">Cheapest at requirements, most expensive in production</span></li>
+        <li><b>Big three</b> <span class="l-th">validate input (ที่ server), access control, no secrets in repo</span><span class="l-en">Validate input (on the server), access control, no secrets in the repo</span></li>
+        <li><b>IDOR</b> <span class="l-th">เชื่อ id ที่ผู้ใช้แก้ได้; แก้โดยเอาตัวตนจาก session</span><span class="l-en">Trusting an id the user can edit; fix by taking identity from the session</span></li>
+        <li><b>PDPA</b> <span class="l-th">consent, minimise, protect; prototype ใช้ข้อมูลจำลอง</span><span class="l-en">Consent, minimise, protect; prototypes use fake data</span></li>
+      </ul>
+    </div>
+    <div class="card" style="border-top:5px solid var(--brand)">
+      <h4>Ch9 Project Management</h4>
+      <ul class="clean">
+        <li><b>Plan</b> <span class="l-th">แตก FR เป็น task; story points; planning poker; velocity</span><span class="l-en">Split FRs into tasks; story points; planning poker; velocity</span></li>
+        <li><b>Track</b> <span class="l-th">sprint; board To-do, Doing, Done; จำกัด Doing; done = merged</span><span class="l-en">Sprints; To-do, Doing, Done board; limit Doing; done = merged</span></li>
+        <li><b>Scrum</b> <span class="l-th">3 roles, 5 events, 3 artifacts</span><span class="l-en">3 roles, 5 events, 3 artifacts</span></li>
+        <li><b>Burndown</b> <span class="l-th">เส้นจริงเหนือเส้น ideal = ช้ากว่าแผน</span><span class="l-en">Actual above ideal = behind schedule</span></li>
+        <li><b>Risk</b> <span class="l-th">identify, analyse, plan, monitor; project, product, business; avoid, reduce, accept</span><span class="l-en">Identify, analyse, plan, monitor; project, product, business; avoid, reduce, accept</span></li>
+        <li><b>Improve</b> <span class="l-th">role หมุนเวียน; retrospective keep, drop, change แบบ blameless</span><span class="l-en">Rotating roles; blameless retrospective: keep, drop, change</span></li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- C2 -->
+<section id="c2"><div class="wrap">
+  <p class="kicker">16 Glossary <span class="en">/ ศัพท์สำคัญ</span></p>
+  <h2 class="sec"><span class="l-th">ศัพท์ที่ควรรู้ความหมายเป็นภาษาอังกฤษ</span><span class="l-en">Terms to know in English</span></h2>
+  <p class="sub"><span class="l-th">ข้อสอบเป็นภาษาอังกฤษ ศัพท์เหล่านี้จะปรากฏในโจทย์และตัวเลือก</span><span class="l-en">The exam is in English; these terms appear in questions and options.</span></p>
+  <div class="gloss">
+    <div><b>Quality attribute</b> <span class="l-th">ด้านหนึ่งของคุณภาพที่ตรวจได้ เช่น reliability, usability</span><span class="l-en">One checkable aspect of quality, such as reliability or usability</span></div>
+    <div><b>NFR</b> <span class="l-th">non-functional requirement ระบุว่าระบบต้อง "ดีแค่ไหน"</span><span class="l-en">Non-functional requirement: how well the system must work</span></div>
+    <div><b>ISO/IEC 25010</b> <span class="l-th">มาตรฐานโมเดลคุณภาพ product ฉบับ 2023 มี 9 characteristic (ฉบับ 2011 มี 8)</span><span class="l-en">Product-quality model standard; the 2023 edition has 9 characteristics (2011 had 8)</span></div>
+    <div><b>Code review</b> <span class="l-th">เพื่อนในทีมอ่านโค้ดก่อน merge</span><span class="l-en">A teammate reads code before it is merged</span></div>
+    <div><b>Linter / static analysis</b> <span class="l-th">เครื่องมือตรวจโค้ดโดยไม่ต้องรัน</span><span class="l-en">A tool that checks code without running it</span></div>
+    <div><b>Defect</b> <span class="l-th">ข้อบกพร่องในงาน ไม่ว่าจะอยู่ใน requirement, design หรือโค้ด</span><span class="l-en">A fault in the work, whether in requirements, design or code</span></div>
+    <div><b>Input validation</b> <span class="l-th">ตรวจชนิด ความยาว ช่วงค่าของข้อมูลเข้าที่ server</span><span class="l-en">Checking type, length and range of input on the server</span></div>
+    <div><b>Authentication</b> <span class="l-th">ยืนยันว่าคุณเป็นใคร (login)</span><span class="l-en">Proving who you are (login)</span></div>
+    <div><b>Authorization / access control</b> <span class="l-th">ตรวจว่าคุณมีสิทธิ์ทำสิ่งนี้หรือเห็นข้อมูลนี้ไหม</span><span class="l-en">Checking whether you may do this or see this data</span></div>
+    <div><b>IDOR</b> <span class="l-th">Insecure Direct Object Reference: เข้าถึงข้อมูลคนอื่นโดยเปลี่ยน id</span><span class="l-en">Insecure Direct Object Reference: reaching other people's data by changing an id</span></div>
+    <div><b>OWASP Top 10</b> <span class="l-th">รายการความเสี่ยง web app ที่สำคัญที่สุด ปี 2021 อันดับ 1 คือ Broken Access Control</span><span class="l-en">The most critical web-app risks; number 1 in 2021 is Broken Access Control</span></div>
+    <div><b>Secret</b> <span class="l-th">ค่าลับ เช่น password, API key, token</span><span class="l-en">A confidential value such as a password, API key or token</span></div>
+    <div><b>PDPA</b> <span class="l-th">พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562</span><span class="l-en">Thailand's Personal Data Protection Act B.E. 2562 (2019)</span></div>
+    <div><b>Consent</b> <span class="l-th">ความยินยอมของเจ้าของข้อมูล โดยรู้วัตถุประสงค์</span><span class="l-en">The data owner's informed agreement for a stated purpose</span></div>
+    <div><b>Data minimisation</b> <span class="l-th">เก็บข้อมูลเท่าที่จำเป็นเท่านั้น</span><span class="l-en">Collecting only the data that is needed</span></div>
+    <div><b>Story point</b> <span class="l-th">หน่วยขนาดงานแบบเทียบกัน</span><span class="l-en">A relative unit of task size</span></div>
+    <div><b>Planning poker</b> <span class="l-th">ประมาณขนาดพร้อมกันทั้งทีม แล้วให้คนที่ต่างอธิบาย</span><span class="l-en">Estimating together, with outliers explaining</span></div>
+    <div><b>Velocity</b> <span class="l-th">จำนวน points ที่ทำเสร็จต่อ sprint</span><span class="l-en">Points completed per sprint</span></div>
+    <div><b>Sprint</b> <span class="l-th">รอบทำงานสั้นที่กำหนดเวลาตายตัว</span><span class="l-en">A short, fixed-length work cycle</span></div>
+    <div><b>WIP limit</b> <span class="l-th">จำนวนงานสูงสุดในคอลัมน์ Doing (work in progress)</span><span class="l-en">Maximum number of items in Doing (work in progress)</span></div>
+    <div><b>Product Owner</b> <span class="l-th">ตัดสินว่าทำอะไรและเรียงลำดับ backlog</span><span class="l-en">Decides what to build and orders the backlog</span></div>
+    <div><b>Scrum Master</b> <span class="l-th">ดูแล process และช่วยเอาอุปสรรคออก</span><span class="l-en">Looks after the process and removes blockers</span></div>
+    <div><b>Increment</b> <span class="l-th">ชิ้นงานที่ใช้งานได้จริงจาก sprint</span><span class="l-en">The usable product piece a sprint produces</span></div>
+    <div><b>Burndown chart</b> <span class="l-th">กราฟงานที่เหลือเทียบกับเวลา</span><span class="l-en">A chart of work remaining over time</span></div>
+    <div><b>Risk</b> <span class="l-th">สิ่งที่อาจผิดพลาดในอนาคต</span><span class="l-en">Something that might go wrong in the future</span></div>
+    <div><b>Contingency plan</b> <span class="l-th">แผนสำรองเมื่อ risk เกิดขึ้นจริง</span><span class="l-en">A fallback ready for when a risk happens</span></div>
+    <div><b>Retrospective</b> <span class="l-th">การทบทวนวิธีทำงานท้าย sprint</span><span class="l-en">A review of how the team worked, at the end of a sprint</span></div>
+    <div><b>Blameless</b> <span class="l-th">พูดถึงปัญหาที่ process ไม่โทษตัวบุคคล</span><span class="l-en">Discussing the process, not blaming a person</span></div>
+  </div>
+</div></section>
+
+<!-- C3 -->
+<section id="c3"><div class="wrap">
+  <p class="kicker">17 Practice MCQ <span class="en">/ แบบฝึกปรนัย</span></p>
+  <h2 class="sec"><span class="l-th">แบบฝึก MCQ 12 ข้อ (ภาษาอังกฤษ แบบเดียวกับข้อสอบ)</span><span class="l-en">12 practice MCQs (English, exam style)</span></h2>
+  <p class="sub"><span class="l-th">กดเลือกคำตอบ ระบบจะบอกทันทีว่าถูกหรือไม่ พร้อมเหตุผล ไม่มีการเก็บคะแนน ลองทำโดยไม่เปิดดูเนื้อหาก่อน</span><span class="l-en">Click an option to see at once whether it is right, with the reason. Nothing is recorded. Try it without looking back first.</span></p>
+  <div class="quiz" id="quiz"></div>
+  <div class="qscore"><span><span class="l-th">ตอบถูก</span><span class="l-en">Correct</span> <span class="n" id="qs-n">0 / 12</span></span><button type="button" id="qs-reset"><span class="l-th">เริ่มใหม่</span><span class="l-en">Reset</span></button></div>
+</div></section>
+
+<!-- C4 -->
+<section id="c4"><div class="wrap">
+  <p class="kicker">18 Short answer <span class="en">/ อัตนัย</span></p>
+  <h2 class="sec"><span class="l-th">Short answer พร้อมคำตอบตัวอย่าง</span><span class="l-en">Short answers with model answers</span></h2>
+  <p class="sub"><span class="l-th">ให้คะแนนข้อละ 0 ถึง 3: 3 = ถูกและเหตุผลถูก, 2 = ถูกแต่เหตุผลอ่อน, 1 = ถูกบางส่วน, 0 = ไม่ถูก เขียนคำตอบของตัวเองลงกระดาษก่อน แล้วค่อยเปิดดู</span><span class="l-en">Each is scored 0 to 3: 3 = correct with correct reasoning, 2 = correct but weak reasoning, 1 = partly correct, 0 = incorrect. Write your own answer on paper first, then open the model answer.</span></p>
+
+  <div class="card">
+    <h4>SA1 (Ch8) Explain what an IDOR vulnerability is and how to fix it. Give one example.</h4>
+    <details class="check" style="margin:10px 0 0">
+      <summary><span class="l-th">ดูคำตอบตัวอย่าง</span><span class="l-en">Show model answer</span></summary>
+      <div class="qs"><p><span class="l-th"><b>คำตอบ 3 คะแนน:</b> IDOR คือการที่ server ตัดสินว่าข้อมูลเป็นของใครจาก id ที่ผู้ใช้แก้ได้ เช่น ใน URL หรือฟอร์ม ผู้ใช้จึงเปลี่ยน id แล้วเห็นหรือแก้ข้อมูลของคนอื่นได้ เป็น broken access control ตัวอย่าง เปลี่ยน <code>user_id=1042</code> เป็น <code>1043</code> แล้วอ่านโน้ตของอีกคน วิธีแก้คือเอาตัวตนจาก session ที่ login และตรวจทุก request ว่าข้อมูลเป็นของผู้ใช้นั้น</span><span class="l-en"><b>3-point answer:</b> IDOR is when the server decides whose data it is from an id the user can edit, such as in the URL or a form, so a user can change the id and see or edit another person's data. It is broken access control. Example: changing <code>user_id=1042</code> to <code>1043</code> shows someone else's notes. Fix: take identity from the authenticated session and check on every request that the data belongs to that user.</span></p>
+      <p style="margin:0;color:var(--muted)"><span class="l-th">ได้ 1 คะแนนถ้าตอบแค่ "ซ่อน id" หรือ "เช็กว่าเป็นตัวเลข" เพราะยังไม่แก้ต้นเหตุ</span><span class="l-en">Only 1 point for "hide the id" or "check it is a number", because the cause is not fixed.</span></p></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h4>SA2 (Ch8) Why is checking input only in the browser not enough? What should be done instead?</h4>
+    <details class="check" style="margin:10px 0 0">
+      <summary><span class="l-th">ดูคำตอบตัวอย่าง</span><span class="l-en">Show model answer</span></summary>
+      <div class="qs"><p><span class="l-th"><b>คำตอบ 3 คะแนน:</b> ผู้ใช้ควบคุม browser ได้ทั้งหมด จะปิด JavaScript หรือส่ง request ตรงไปที่ server โดยไม่ผ่านหน้าเว็บก็ได้ การตรวจใน browser จึงถูกข้ามได้ ต้อง validate input ที่ฝั่ง server ทุกครั้ง (ชนิด ความยาว ช่วงค่า) การตรวจใน browser มีไว้ช่วยผู้ใช้ให้รู้ข้อผิดพลาดเร็ว ไม่ใช่เพื่อความปลอดภัย</span><span class="l-en"><b>3-point answer:</b> The user controls the browser completely; they can switch off JavaScript or send requests straight to the server without the page, so browser checks can be skipped. Input must always be validated on the server (type, length, range). Browser checks only help users notice mistakes early; they are not security.</span></p></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h4>SA3 (Ch9) An AI assistant suggests one task, "Build the whole app," assigned to the best coder. Give two problems with this plan and one fix based on Chapter 9.</h4>
+    <details class="check" style="margin:10px 0 0">
+      <summary><span class="l-th">ดูคำตอบตัวอย่าง</span><span class="l-en">Show model answer</span></summary>
+      <div class="qs"><p><span class="l-th"><b>คำตอบ 3 คะแนน:</b> ปัญหา 2 ข้อจาก (1) task ใหญ่เกินจนประมาณและติดตามความคืบหน้าไม่ได้ (2) ไม่มีการแบ่งงาน คนอื่นในทีมไม่มีส่วนร่วม (3) ฝากทุกอย่างไว้กับคนเดียวเป็น single point of failure ถ้าคนนั้นป่วยหรือออก โปรเจกต์หยุด (project risk) วิธีแก้: แตกเป็น task ขนาด FR ประมาณขนาดแต่ละ task กระจายเจ้าของบน board และทบทวนความคืบหน้าทุก sprint</span><span class="l-en"><b>3-point answer:</b> Two problems from: (1) the task is too big to estimate or track; (2) the work is not shared, so the rest of the team is left out; (3) relying on one person is a single point of failure: if they are ill or leave, the project stops (a project risk). Fix: split it into FR-sized tasks, size each one, spread owners across a board, and review progress every sprint.</span></p></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h4>SA4 (Ch9) Explain the difference between a project risk, a product risk and a business risk. Give one example of each.</h4>
+    <details class="check" style="margin:10px 0 0">
+      <summary><span class="l-th">ดูคำตอบตัวอย่าง</span><span class="l-en">Show model answer</span></summary>
+      <div class="qs"><p><span class="l-th"><b>คำตอบ 3 คะแนน:</b> project risk กระทบตารางเวลาหรือทรัพยากร เช่น สมาชิกออกจากทีม; product risk กระทบคุณภาพหรือประสิทธิภาพของ product เช่น ระบบช้าเกินเมื่อข้อมูลเยอะ; business risk กระทบเป้าหมายขององค์กรหรือตลาด เช่น ทำเสร็จแล้วไม่มีใครต้องการ (Sommerville §22.1)</span><span class="l-en"><b>3-point answer:</b> A project risk affects the schedule or resources, for example a member leaves the team. A product risk affects the quality or performance of the product, for example the system is too slow with a lot of data. A business risk affects the organisation's goals or market, for example nobody needs the product once it is built (Sommerville §22.1).</span></p></div>
+    </details>
+  </div>
+
+  <div class="callout exam">
+    <span class="lab"><span class="l-th">เคล็ดลับเขียน short answer</span><span class="l-en">Short-answer tips</span></span>
+    <span class="l-th">ตอบให้ครบ 3 ส่วนเสมอ: <b>คืออะไร</b> (นิยามด้วยศัพท์ของบท), <b>ทำไม</b> (เหตุผลหรือผลกระทบ), <b>ตัวอย่างหรือวิธีแก้</b> คำตอบที่มีแต่คำศัพท์โดยไม่มีเหตุผลได้ไม่เกิน 2 คะแนน</span>
+    <span class="l-en">Always cover three parts: <b>what it is</b> (define with the chapter's terms), <b>why</b> (the reason or impact), and <b>an example or fix</b>. Answers with terms but no reasoning get at most 2 points.</span>
+  </div>
+
+  <h3><span class="l-th">อ้างอิง</span><span class="l-en">References</span></h3>
+  <ul class="refs">
+    <li>Sommerville, I. (2011). <i>Software Engineering</i>, 9th ed. Ch14 Security engineering; Ch22 Project management (§22.1 Risk management); Ch23 Project planning; Ch24 Quality management.</li>
+    <li>ISO/IEC 25010:2023. Systems and software engineering, SQuaRE, Product quality model (Edition 2). https://www.iso.org/standard/78176.html (replaces ISO/IEC 25010:2011).</li>
+    <li>OWASP Top 10 (2021). A01 Broken Access Control.</li>
+    <li>Boehm, B. (1981). <i>Software Engineering Economics</i>.</li>
+    <li><span class="l-th">พ.ร.บ. คุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562</span><span class="l-en">Personal Data Protection Act B.E. 2562 (2019), Thailand</span>.</li>
+    <li>Schwaber, K., &amp; Sutherland, J. (2020). <i>The Scrum Guide</i>.</li>
+    <li>Cohn, M. (2005). <i>Agile Estimating and Planning</i>.</li>
+    <li>US GAO/T-RCED-95-230 (1995); Montealegre, R., &amp; Keil, M. (2000). <i>MIS Quarterly</i>. Denver baggage system.</li>
+  </ul>
+
+  <button class="print-btn" type="button" onclick="window.print()" style="margin-top:24px"><span class="l-th">พิมพ์ หรือ บันทึกเป็น PDF</span><span class="l-en">Print / Save as PDF</span></button>
+</div></section>
+
+<footer><div class="wrap">
+  <span>Intro to Software Engineering (15031001) — <span class="l-th">ปีการศึกษา 2569</span><span class="l-en">Academic Year 2569</span> — Ch8 and Ch9 self-study handbook</span>
+  <span>School of Applied Digital Technology, MFU</span>
+</div></footer>
+
+<script>
+  (function(){
+    var saved = null;
+    try { saved = localStorage.getItem('ch89_lang'); } catch(e) {}
+    if (saved === 'en' || saved === 'th') { document.body.dataset.lang = saved; document.documentElement.lang = saved; }
+    function setLang(l){
+      document.body.dataset.lang = l;
+      document.documentElement.lang = l;
+      try { localStorage.setItem('ch89_lang', l); } catch(e) {}
+      document.querySelectorAll('.langbar button').forEach(function(b){ b.classList.toggle('on', b.dataset.set === l); });
+    }
+    document.querySelectorAll('.langbar button').forEach(function(b){
+      b.addEventListener('click', function(){ setLang(b.dataset.set); });
+      b.classList.toggle('on', b.dataset.set === document.body.dataset.lang);
+    });
+  })();
+
+  (function(){
+    var Q = [
+      {q:'Which of the following is <b>not</b> one of the "big three" security habits taught in this course?',
+       o:['Validate input on the server.','Enforce access control on every request.','Keep secrets out of the repository.','Encrypt the source code before pushing it.'], a:3,
+       th:'big three คือ validate input, access control และ no secrets in repo การเข้ารหัสซอร์สโค้ดไม่ได้อยู่ในนั้น',
+       en:'The big three are validate input, access control and no secrets in the repo. Encrypting source code is not one of them.'},
+      {q:'A user changes <code>user_id=1042</code> to <code>user_id=1043</code> in the URL and sees another person\'s notes. What is the best fix?',
+       o:['Hide the id from the URL bar.','Take the owner\'s identity from the authenticated session.','Check that the id is a number.','Add a linter to the project.'], a:1,
+       th:'นี่คือ IDOR ต้องเอาตัวตนจาก session การซ่อนหรือเช็กว่าเป็นตัวเลขยังให้ผู้ใช้ส่ง id ของคนอื่นได้อยู่',
+       en:'This is IDOR. Take identity from the session; hiding the id or checking it is numeric still lets the user send someone else\'s id.'},
+      {q:'Which characteristic was <b>newly added</b> in ISO/IEC 25010:2023?',
+       o:['Usability.','Safety.','Portability.','Profitability.'], a:1,
+       th:'Safety เป็นของใหม่ปี 2023 ส่วน Usability และ Portability เปลี่ยนชื่อเป็น Interaction capability และ Flexibility และ Profitability ไม่ใช่คุณภาพของ product',
+       en:'Safety is new in 2023; Usability and Portability were renamed Interaction capability and Flexibility; Profitability is not a product quality.'},
+      {q:'According to Boehm\'s cost-of-defects idea, where is a defect usually <b>cheapest</b> to fix?',
+       o:['Requirements.','Testing.','Production.','Maintenance.'], a:0,
+       th:'ยิ่งเจอเร็วยิ่งถูก ระยะ requirements มีงานที่สร้างทับน้อยที่สุด',
+       en:'The earlier the cheaper; at requirements, the least work has been built on top of the mistake.'},
+      {q:'Which tool reads source code <b>without running it</b> to flag style issues and likely bugs?',
+       o:['A unit test.','A burndown chart.','A code review meeting.','A linter (static analysis).'], a:3,
+       th:'linter เป็น static analysis อ่านโค้ดโดยไม่รัน ส่วน unit test ต้องรันโค้ด และ code review ใช้คน',
+       en:'A linter is static analysis and does not run the code; unit tests run it, and code review uses people.'},
+      {q:'On a sprint burndown chart, the actual line stays <b>above</b> the ideal line. What does this mean?',
+       o:['The team is ahead of schedule.','The team is behind schedule.','The sprint has no remaining work.','The estimates were too large.'], a:1,
+       th:'เหนือเส้น ideal = งานเหลือมากกว่าที่ควร จึงช้ากว่าแผน',
+       en:'Above the ideal line means more work is left than planned, so the team is behind.'},
+      {q:'A team finished 18 story points in sprint 1 and 22 in sprint 2. About how many sprints will 60 remaining points take?',
+       o:['2','3','4','6'], a:1,
+       th:'velocity เฉลี่ย 20 points ต่อ sprint, 60 หาร 20 = 3',
+       en:'Average velocity is 20 points per sprint; 60 divided by 20 = 3.'},
+      {q:'"We build the app, but nobody actually needs it." In Sommerville\'s classification this is a ...',
+       o:['project risk.','product risk.','business risk.','technical risk.'], a:2,
+       th:'กระทบเป้าหมายใหญ่ขององค์กรหรือตลาด จึงเป็น business risk',
+       en:'It hits the organisation\'s wider goal or market, so it is a business risk.'},
+      {q:'Which Scrum artifact is the <b>usable piece of product</b> that a sprint produces?',
+       o:['Increment.','Product Backlog.','Sprint Backlog.','Daily Scrum.'], a:0,
+       th:'Increment คือผลงานที่ใช้งานได้จาก sprint ส่วน Daily Scrum เป็น event ไม่ใช่ artifact',
+       en:'The Increment is the usable result of a sprint; the Daily Scrum is an event, not an artifact.'},
+      {q:'Why does a team limit the number of tasks in the "Doing" column?',
+       o:['To make the board look tidy.','To give the Scrum Master more control.','To finish work before starting new work, so items actually get done.','To reduce the number of commits.'], a:2,
+       th:'งานค้างครึ่งๆ กลางๆ หลายชิ้นทำให้ไม่มีอะไรเสร็จ จึงจำกัดเพื่อให้ทำให้เสร็จก่อน',
+       en:'Many half-done items mean nothing gets finished, so the limit forces finishing first.'},
+      {q:'"Collect only the personal data that the feature really needs" describes which PDPA principle?',
+       o:['Consent.','Minimise.','Protect.','Portability.'], a:1,
+       th:'นี่คือ data minimisation เก็บเท่าที่จำเป็น',
+       en:'This is data minimisation: collect only what is needed.'},
+      {q:'Estimating how likely each risk is and how big its impact would be belongs to which risk-management step?',
+       o:['Identify.','Analyse.','Plan.','Monitor.'], a:1,
+       th:'Analyse คือประเมิน likelihood x impact ส่วน Identify คือหาว่ามี risk อะไรบ้าง',
+       en:'Analyse means assessing likelihood x impact; Identify is listing which risks exist.'}
+    ];
+    var box = document.getElementById('quiz');
+    var correct = {};
+    function render(){
+      box.innerHTML = '';
+      correct = {};
+      Q.forEach(function(it, i){
+        var d = document.createElement('div');
+        d.className = 'qq';
+        var html = '<div class="stem">' + (i+1) + '. ' + it.q + '</div>';
+        it.o.forEach(function(t, j){
+          html += '<button type="button" class="opt" data-j="' + j + '">' + 'ABCD'[j] + '. ' + t + '</button>';
+        });
+        html += '<div class="fb"></div>';
+        d.innerHTML = html;
+        d.querySelectorAll('.opt').forEach(function(b){
+          b.addEventListener('click', function(){
+            var j = +b.dataset.j;
+            d.querySelectorAll('.opt').forEach(function(x){ x.classList.remove('right','wrong'); });
+            var ok = (j === it.a);
+            b.classList.add(ok ? 'right' : 'wrong');
+            if (!ok) { d.querySelectorAll('.opt')[it.a].classList.add('right'); }
+            if (!(i in correct)) { correct[i] = ok; }
+            var fb = d.querySelector('.fb');
+            fb.innerHTML = '<b><span class="l-th">' + (ok ? 'ถูกต้อง' : 'ยังไม่ถูก คำตอบคือ ' + 'ABCD'[it.a]) + '</span><span class="l-en">' + (ok ? 'Correct' : 'Not quite. The answer is ' + 'ABCD'[it.a]) + '</span></b>' +
+              '<span class="l-th">' + it.th + '</span><span class="l-en">' + it.en + '</span>';
+            fb.classList.add('show');
+            score();
+          });
+        });
+        box.appendChild(d);
+      });
+      score();
+    }
+    function score(){
+      var n = 0;
+      Object.keys(correct).forEach(function(k){ if (correct[k]) n++; });
+      document.getElementById('qs-n').textContent = n + ' / ' + Q.length;
+    }
+    document.getElementById('qs-reset').addEventListener('click', render);
+    render();
+  })();
+</script>
+</body>
+</html>

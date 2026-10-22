@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Intro2SE Ch7 — Unit Testing · Year-1 Core</title>
+<style>
+/* Intro2SE HTML slide-deck theme + engine
+   Matches the Intro2SE pptx (intro2se-weekNN.fig) look:
+   Space Grotesk + JetBrains Mono, #EEF0F3 bg, colored-circle motif,
+   white cards, red/yellow/blue/green accents.
+   Keyboard-navigable single-slide-at-a-time deck. Print = all slides. */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root{
+  --bg:#EEF0F3; --ink:#0B0F19; --text:#3A4250; --muted:#7A8290;
+  --border:#E4E7EC; --border-2:#C8CCD3; --white:#FFFFFF; --panel:#F7F8FA;
+  --yellow:#FFC233; --red:#FF5A47; --blue:#2D5BFF; --green:#16B670;
+  --disp:"Space Grotesk",-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;
+  --mono:"JetBrains Mono","SF Mono",Menlo,Consolas,monospace;
+  --shadow:0 1.2vh 3vh rgba(11,15,25,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--disp);color:var(--text);background:#0b1b2e}
+
+#deck{position:relative;height:100vh;width:100vw;overflow:hidden}
+.slide{
+  position:absolute;inset:0;display:none;flex-direction:column;
+  padding:4.5vh 6vw 6vh;
+  background:linear-gradient(150deg,#f2f4f7 0%,#e9ecf1 100%);
+  overflow:hidden;
+}
+.slide.active{display:flex;animation:f .3s ease}
+@keyframes f{from{opacity:0;transform:translateY(1vh)}to{opacity:1;transform:none}}
+
+/* ---- top chrome bar ---- */
+.chrome{
+  display:flex;align-items:center;justify-content:space-between;gap:1vw;
+  font-family:var(--mono);font-weight:700;font-size:1.05vw;color:var(--ink);
+  padding-bottom:2.2vh;flex:0 0 auto;
+}
+.chrome .l{display:flex;align-items:center;gap:.7vw;min-width:0}
+.chrome .play{color:var(--blue)}
+.chrome .crumb{color:var(--muted);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chrome .count{color:var(--muted);font-weight:500;white-space:nowrap}
+
+/* body region */
+.body{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;min-height:0}
+.body.top{justify-content:flex-start}
+
+/* ---- typography ---- */
+.kicker{font-family:var(--mono);font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  font-size:1.05vw;color:var(--muted);margin-bottom:1.4vh;display:block}
+.kicker.blue{color:var(--blue)} .kicker.red{color:var(--red)}
+.kicker.green{color:var(--green)} .kicker.gold{color:#a67a00}
+h1.head{font-family:var(--disp);font-weight:700;color:var(--ink);
+  font-size:4.6vw;line-height:1.05;letter-spacing:-.01em;margin-bottom:1.4vh}
+h2.head{font-family:var(--disp);font-weight:700;color:var(--ink);
+  font-size:3.2vw;line-height:1.1;letter-spacing:-.01em;margin-bottom:2vh}
+.dek{font-size:1.7vw;line-height:1.5;color:var(--text);max-width:80%;margin-bottom:2.4vh}
+.dek.narrow{max-width:64%}
+p{margin:0 0 1vh} strong{color:var(--ink);font-weight:700}
+.sub{font-size:1.35vw;color:var(--muted);margin-top:1vh}
+
+/* ---- title slide ---- */
+.title-slide .kicker{font-size:1.2vw}
+.title-slide h1.head{font-size:6vw;max-width:62%}
+.title-slide .lead{font-size:1.7vw;color:var(--text);max-width:52%;margin-top:3vh;line-height:1.5}
+.circles{position:absolute;right:6vw;top:50%;transform:translateY(-50%);width:34vw;height:70vh}
+.circles i{position:absolute;border-radius:50%;display:block}
+.circles .c1{width:13vw;height:13vw;background:var(--blue);right:6vw;top:6vh}
+.circles .c2{width:9vw;height:9vw;background:var(--green);left:0;top:34vh}
+.circles .c3{width:7vw;height:7vw;background:var(--yellow);right:0;top:40vh}
+.circles .c4{width:15vw;height:15vw;background:var(--red);right:9vw;bottom:2vh}
+
+/* ---- generic grids ---- */
+.grid{display:grid;gap:1.4vw}
+.g2{grid-template-columns:1fr 1fr}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+
+/* ---- browser cards (mac dots) ---- */
+.bcard{background:var(--white);border-radius:1.2vw;box-shadow:var(--shadow);
+  padding:2.4vh 1.7vw;display:flex;flex-direction:column;min-width:0}
+.bcard .dots{display:flex;gap:.5vw;margin-bottom:2vh}
+.bcard .dots i{width:.85vw;height:.85vw;border-radius:50%;display:block}
+.bcard .dots i:nth-child(1){background:var(--red)}
+.bcard .dots i:nth-child(2){background:var(--yellow)}
+.bcard .dots i:nth-child(3){background:var(--green)}
+.bcard .lbl{font-family:var(--mono);font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  font-size:1vw;color:var(--muted);margin-bottom:1.2vh}
+.bcard h3{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.9vw;line-height:1.1;margin-bottom:1.4vh}
+.bcard p{font-size:1.35vw;line-height:1.45;color:var(--text)}
+.bcard .foot{margin-top:auto;padding-top:1.6vh}
+
+/* chip row */
+.chips{display:flex;align-items:center;gap:.7vw;flex-wrap:wrap}
+.chips .chip{font-family:var(--mono);font-weight:500;font-size:1.1vw;color:var(--text);
+  background:var(--panel);border-radius:999px;padding:.7vh 1vw}
+.chips .chip.hot{background:#ffe9e6;color:var(--red)}
+.chips .arw{color:var(--muted);font-size:1.1vw}
+.squares{display:flex;gap:.6vw}
+.squares i{width:2.4vw;height:2.4vw;border-radius:.5vw;display:block}
+.squares .y{background:var(--yellow)} .squares .r{background:var(--red)} .squares .g{background:var(--green)}
+
+/* ---- big color cards (red/yellow/green) ---- */
+.ccard{border-radius:1.2vw;padding:3vh 1.8vw;display:flex;flex-direction:column;color:#fff;min-height:52vh}
+.ccard.red{background:var(--red)} .ccard.yellow{background:var(--yellow);color:var(--ink)}
+.ccard.green{background:var(--green)} .ccard.blue{background:var(--blue)}
+.ccard .lbl{font-family:var(--mono);font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  font-size:1vw;opacity:.8;margin-bottom:2vh}
+.ccard h3{font-family:var(--disp);font-weight:700;font-size:2.3vw;line-height:1.05;margin-bottom:2.2vh}
+.ccard p{font-size:1.35vw;line-height:1.45}
+.ccard .ico{margin-top:auto;align-self:flex-end;font-size:3vw;opacity:.9}
+
+/* ---- stage/step light cards (with progress bar or chip) ---- */
+.scard{background:var(--white);border-radius:1.1vw;box-shadow:var(--shadow);
+  padding:2.4vh 1.4vw;display:flex;flex-direction:column;min-width:0}
+.scard .lbl{font-family:var(--mono);font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  font-size:.92vw;color:var(--muted);margin-bottom:1vh}
+.scard h3{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.5vw;line-height:1.1;margin-bottom:1.2vh}
+.scard p{font-size:1.15vw;line-height:1.4;color:var(--text);flex:1}
+.scard .bar{display:flex;gap:.3vw;margin-top:1.6vh}
+.scard .bar i{height:.7vh;flex:1;border-radius:999px;background:var(--border-2)}
+.scard .bar.n1 i:nth-child(-n+1),.scard .bar.n2 i:nth-child(-n+2),
+.scard .bar.n3 i:nth-child(-n+3),.scard .bar.n4 i:nth-child(-n+4),
+.scard .bar.n5 i:nth-child(-n+5){background:var(--col,var(--blue))}
+.scard.c-red{--col:var(--red)} .scard.c-yellow{--col:var(--yellow)}
+.scard.c-blue{--col:var(--blue)} .scard.c-green{--col:var(--green)}
+.scard .chip{align-self:flex-start;margin-top:1.4vh;font-family:var(--mono);font-weight:500;
+  font-size:1vw;color:var(--text);background:var(--panel);border-radius:.5vw;padding:.5vh .9vw}
+
+/* ---- do / don't two cards ---- */
+.dcard{background:var(--white);border-radius:1.2vw;box-shadow:var(--shadow);padding:2.6vh 1.8vw}
+.dcard .pill{display:inline-block;font-family:var(--mono);font-weight:700;font-size:1vw;
+  color:#fff;border-radius:999px;padding:.5vh 1.1vw;margin-bottom:1.8vh}
+.dcard.do .pill{background:var(--green)} .dcard.dont .pill{background:var(--red)}
+.dcard .item{padding:1.2vh 0;border-top:1px solid var(--border)}
+.dcard .item:first-of-type{border-top:none}
+.dcard .item h4{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.4vw;margin-bottom:.5vh}
+.dcard .item p{font-size:1.15vw;line-height:1.4;color:var(--text)}
+
+/* ---- list + panel ---- */
+.listpanel{display:grid;grid-template-columns:1fr 1.05fr;gap:3vw;align-items:center}
+.expl h4{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.6vw;margin:1.8vh 0 .6vh}
+.expl h4:first-child{margin-top:0}
+.expl p{font-size:1.3vw;line-height:1.45;color:var(--text)}
+.panel{background:var(--white);border-radius:1.2vw;box-shadow:var(--shadow);padding:1vh 1.6vw}
+.panel .row{display:flex;align-items:center;gap:1vw;padding:1.6vh .4vw;border-top:1px solid var(--border)}
+.panel .row:first-child{border-top:none}
+.panel .row .sq{width:1.6vw;height:1.6vw;border-radius:.4vw;flex:0 0 auto}
+.panel .row .n{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.5vw;flex:0 0 auto;width:1.6vw}
+.panel .row .txt{font-size:1.3vw;color:var(--ink);flex:1}
+.panel .row .tag{font-family:var(--mono);font-size:1vw;color:var(--muted)}
+.b-blue{background:var(--blue)} .b-red{background:var(--red)}
+.b-yellow{background:var(--yellow)} .b-green{background:var(--green)} .b-purple{background:#7C4DFF}
+
+/* ---- pills (before you leave) ---- */
+.pillrows{display:flex;flex-direction:column;gap:1.4vh}
+.pillrow{display:flex;align-items:center;gap:1.4vw}
+.pillrow .k{font-size:1.4vw;color:var(--ink);width:12vw;flex:0 0 auto}
+.pillrow .v{font-family:var(--mono);font-weight:500;font-size:1.35vw;color:#fff;
+  border-radius:999px;padding:1.1vh 1.6vw;flex:1}
+
+/* ---- quote ---- */
+.quote{background:var(--panel);border-left:.5vw solid var(--yellow);border-radius:0 1vw 1vw 0;
+  padding:2.6vh 2vw}
+.quote p{font-size:2.2vw;line-height:1.35;color:var(--ink);font-weight:500}
+.quote .by{font-size:1.4vw;color:var(--muted);font-style:italic;margin-top:1.6vh}
+
+/* ---- horizontal flow ---- */
+.flow{display:flex;align-items:stretch;gap:1vw;flex-wrap:nowrap}
+.flow .node{background:var(--white);border-radius:1vw;box-shadow:var(--shadow);
+  padding:2vh 1.2vw;flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0;text-align:center}
+.flow .node .t{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.4vw;line-height:1.1}
+.flow .node .s{font-size:1vw;color:var(--muted);margin-top:.6vh}
+.flow .arw{align-self:center;color:var(--muted);font-size:1.8vw;flex:0 0 auto}
+.flow .node.on-blue{background:var(--blue);color:#fff} .flow .node.on-blue .t{color:#fff}
+.flow .node.on-green{background:var(--green);color:#fff} .flow .node.on-green .t{color:#fff}
+
+/* ---- table ---- */
+.table-wrap{overflow:auto;border-radius:1vw;box-shadow:var(--shadow);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;background:var(--white);font-size:1.25vw}
+thead th{font-family:var(--mono);font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+  font-size:1vw;color:#fff;background:var(--ink);text-align:left;padding:1.4vh 1.1vw}
+tbody td{padding:1.4vh 1.1vw;border-top:1px solid var(--border);vertical-align:top;line-height:1.35}
+tbody tr:nth-child(even){background:var(--panel)}
+td.b,th.b{font-weight:700;color:var(--ink)}
+
+/* summary 2x2 (dark) */
+.slide.dark{background:linear-gradient(150deg,#141a4a 0%,#0f1440 100%)}
+.slide.dark h2.head,.slide.dark .kicker{color:#fff}
+.quad{display:grid;grid-template-columns:1fr 1fr;gap:2.6vh 3vw;margin-top:1vh}
+.quad .q h4{font-family:var(--disp);font-weight:700;color:#fff;font-size:1.9vw;margin-bottom:.8vh}
+.quad .q p{font-size:1.3vw;line-height:1.45;color:#cfd4ea}
+.quad .q .tag{font-family:var(--mono);font-size:1vw;color:#8b93c7;text-transform:uppercase;letter-spacing:.06em}
+
+/* footer line */
+.foot-note{margin-top:2.4vh;font-size:1.2vw;color:var(--muted)}
+.rule{height:1px;background:var(--border);margin:2vh 0}
+
+/* ---- deck controls ---- */
+.bar{position:fixed;bottom:0;left:0;height:.6vh;background:var(--blue);transition:width .3s;z-index:6}
+.hint{position:fixed;bottom:1.6vh;left:50%;transform:translateX(-50%);font-family:var(--mono);
+  font-size:.85vw;color:var(--muted);z-index:6}
+
+/* ---- print: every slide on its own page ---- */
+@media print{
+  #deck{height:auto;overflow:visible}
+  .slide{display:flex!important;position:relative;height:100vh;page-break-after:always;
+    inset:auto;break-inside:avoid}
+  .bar,.hint{display:none}
+}
+
+/* ---- embedded figure images (from Week2.pptx) ---- */
+.fig{display:block;margin:0 auto;max-width:100%;max-height:44vh;height:auto;width:auto;
+  background:#fff;border-radius:1vw;box-shadow:var(--shadow);padding:1.6vh 1.6vw}
+.fig.sm{max-height:28vh}
+.figcap{text-align:center;font-family:var(--mono);font-size:1vw;color:var(--muted);margin-top:.9vh}
+
+</style>
+<style>
+  /* deeper green for SVG box fills carrying text — theme green (#16B670) fails AA on white (~2.6:1); this passes (~5:1) */
+  :root{ --gbox:#0B7A4A; }
+  /* dark closing slide: invert the chrome bar text (ink-on-navy ≈ invisible otherwise) */
+  .slide.dark .chrome .l{ color:#e8ecf7; }
+  .slide.dark .chrome .crumb, .slide.dark .chrome .count{ color:#aeb6dd; }
+  /* dark code block (git log, snippets, prompt) */
+  .code{background:#0f1440;border-radius:1vw;padding:2vh 1.6vw;font-family:var(--mono);
+    font-size:1.05vw;line-height:1.7;color:#c8d0f0;overflow:auto;white-space:pre}
+  .code.sm{font-size:.95vw;line-height:1.6}
+  .code .k{color:#7aa2ff}.code .c{color:#8891b8}.code .s{color:#7ee0b8}.code .g{color:#ffcf6b}.code .r{color:#ff8f7d}
+  .codecap{font-family:var(--mono);font-size:1vw;color:var(--muted);margin:.2vh 0 1vh}
+  /* numbered fundamentals panel */
+  .num-row{display:flex;align-items:flex-start;gap:1.1vw;padding:1.5vh .4vw;border-top:1px solid var(--border)}
+  .num-row:first-child{border-top:none}
+  .num-row .n{font-family:var(--mono);font-weight:700;color:#fff;background:var(--blue);
+    width:2.2vw;height:2.2vw;border-radius:.5vw;display:flex;align-items:center;justify-content:center;
+    font-size:1.15vw;flex:0 0 auto}
+  .num-row .n.g{background:var(--green)} .num-row .n.y{background:var(--yellow);color:var(--ink)}
+  .num-row .n.r{background:var(--red)} .num-row .n.p{background:#7C4DFF}
+  .num-row h4{font-family:var(--disp);font-weight:700;color:var(--ink);font-size:1.5vw;margin-bottom:.3vh}
+  .num-row p{font-size:1.2vw;line-height:1.4;color:var(--text)}
+  /* label chip inline */
+  .lead-tag{display:inline-block;font-family:var(--mono);font-weight:700;font-size:.9vw;letter-spacing:.04em;
+    text-transform:uppercase;color:#fff;background:var(--blue);border-radius:.4vw;padding:.4vh .8vw;margin-bottom:1.2vh}
+  .lead-tag.g{background:var(--green)} .lead-tag.r{background:var(--red)} .lead-tag.y{background:var(--yellow);color:var(--ink)}
+  /* flow arrow label */
+  .flow .arw small{display:block;font-family:var(--mono);font-size:.7vw;color:var(--muted);text-align:center}
+  .flow.wrap{flex-wrap:wrap;gap:1.2vh 1vw}
+  /* red flow node (theme only ships on-blue / on-green) */
+  .flow .node.on-red{background:var(--red);color:#fff} .flow .node.on-red .t{color:#fff}
+  /* inline code — subtle mono chip on light surfaces */
+  code{font-family:var(--mono);font-size:.9em;background:var(--panel);border-radius:.3vw;padding:.1vh .45vw;color:var(--ink)}
+  .foot-note code{font-size:.95em}
+  /* shave a few px off dense scard+foot-note slides so nothing clips at 16:9 */
+  .scard{padding-top:2vh;padding-bottom:2vh}
+  .scard .bar{margin-top:1.2vh}
+  .body > .foot-note:last-child{margin-top:1.9vh}
+  /* "IN PLAIN TERMS" — a plain-language restatement / analogy for Year-1 readers */
+  .plain{background:#EAF1FF;border-left:.5vw solid var(--blue);border-radius:0 .7vw .7vw 0;
+    padding:1.15vh 1.2vw;margin-top:1.6vh}
+  .plain .lab{display:inline-block;font-family:var(--mono);font-weight:700;font-size:.82vw;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--blue);margin-bottom:.35vh}
+  .plain p{font-size:1.18vw;line-height:1.42;color:var(--ink);margin:0}
+  .plain.g{background:#E4F6EE;border-left-color:var(--green)} .plain.g .lab{color:#0B7A4A}
+  .plain.r{background:#FFECE9;border-left-color:var(--red)} .plain.r .lab{color:#C43A2B}
+  .slide.dark .plain{background:#16224a} .slide.dark .plain p{color:#e8ecf7}
+  /* compact SVG figure block with a mono caption */
+  .figblock{margin:.6vh 0 0}
+  .figblock .cap{font-family:var(--mono);font-size:.92vw;color:var(--muted);text-align:center;margin-top:.4vh}
+</style>
+</head>
+<body>
+<div id="deck">
+
+<section class="slide title-slide active">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Unit Testing · Does it do the right thing?</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker">CHAPTER 7 · YEAR-1 CORE · UNIT TESTING</span>
+    <h1 class="head">It runs. But is it <em>right</em>?</h1>
+    <p class="lead">A program that starts up is not a program that works. <strong>Testing</strong> is how an engineer proves the code does what the requirement asked — and how you catch what <strong>AI-generated code</strong> quietly got wrong, before a user does.</p>
+  </div>
+  <div class="circles"><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i></div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Where we are</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">THE GOLDEN THREAD · ONE STEP FURTHER</span>
+    <h2 class="head">Testing closes the loop from requirement to running code</h2>
+    <div class="flow wrap" style="margin-bottom:2.4vh"><div class="node"><div class="t">Problem</div><div class="s">Wk 3</div></div><div class="arw">→</div><div class="node"><div class="t">FR / NFR</div><div class="s">SRS</div></div><div class="arw">→</div><div class="node"><div class="t">Model</div><div class="s">UML</div></div><div class="arw">→</div><div class="node"><div class="t">Design</div><div class="s">Wk 5</div></div><div class="arw">→</div><div class="node"><div class="t">Code</div><div class="s">Wk 6</div></div><div class="arw">→</div><div class="node on-blue"><div class="t">Test</div><div class="s" style="color:#cfe0ff">Ch7</div></div><div class="arw">→</div><div class="node"><div class="t">Quality</div><div class="s">Ch8</div></div><div class="arw">→</div><div class="node"><div class="t">PM</div><div class="s">Ch9</div></div><div class="arw">→</div><div class="node"><div class="t">Ethics</div><div class="s">Ch10</div></div></div>
+    <div class="grid g3">
+      <div class="scard c-blue"><div class="lbl">Idea 1</div><h3>Why test?</h3><p>Verification vs validation — “built it right” vs “built the right thing.”</p><div class="bar n1"><i></i><i></i><i></i></div></div>
+      <div class="scard c-green"><div class="lbl">Idea 2 · 3</div><h3>Unit tests</h3><p>A test = input + expected output. A unit test checks one function in isolation.</p><div class="bar n2"><i></i><i></i><i></i></div></div>
+      <div class="scard c-red"><div class="lbl">Idea 4 · 5</div><h3>AC → tests</h3><p>Each acceptance criterion becomes a test — and tests are how you catch AI mistakes.</p><div class="bar n3"><i></i><i></i><i></i></div></div>
+    </div>
+    <p class="foot-note">Scope reminder: testing is <strong>understand-only</strong> this term — you learn the concepts and apply them to harden your prototype; there is no separately graded test suite.</p>
+    <div class="plain"><span class="lab">In plain terms</span><p>A criterion and a test are the <strong>same sentence written twice</strong> — once in plain English (“a done task is not reminded”), once in code (the <code>assert</code>). Writing the test is just translating that sentence into something the computer can read.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Verification vs validation</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">IDEA 1 · WHY WE TEST</span>
+    <h2 class="head">Two questions every test answers</h2>
+    <div class="grid g2">
+      <div class="bcard"><span class="lbl">Verification</span><h3>Did we build it <em>right</em>?</h3><p>Does the code match the spec — no bugs, correct logic? Caught by unit tests &amp; reviews.</p></div>
+      <div class="bcard"><span class="lbl">Validation</span><h3>Did we build the <em>right thing</em>?</h3><p>Is this what the user actually needed? Caught by demos, acceptance tests, feedback.</p></div>
+    </div>
+    <div class="plain"><span class="lab">In plain terms</span>
+      <p>A reminder that fires on the <strong>wrong day</strong> still “runs” — it passes a glance but fails <em>verification</em>. A perfectly-coded feature nobody asked for passes verification but fails <em>validation</em>. You need both.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· The V-model</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">IDEA 1b · THE V-MODEL (SOMMERVILLE §8)</span>
+    <h2 class="head">Every build step has a matching check</h2>
+    <div class="figblock">
+      <svg viewBox="0 0 900 300" style="width:100%;height:36vh;display:block;margin:.3vh auto">
+        <defs><marker id="v7" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="var(--muted)"/></marker></defs>
+        <!-- left arm (specify) -->
+        <rect x="70"  y="30"  width="190" height="44" rx="8" fill="var(--blue)"/><text x="165" y="58" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="16" fill="#fff">Requirements</text>
+        <rect x="150" y="100" width="190" height="44" rx="8" fill="var(--blue)" opacity=".82"/><text x="245" y="128" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="16" fill="#fff">Design / architecture</text>
+        <rect x="230" y="170" width="190" height="44" rx="8" fill="var(--blue)" opacity=".66"/><text x="325" y="198" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="16" fill="#fff">Detailed design</text>
+        <!-- bottom -->
+        <rect x="355" y="238" width="190" height="44" rx="8" fill="var(--ink)"/><text x="450" y="266" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="16" fill="#fff">Code</text>
+        <!-- right arm (test) -->
+        <rect x="480" y="170" width="190" height="44" rx="8" fill="var(--gbox)"/><text x="575" y="198" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="16" fill="#fff">Unit tests</text>
+        <rect x="560" y="100" width="190" height="44" rx="8" fill="var(--gbox)" opacity=".85"/><text x="655" y="128" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="16" fill="#fff">Integration tests</text>
+        <rect x="640" y="30"  width="200" height="44" rx="8" fill="var(--gbox)" opacity=".72"/><text x="740" y="58" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="16" fill="#fff">System / acceptance</text>
+        <!-- V arms -->
+        <path d="M165,74 L245,100 M245,144 L325,170 M325,214 L420,238 M480,238 L575,214 M575,170 L655,144 M655,100 L740,74" stroke="var(--border-2)" stroke-width="2" fill="none"/>
+        <!-- matching dashed links -->
+        <line x1="260" y1="52" x2="640" y2="52" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#v7)"/>
+        <line x1="340" y1="122" x2="560" y2="122" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#v7)"/>
+        <line x1="420" y1="192" x2="480" y2="192" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#v7)"/>
+        <text x="450" y="46" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--muted)">validation — “right thing?”</text>
+        <text x="450" y="186" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--muted)">verification — “built it right?”</text>
+      </svg>
+      <div class="cap">Left arm = what you specify · right arm = how you check it · each level tests the one across from it</div>
+    </div>
+    <p class="foot-note">V&amp;V framing from <strong>Boehm (1979)</strong>: <em>Validation</em> = are we building the right product? <em>Verification</em> = are we building the product right? (Sommerville 9e, §8).</p>
+    <div class="plain g"><span class="lab">In plain terms</span><p>It's <strong>writing</strong> (left arm) and <strong>proofreading</strong> (right arm). You proofread each part against what you meant to write: verification = “no typos, matches the plan”; validation = “this is the chapter the reader actually needed.”</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· A test = input + expected</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">IDEA 2 · WHAT A TEST ACTUALLY IS</span>
+    <h2 class="head">Give known input → check the result equals what you expect</h2>
+    <p class="dek narrow">If the real output matches the expected output, the test <strong>passes</strong>. If not, it <strong>fails</strong> — and you just found a bug, cheaply, before a user did.</p>
+    <div class="figblock">
+      <svg viewBox="0 0 900 230" style="width:100%;height:30vh;display:block;margin:.4vh auto">
+        <defs><marker id="ar7" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="var(--blue)"/></marker></defs>
+        <rect x="30" y="80" width="210" height="70" rx="12" fill="#fff" stroke="var(--green)" stroke-width="3"/>
+        <text x="135" y="112" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="20" fill="var(--ink)">Input</text>
+        <text x="135" y="135" text-anchor="middle" font-family="var(--mono)" font-size="13" fill="var(--muted)">task due 10 Aug, today 9 Aug</text>
+        <rect x="345" y="80" width="210" height="70" rx="12" fill="#fff" stroke="var(--blue)" stroke-width="3"/>
+        <text x="450" y="112" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="20" fill="var(--ink)">function()</text>
+        <text x="450" y="135" text-anchor="middle" font-family="var(--mono)" font-size="13" fill="var(--muted)">tasks_due_for_reminder</text>
+        <rect x="660" y="80" width="210" height="70" rx="12" fill="#fff" stroke="var(--blue)" stroke-width="3"/>
+        <text x="765" y="120" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="20" fill="var(--ink)">Output</text>
+        <line x1="240" y1="115" x2="342" y2="115" stroke="var(--blue)" stroke-width="3" marker-end="url(#ar7)"/>
+        <line x1="555" y1="115" x2="657" y2="115" stroke="var(--blue)" stroke-width="3" marker-end="url(#ar7)"/>
+        <text x="450" y="205" text-anchor="middle" font-family="var(--disp)" font-size="22" fill="var(--ink)">Output = Expected ?&#160;&#160;<tspan fill="var(--green)" font-weight="700">✓ pass</tspan>&#160;/&#160;<tspan fill="var(--red)" font-weight="700">✗ fail = bug</tspan></text>
+      </svg>
+      <div class="cap">A test is a tiny, repeatable experiment on your code</div>
+    </div>
+    <div class="plain g"><span class="lab">In plain terms</span><p>Type 2 + 2 into a calculator and you <strong>expect</strong> 4. If the screen shows 5, the calculator has a bug. A test is exactly that check — an expected answer you write down once, so the computer re-checks it for you every time.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Unit testing</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">IDEA 3 · THE SMALLEST USEFUL TEST</span>
+    <h2 class="head">A unit test checks one small piece in isolation</h2>
+    <div class="grid g3">
+      <div class="scard c-blue"><div class="lbl">One unit</div><h3>Usually one function</h3><p>Test <code>tasks_due_for_reminder()</code> alone — no database, no UI, no network.</p><div class="bar n1"><i></i><i></i><i></i></div></div>
+      <div class="scard c-green"><div class="lbl">Fast</div><h3>Runs in milliseconds</h3><p>So you run them constantly — after every change, not once at the end.</p><div class="bar n2"><i></i><i></i><i></i></div></div>
+      <div class="scard c-red"><div class="lbl">Precise</div><h3>Pinpoints the break</h3><p>When one fails, you know <em>exactly</em> which piece broke — no hunting.</p><div class="bar n3"><i></i><i></i><i></i></div></div>
+    </div>
+    <div class="plain g"><span class="lab">In plain terms</span>
+      <p>Unit tests are like checking each <strong>LEGO brick</strong> is the right shape before you build the castle. Cheaper to catch a bad brick now than to tear down the whole thing later.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Acceptance criteria → tests</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker blue">IDEA 4 · THE GOLDEN THREAD REACHES TESTING</span>
+    <h2 class="head">Each acceptance criterion becomes a test</h2>
+    <div class="grid g2" style="align-items:start">
+      <div>
+        <span class="lead-tag">FROM YOUR SRS</span>
+        <div class="panel">
+          <div class="row"><span class="sq b-blue"></span><span class="txt"><strong>FR-1</strong> — remind an open task 1 day before it is due</span></div>
+          <div class="row"><span class="sq b-green"></span><span class="txt">AC: open task due tomorrow → <em>appears</em> in reminders</span></div>
+          <div class="row"><span class="sq b-red"></span><span class="txt">AC: a <code>done</code> task → does <em>not</em> appear</span></div>
+        </div>
+        <p class="foot-note">Problem → FR → Design → Code → <strong>Test</strong>. Same thread, one step further.</p>
+      </div>
+      <div>
+        <p class="codecap">Two criteria, two tests</p>
+        <div class="code sm"><span class="k">def</span> test_reminds_open_task_1_day_before():
+  tasks = [Task(due=date(2026,8,10), status=<span class="s">'open'</span>)]
+  <span class="k">assert</span> tasks_due_for_reminder(tasks, date(2026,8,9)) == tasks
+
+<span class="k">def</span> test_does_not_remind_done_task():
+  tasks = [Task(due=date(2026,8,10), status=<span class="s">'done'</span>)]
+  <span class="k">assert</span> tasks_due_for_reminder(tasks, date(2026,8,9)) == []</div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Choosing inputs · EP &amp; BVA</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker blue">CHOOSING TEST INPUTS · TWO CLASSIC TECHNIQUES (SWEBOK · SOMMERVILLE §8)</span>
+    <h2 class="head">You can’t test every input — so test the right few</h2>
+    <div class="grid g2" style="align-items:start;margin-bottom:1vh">
+      <div class="bcard"><span class="lbl">Equivalence Partitioning (EP)</span><h3>Group inputs that behave the same</h3><p>Split inputs into <strong>classes</strong> the code treats alike, then test <strong>one value from each</strong> — one valid, one too short, one too long. One test now stands for a whole range.</p></div>
+      <div class="bcard"><span class="lbl">Boundary Value Analysis (BVA)</span><h3>Bugs hide at the edges</h3><p>Test right <strong>at and around each boundary</strong> — the first and last allowed value, and just outside. This is where “≤ vs &lt;” and off-by-one bugs live.</p></div>
+    </div>
+    <div class="figblock">
+      <svg viewBox="0 0 900 150" style="width:100%;max-height:30vh;display:block" xmlns="http://www.w3.org/2000/svg">
+        <rect x="60" y="60" width="200" height="28" fill="#FFECE9"/>
+        <rect x="260" y="60" width="380" height="28" fill="#E4F6EE"/>
+        <rect x="640" y="60" width="200" height="28" fill="#FFECE9"/>
+        <line x1="60" y1="88" x2="840" y2="88" stroke="var(--ink)" stroke-width="2"/>
+        <text x="160" y="50" text-anchor="middle" font-family="var(--mono)" font-size="13" fill="var(--red)">invalid · too short</text>
+        <text x="450" y="50" text-anchor="middle" font-family="var(--mono)" font-size="13" fill="#0B7A4A">valid · 1–100 chars</text>
+        <text x="740" y="50" text-anchor="middle" font-family="var(--mono)" font-size="13" fill="var(--red)">invalid · too long</text>
+        <g font-family="var(--mono)" font-size="13">
+          <circle cx="160" cy="88" r="6" fill="var(--red)"/><text x="160" y="115" text-anchor="middle" fill="var(--ink)">0 (empty)</text><text x="160" y="132" text-anchor="middle" fill="var(--red)">✗</text>
+          <circle cx="260" cy="88" r="6" fill="#0B7A4A"/><text x="260" y="115" text-anchor="middle" fill="var(--ink)">1 (min)</text><text x="260" y="132" text-anchor="middle" fill="#0B7A4A">✓</text>
+          <circle cx="450" cy="88" r="6" fill="#0B7A4A"/><text x="450" y="115" text-anchor="middle" fill="var(--ink)">50 (mid)</text><text x="450" y="132" text-anchor="middle" fill="#0B7A4A">✓</text>
+          <circle cx="640" cy="88" r="6" fill="#0B7A4A"/><text x="640" y="115" text-anchor="middle" fill="var(--ink)">100 (max)</text><text x="640" y="132" text-anchor="middle" fill="#0B7A4A">✓</text>
+          <circle cx="740" cy="88" r="6" fill="var(--red)"/><text x="740" y="115" text-anchor="middle" fill="var(--ink)">101</text><text x="740" y="132" text-anchor="middle" fill="var(--red)">✗</text>
+        </g>
+      </svg>
+      <div class="cap">StudyMate: a task title must be 1–100 chars — EP picks one per band (0 · 50 · 101); BVA adds the edges (1 · 100)</div>
+    </div>
+    <p class="foot-note">Five well-chosen tests beat a hundred random ones. Same idea for a <strong>due date</strong> (past / today / future) or a reminder window. Source: Sommerville 9e §8.1.2 (choosing test cases — partitions &amp; boundaries); SWEBOK v4 Testing KA.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Levels of testing</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">IDEA 3b · LEVELS OF TESTING (SOMMERVILLE §8.1–§8.4)</span>
+    <h2 class="head">Many small tests at the base, a few big ones on top</h2>
+    <div class="grid g2" style="align-items:center">
+      <div class="figblock">
+        <svg viewBox="0 0 600 300" style="width:100%;height:34vh;display:block">
+          <polygon points="300,20 540,270 60,270" fill="none" stroke="var(--border-2)" stroke-width="2"/>
+          <line x1="140" y1="188" x2="460" y2="188" stroke="var(--border-2)" stroke-width="2"/>
+          <line x1="205" y1="105" x2="395" y2="105" stroke="var(--border-2)" stroke-width="2"/>
+          <polygon points="300,20 395,105 205,105" fill="var(--red)" opacity=".85"/>
+          <polygon points="205,105 395,105 460,188 140,188" fill="var(--yellow)"/>
+          <polygon points="140,188 460,188 540,270 60,270" fill="var(--gbox)"/>
+          <text x="300" y="80" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="14" fill="#fff">System / release</text>
+          <text x="300" y="152" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="16" fill="var(--ink)">Integration / component</text>
+          <text x="300" y="232" text-anchor="middle" font-family="var(--disp)" font-weight="700" font-size="18" fill="#fff">Unit tests</text>
+          <text x="560" y="250" text-anchor="end" font-family="var(--mono)" font-size="12" fill="var(--muted)">many · fast</text>
+          <text x="300" y="300" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--muted)">few · slow (top)</text>
+        </svg>
+      </div>
+      <div>
+        <div class="num-row"><span class="n">1</span><div><h4>Development testing (§8.1)</h4><p>You, during the build: <strong>unit</strong> → component → system tests.</p></div></div>
+        <div class="num-row"><span class="n g">2</span><div><h4>Release testing (§8.3)</h4><p>A separate check of the whole version before users get it.</p></div></div>
+        <div class="num-row"><span class="n y">3</span><div><h4>User testing (§8.4)</h4><p>Real users try it — <strong>acceptance testing</strong> is the formal form.</p></div></div>
+        <p class="foot-note" style="margin-top:1.2vh">Pyramid shape: Cohn (2009). Most of your effort is cheap unit tests at the base.</p>
+      </div>
+    </div>
+    <div class="plain g"><span class="lab">In plain terms</span><p>Like checking a car: test each part on the bench many times (cheap, fast = <strong>unit tests</strong>), then take a few full test-drives (slow, expensive = <strong>system tests</strong>). Most of your checking lives at the bottom.</p></div>
+  </div>
+</section>
+<style>.lvl5 .dek{font-size:1.5vw;margin-bottom:.9vh}.lvl5 .panel{padding:.1vh 1.6vw}.lvl5 .num-row{padding:.8vh .4vw}.lvl5 .num-row h4{font-size:1.28vw;margin-bottom:.05vh}.lvl5 .num-row p{font-size:1.08vw;line-height:1.28}.lvl5 .num-row .n{width:2vw;height:2vw;font-size:1.05vw}.lvl5 .foot-note{margin-top:1.1vh}</style>
+<section class="slide lvl5">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Levels · Unit</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker blue">LEVELS OF TESTING · 1/5 · UNIT</span>
+    <h2 class="head">Unit testing — one function, in isolation</h2>
+    <div class="grid g2" style="grid-template-columns:.8fr 1.2fr;gap:2vw;align-items:start">
+      <div><p class="dek" style="font-size:1.26vw;line-height:1.4;margin-bottom:.7vh"><strong>Testing individual program components — methods or object classes — in isolation</strong> (Sommerville §8.1.1). A defect-testing process: fast (milliseconds), and a failure points at exactly one piece.</p>
+        <div class="figblock"><svg viewBox="0 0 300 262" style="width:100%;max-height:42vh;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="8" width="220" height="40" rx="9" fill="#fff" stroke="var(--border-2)" stroke-width="2"/><text x="150" y="33" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="var(--muted)">Today UI</text><line x1="150" y1="48" x2="150" y2="60" stroke="var(--border-2)" stroke-width="2.5"/><rect x="40" y="60" width="220" height="40" rx="9" fill="#fff" stroke="var(--border-2)" stroke-width="2"/><text x="150" y="85" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="var(--muted)">TaskService</text><line x1="150" y1="100" x2="150" y2="112" stroke="var(--border-2)" stroke-width="2.5"/><rect x="40" y="112" width="220" height="40" rx="9" fill="var(--gbox)" stroke="var(--gbox)" stroke-width="2"/><text x="150" y="137" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">ReminderScheduler</text><line x1="150" y1="152" x2="150" y2="164" stroke="var(--border-2)" stroke-width="2.5"/><rect x="40" y="164" width="220" height="40" rx="9" fill="#fff" stroke="var(--border-2)" stroke-width="2"/><text x="150" y="189" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="var(--muted)">TaskRepository</text><line x1="150" y1="204" x2="150" y2="216" stroke="var(--border-2)" stroke-width="2.5"/><rect x="40" y="216" width="220" height="40" rx="9" fill="#fff" stroke="var(--border-2)" stroke-width="2"/><text x="150" y="241" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="var(--muted)">Notifier</text></svg><div class="cap" style="margin-top:.3vh">highlighted = tested at this level</div></div></div>
+      <div class="panel" style="padding:.1vh 1.4vw"><div class="num-row"><span class="n g">1</span><div><h4><code>days_until_due(task, today)</code></h4><p>Due 10 Aug, today 8 Aug → returns <code>2</code>. <span style="color:var(--muted)">· core date maths, zero dependencies</span></p></div></div><div class="num-row"><span class="n g">2</span><div><h4>Boundaries of that function</h4><p>Overdue → a <em>negative</em> number; due <em>today</em> → <code>0</code>. <span style="color:var(--muted)">· off-by-one is the classic bug</span></p></div></div><div class="num-row"><span class="n g">3</span><div><h4><code>tasks_due_for_reminder(…)</code></h4><p>An <code>open</code> task due tomorrow → is <em>in</em> the list. <span style="color:var(--muted)">· the happy path of FR-1</span></p></div></div><div class="num-row"><span class="n g">4</span><div><h4>The “should-not” case</h4><p>A <code>done</code> task → is <em>not</em> reminded. <span style="color:var(--muted)">· proves the filter really filters</span></p></div></div><div class="num-row"><span class="n g">5</span><div><h4><code>is_valid_title(title)</code></h4><p>Empty / spaces-only → rejected; a normal title → accepted. <span style="color:var(--muted)">· input validation in isolation</span></p></div></div></div>
+    </div>
+    <p class="foot-note">Base of the pyramid — the most numerous, fastest, cheapest tests. Mostly <strong>verification</strong>.</p>
+  </div>
+</section>
+<section class="slide lvl5">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Levels · Integration</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker blue">LEVELS OF TESTING · 2/5 · INTEGRATION</span>
+    <h2 class="head">Integration / component testing — modules via their interfaces</h2>
+    <div class="grid g2" style="grid-template-columns:.8fr 1.2fr;gap:2vw;align-items:start">
+      <div><p class="dek" style="font-size:1.26vw;line-height:1.4;margin-bottom:.7vh"><strong>Several units combined into composite components, tested through their interfaces</strong> (Sommerville §8.1.3; SWEBOK calls it <em>integration testing</em>). The bugs live <em>between</em> the pieces, not inside one unit.</p>
+        <div class="figblock"><svg viewBox="0 0 300 262" style="width:100%;max-height:42vh;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="8" width="220" height="40" rx="9" fill="#fff" stroke="var(--border-2)" stroke-width="2"/><text x="150" y="33" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="var(--muted)">Today UI</text><line x1="150" y1="48" x2="150" y2="60" stroke="var(--border-2)" stroke-width="2.5"/><rect x="40" y="60" width="220" height="40" rx="9" fill="var(--blue)" stroke="var(--blue)" stroke-width="2"/><text x="150" y="85" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">TaskService</text><line x1="150" y1="100" x2="150" y2="112" stroke="var(--blue)" stroke-width="2.5"/><rect x="40" y="112" width="220" height="40" rx="9" fill="var(--blue)" stroke="var(--blue)" stroke-width="2"/><text x="150" y="137" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">ReminderScheduler</text><line x1="150" y1="152" x2="150" y2="164" stroke="var(--blue)" stroke-width="2.5"/><rect x="40" y="164" width="220" height="40" rx="9" fill="var(--blue)" stroke="var(--blue)" stroke-width="2"/><text x="150" y="189" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">TaskRepository</text><line x1="150" y1="204" x2="150" y2="216" stroke="var(--border-2)" stroke-width="2.5"/><rect x="40" y="216" width="220" height="40" rx="9" fill="#fff" stroke="var(--border-2)" stroke-width="2"/><text x="150" y="241" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="var(--muted)">Notifier</text></svg><div class="cap" style="margin-top:.3vh">highlighted = tested at this level</div></div></div>
+      <div class="panel" style="padding:.1vh 1.4vw"><div class="num-row"><span class="n ">1</span><div><h4>Add via the service</h4><p><code>TaskService.add(…)</code> → stored in <code>TaskRepository</code> and read back. <span style="color:var(--muted)">· logic + persistence together</span></p></div></div><div class="num-row"><span class="n ">2</span><div><h4>Scheduler + repo + notifier</h4><p>A due task flows through and a reminder is created by the notifier. <span style="color:var(--muted)">· three modules, one path</span></p></div></div><div class="num-row"><span class="n ">3</span><div><h4>Mark done, end of chain</h4><p>Stored status updates <em>and</em> the task drops from tomorrow’s reminders. <span style="color:var(--muted)">· one action, two modules react</span></p></div></div><div class="num-row"><span class="n ">4</span><div><h4>Invalid data at the boundary</h4><p>A bad due date is rejected; <em>nothing</em> is written to the repository. <span style="color:var(--muted)">· validation guards persistence</span></p></div></div><div class="num-row"><span class="n ">5</span><div><h4>Today screen ↔ repository</h4><p>The component queries the repo and renders the correct list for today. <span style="color:var(--muted)">· UI reads real data correctly</span></p></div></div></div>
+    </div>
+    <p class="foot-note">The other level you’ll actually build on your prototype in this course.</p>
+  </div>
+</section>
+<section class="slide lvl5">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Levels · System</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker blue">LEVELS OF TESTING · 3/5 · SYSTEM</span>
+    <h2 class="head">System testing — the whole app, end-to-end</h2>
+    <div class="grid g2" style="grid-template-columns:.8fr 1.2fr;gap:2vw;align-items:start">
+      <div><p class="dek" style="font-size:1.26vw;line-height:1.4;margin-bottom:.7vh"><strong>Integrate the components into a version of the whole system and test it together</strong> — that they interact correctly and pass the right data across interfaces (Sommerville §8.1.4). Also covers performance &amp; security.</p>
+        <div class="figblock"><svg viewBox="0 0 300 262" style="width:100%;max-height:42vh;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="8" width="220" height="40" rx="9" fill="var(--ink)" stroke="var(--ink)" stroke-width="2"/><text x="150" y="33" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">Today UI</text><line x1="150" y1="48" x2="150" y2="60" stroke="var(--ink)" stroke-width="2.5"/><rect x="40" y="60" width="220" height="40" rx="9" fill="var(--ink)" stroke="var(--ink)" stroke-width="2"/><text x="150" y="85" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">TaskService</text><line x1="150" y1="100" x2="150" y2="112" stroke="var(--ink)" stroke-width="2.5"/><rect x="40" y="112" width="220" height="40" rx="9" fill="var(--ink)" stroke="var(--ink)" stroke-width="2"/><text x="150" y="137" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">ReminderScheduler</text><line x1="150" y1="152" x2="150" y2="164" stroke="var(--ink)" stroke-width="2.5"/><rect x="40" y="164" width="220" height="40" rx="9" fill="var(--ink)" stroke="var(--ink)" stroke-width="2"/><text x="150" y="189" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">TaskRepository</text><line x1="150" y1="204" x2="150" y2="216" stroke="var(--ink)" stroke-width="2.5"/><rect x="40" y="216" width="220" height="40" rx="9" fill="var(--ink)" stroke="var(--ink)" stroke-width="2"/><text x="150" y="241" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">Notifier</text></svg><div class="cap" style="margin-top:.3vh">highlighted = tested at this level</div></div></div>
+      <div class="panel" style="padding:.1vh 1.4vw"><div class="num-row"><span class="n p">1</span><div><h4>Add → see it</h4><p>Add a task with a due date, save → it appears on the Today screen. <span style="color:var(--muted)">· a full feature, end to end</span></p></div></div><div class="num-row"><span class="n p">2</span><div><h4>Reminder fires</h4><p>A task due tomorrow → a notification at the scheduled time. <span style="color:var(--muted)">· FR-1, across the real app</span></p></div></div><div class="num-row"><span class="n p">3</span><div><h4>Done disappears</h4><p>Removes it from the active list <em>and</em> reminders; counts it complete. <span style="color:var(--muted)">· state consistent everywhere</span></p></div></div><div class="num-row"><span class="n p">4</span><div><h4>Access control</h4><p>User A cannot see or open user B’s tasks. <span style="color:var(--muted)">· security, system-wide (Ch8)</span></p></div></div><div class="num-row"><span class="n p">5</span><div><h4>Performance (NFR)</h4><p>With 500 tasks, the Today screen loads in &lt; 2 s. <span style="color:var(--muted)">· measure it, don’t assume it</span></p></div></div></div>
+    </div>
+    <p class="foot-note">Understand-only in this course — know what it is and why it matters.</p>
+  </div>
+</section>
+<section class="slide lvl5">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Levels · Release</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker blue">LEVELS OF TESTING · 4/5 · RELEASE</span>
+    <h2 class="head">Release testing — a separate team, the full version</h2>
+    <div class="grid g2" style="grid-template-columns:.8fr 1.2fr;gap:2vw;align-items:start">
+      <div><p class="dek" style="font-size:1.26vw;line-height:1.4;margin-bottom:.7vh"><strong>A separate team tests a complete version meant for use outside the dev team</strong>, checking it meets stakeholders’ requirements (Sommerville §8.3). A form of system testing, done before shipping.</p>
+        <div class="figblock"><svg viewBox="0 0 300 282" style="width:100%;max-height:42vh;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg"><rect x="40" y="8" width="220" height="40" rx="9" fill="#a67a00" stroke="#a67a00" stroke-width="2"/><text x="150" y="33" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">Today UI</text><line x1="150" y1="48" x2="150" y2="60" stroke="#a67a00" stroke-width="2.5"/><rect x="40" y="60" width="220" height="40" rx="9" fill="#a67a00" stroke="#a67a00" stroke-width="2"/><text x="150" y="85" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">TaskService</text><line x1="150" y1="100" x2="150" y2="112" stroke="#a67a00" stroke-width="2.5"/><rect x="40" y="112" width="220" height="40" rx="9" fill="#a67a00" stroke="#a67a00" stroke-width="2"/><text x="150" y="137" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">ReminderScheduler</text><line x1="150" y1="152" x2="150" y2="164" stroke="#a67a00" stroke-width="2.5"/><rect x="40" y="164" width="220" height="40" rx="9" fill="#a67a00" stroke="#a67a00" stroke-width="2"/><text x="150" y="189" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">TaskRepository</text><line x1="150" y1="204" x2="150" y2="216" stroke="#a67a00" stroke-width="2.5"/><rect x="40" y="216" width="220" height="40" rx="9" fill="#a67a00" stroke="#a67a00" stroke-width="2"/><text x="150" y="241" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">Notifier</text><text x="150" y="277" text-anchor="middle" font-family="var(--mono)" font-size="13" fill="#a67a00" font-weight="700">✓ v1.0 — ready to ship</text></svg><div class="cap" style="margin-top:.3vh">highlighted = tested at this level</div></div></div>
+      <div class="panel" style="padding:.1vh 1.4vw"><div class="num-row"><span class="n y">1</span><div><h4>Requirements coverage</h4><p>Every FR (FR-1 remind, FR-2 list, FR-3 edit…) has a passing end-to-end check. <span style="color:var(--muted)">· nothing promised is missing</span></p></div></div><div class="num-row"><span class="n y">2</span><div><h4>Target platforms</h4><p>Installs and runs on supported devices (e.g. iOS + Android). <span style="color:var(--muted)">· works where users are</span></p></div></div><div class="num-row"><span class="n y">3</span><div><h4>No regression after update</h4><p>An existing user’s saved tasks still load on the new version. <span style="color:var(--muted)">· new code didn’t break old data</span></p></div></div><div class="num-row"><span class="n y">4</span><div><h4>Realistic failure</h4><p>No internet → a clear message, no crash, the reminder is queued. <span style="color:var(--muted)">· graceful under bad conditions</span></p></div></div><div class="num-row"><span class="n y">5</span><div><h4>Data safety</h4><p>No secrets or real personal data leak into logs or responses. <span style="color:var(--muted)">· ship-ready and PDPA-aware (Ch8)</span></p></div></div></div>
+    </div>
+    <p class="foot-note">Understand-only — done by a separate team before shipping.</p>
+  </div>
+</section>
+<section class="slide lvl5">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Levels · Acceptance</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker blue">LEVELS OF TESTING · 5/5 · ACCEPTANCE</span>
+    <h2 class="head">Acceptance / user testing — real users validate</h2>
+    <div class="grid g2" style="grid-template-columns:.8fr 1.2fr;gap:2vw;align-items:start">
+      <div><p class="dek" style="font-size:1.26vw;line-height:1.4;margin-bottom:.7vh"><strong>Users test it in their own environment; in acceptance testing the customer formally decides whether to accept it</strong> (Sommerville §8.4). This is <em>validation</em> — you can pass every level below and still fail here.</p>
+        <div class="figblock"><svg viewBox="0 0 300 300" style="width:100%;max-height:42vh;display:block;margin:0 auto" xmlns="http://www.w3.org/2000/svg"><rect x="55" y="2" width="190" height="30" rx="15" fill="var(--red)"/><text x="150" y="22" text-anchor="middle" font-family="var(--mono)" font-size="14" fill="#fff">real users</text><line x1="150" y1="32" x2="150" y2="46" stroke="var(--red)" stroke-width="2.5"/><rect x="40" y="46" width="220" height="40" rx="9" fill="var(--red)" stroke="var(--red)" stroke-width="2"/><text x="150" y="71" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">Today UI</text><line x1="150" y1="86" x2="150" y2="98" stroke="var(--red)" stroke-width="2.5"/><rect x="40" y="98" width="220" height="40" rx="9" fill="var(--red)" stroke="var(--red)" stroke-width="2"/><text x="150" y="123" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">TaskService</text><line x1="150" y1="138" x2="150" y2="150" stroke="var(--red)" stroke-width="2.5"/><rect x="40" y="150" width="220" height="40" rx="9" fill="var(--red)" stroke="var(--red)" stroke-width="2"/><text x="150" y="175" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">ReminderScheduler</text><line x1="150" y1="190" x2="150" y2="202" stroke="var(--red)" stroke-width="2.5"/><rect x="40" y="202" width="220" height="40" rx="9" fill="var(--red)" stroke="var(--red)" stroke-width="2"/><text x="150" y="227" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">TaskRepository</text><line x1="150" y1="242" x2="150" y2="254" stroke="var(--red)" stroke-width="2.5"/><rect x="40" y="254" width="220" height="40" rx="9" fill="var(--red)" stroke="var(--red)" stroke-width="2"/><text x="150" y="279" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">Notifier</text></svg><div class="cap" style="margin-top:.3vh">highlighted = tested at this level</div></div></div>
+      <div class="panel" style="padding:.1vh 1.4vw"><div class="num-row"><span class="n r">1</span><div><h4>Real use</h4><p>A student uses StudyMate for a week → the reminders really help. <span style="color:var(--muted)">· does it solve the problem?</span></p></div></div><div class="num-row"><span class="n r">2</span><div><h4>Formal sign-off</h4><p>The customer runs the agreed SRS acceptance scenarios and accepts. <span style="color:var(--muted)">· contractual validation</span></p></div></div><div class="num-row"><span class="n r">3</span><div><h4>Usability</h4><p>A first-timer adds a task and sets a reminder, no instructions, in &lt; 1 min. <span style="color:var(--muted)">· learnable without a manual</span></p></div></div><div class="num-row"><span class="n r">4</span><div><h4>Right timing</h4><p>The reminder time (1 day before, a useful hour) matches what users want. <span style="color:var(--muted)">· validated, not assumed</span></p></div></div><div class="num-row"><span class="n r">5</span><div><h4>Fits real habits</h4><p>Users confirm the done / Today flow matches how they really plan study. <span style="color:var(--muted)">· the right mental model</span></p></div></div></div>
+    </div>
+    <p class="foot-note">The only level that proves <strong>validation</strong> — the right thing, not just built right. How to measure it → next: TAM / UTAUT2 / SUS.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Acceptance · TAM</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker red">ACCEPTANCE · TECHNOLOGY ACCEPTANCE MODEL (DAVIS, 1989)</span>
+    <h2 class="head">TAM: two things decide whether people adopt it</h2>
+    <div class="grid g2" style="grid-template-columns:1.15fr .85fr;gap:2vw;align-items:start">
+      <div class="figblock">
+        <svg viewBox="0 0 640 220" style="width:100%;max-height:42vh;display:block" xmlns="http://www.w3.org/2000/svg">
+          <defs><marker id="ta" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="var(--muted)"/></marker></defs>
+          <rect x="18" y="20" width="190" height="52" rx="9" fill="#fff" stroke="var(--red)" stroke-width="2"/><text x="113" y="51" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="var(--ink)">Perceived Usefulness</text>
+          <rect x="18" y="148" width="190" height="52" rx="9" fill="#fff" stroke="var(--red)" stroke-width="2"/><text x="113" y="179" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="var(--ink)">Perceived Ease of Use</text>
+          <rect x="300" y="84" width="180" height="52" rx="9" fill="var(--red)"/><text x="390" y="115" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">Intention to Use</text>
+          <rect x="520" y="84" width="104" height="52" rx="9" fill="var(--ink)"/><text x="572" y="115" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">Use</text>
+          <line x1="113" y1="148" x2="113" y2="72" stroke="var(--muted)" stroke-width="2" marker-end="url(#ta)"/><text x="120" y="118" font-family="var(--mono)" font-size="10" fill="var(--muted)">eases →</text>
+          <line x1="208" y1="46" x2="300" y2="100" stroke="var(--muted)" stroke-width="2" marker-end="url(#ta)"/>
+          <line x1="208" y1="174" x2="300" y2="122" stroke="var(--muted)" stroke-width="2" marker-end="url(#ta)"/>
+          <line x1="480" y1="110" x2="520" y2="110" stroke="var(--ink)" stroke-width="2" marker-end="url(#ta)"/>
+        </svg>
+        <div class="cap">Usefulness + ease of use → intention → use</div>
+      </div>
+      <div>
+        <div class="plain"><span class="lab">Example · StudyMate survey (rate 1–5)</span><p><strong>PU:</strong> “StudyMate helps me not miss deadlines.”<br><strong>PEOU:</strong> “Adding a task is easy.” → average each.</p></div>
+        <div class="plain g"><span class="lab">When to use</span><p>Early, quick read on <em>why</em> people would adopt a <strong>work / productivity</strong> tool — only two levers, a short survey, easy to analyse.</p></div>
+      </div>
+    </div>
+    <p class="foot-note">Source: Davis, F. D. (1989), <em>MIS Quarterly</em> 13(3). Ease of use also raises usefulness (easier → feels more useful).</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Acceptance · UTAUT2</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker red">ACCEPTANCE · UTAUT2 (VENKATESH, THONG &amp; XU, 2012)</span>
+    <h2 class="head">UTAUT2: seven drivers of whether people use it</h2>
+    <div class="grid g2" style="grid-template-columns:1.3fr .7fr;gap:1.6vw;align-items:start">
+      <div class="figblock"><svg viewBox="0 0 640 322" style="width:100%;max-height:54vh;display:block" xmlns="http://www.w3.org/2000/svg"><defs><marker id="ua" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="var(--muted)"/></marker></defs><rect x="18" y="8" width="250" height="30" rx="7" fill="#fff" stroke="var(--border-2)" stroke-width="1.5"/><text x="30" y="28" font-family="var(--mono)" font-size="13" fill="var(--ink)"><tspan font-weight="700">PE</tspan>  Performance Expectancy</text><line x1="268" y1="23" x2="430" y2="150" stroke="var(--border-2)" stroke-width="1.2" marker-end="url(#ua)"/><rect x="18" y="48" width="250" height="30" rx="7" fill="#fff" stroke="var(--border-2)" stroke-width="1.5"/><text x="30" y="68" font-family="var(--mono)" font-size="13" fill="var(--ink)"><tspan font-weight="700">EE</tspan>  Effort Expectancy</text><line x1="268" y1="63" x2="430" y2="150" stroke="var(--border-2)" stroke-width="1.2" marker-end="url(#ua)"/><rect x="18" y="88" width="250" height="30" rx="7" fill="#fff" stroke="var(--border-2)" stroke-width="1.5"/><text x="30" y="108" font-family="var(--mono)" font-size="13" fill="var(--ink)"><tspan font-weight="700">SI</tspan>  Social Influence</text><line x1="268" y1="103" x2="430" y2="150" stroke="var(--border-2)" stroke-width="1.2" marker-end="url(#ua)"/><rect x="18" y="128" width="250" height="30" rx="7" fill="#fff" stroke="var(--border-2)" stroke-width="1.5"/><text x="30" y="148" font-family="var(--mono)" font-size="13" fill="var(--ink)"><tspan font-weight="700">FC</tspan>  Facilitating Conditions</text><line x1="268" y1="143" x2="430" y2="150" stroke="var(--border-2)" stroke-width="1.2" marker-end="url(#ua)"/><rect x="18" y="168" width="250" height="30" rx="7" fill="#fff" stroke="var(--border-2)" stroke-width="1.5"/><text x="30" y="188" font-family="var(--mono)" font-size="13" fill="var(--ink)"><tspan font-weight="700">HM</tspan>  Hedonic Motivation</text><line x1="268" y1="183" x2="430" y2="150" stroke="var(--border-2)" stroke-width="1.2" marker-end="url(#ua)"/><rect x="18" y="208" width="250" height="30" rx="7" fill="#fff" stroke="var(--border-2)" stroke-width="1.5"/><text x="30" y="228" font-family="var(--mono)" font-size="13" fill="var(--ink)"><tspan font-weight="700">PV</tspan>  Price Value</text><line x1="268" y1="223" x2="430" y2="150" stroke="var(--border-2)" stroke-width="1.2" marker-end="url(#ua)"/><rect x="18" y="248" width="250" height="30" rx="7" fill="#fff" stroke="var(--border-2)" stroke-width="1.5"/><text x="30" y="268" font-family="var(--mono)" font-size="13" fill="var(--ink)"><tspan font-weight="700">HB</tspan>  Habit</text><line x1="268" y1="263" x2="430" y2="150" stroke="var(--border-2)" stroke-width="1.2" marker-end="url(#ua)"/><rect x="430" y="125" width="185" height="50" rx="9" fill="var(--red)"/><text x="522" y="155" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">Behavioural Intention</text><rect x="430" y="240" width="185" height="46" rx="9" fill="var(--ink)"/><text x="522" y="268" text-anchor="middle" font-family="var(--mono)" font-size="13.5" fill="#fff">Use Behaviour</text><line x1="522" y1="175" x2="522" y2="240" stroke="var(--ink)" stroke-width="2" marker-end="url(#ua)"/><text x="320" y="312" text-anchor="middle" font-family="var(--mono)" font-size="12" fill="var(--muted)">moderated by: age · gender · experience</text></svg><div class="cap">seven drivers → intention → use</div></div>
+      <div>
+        <div class="plain"><span class="lab">Example · StudyMate (rate 1–5)</span><p>“Helps my grades” (PE) · “easy to learn” (EE) · “my friends use it” (SI) · “I open it automatically” (Habit).</p></div>
+        <div class="plain g"><span class="lab">When to use</span><p>When you need a <strong>fuller, consumer-app</strong> picture — adds motivation, price, habit &amp; social factors beyond TAM. Heavier survey; usually in research / theses.</p></div>
+      </div>
+    </div>
+    <p class="foot-note">Source: Venkatesh, Thong &amp; Xu (2012), <em>MIS Quarterly</em> 36(1); extends UTAUT (Venkatesh et al., 2003).</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Measuring acceptance · SUS</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker red">ACCEPTANCE · SYSTEM USABILITY SCALE (BROOKE, 1996)</span>
+    <h2 class="head">SUS: ten questions → one score out of 100</h2>
+    <div class="grid g2" style="align-items:start">
+      <div>
+        <div class="num-row"><span class="n">1</span><div><h4>Ask 10 statements</h4><p>Alternating positive / negative, each rated 1–5 (strongly disagree → agree).</p></div></div>
+        <div class="num-row"><span class="n g">2</span><div><h4>Score each item</h4><p>Odd (positive): response − 1 · Even (negative): 5 − response.</p></div></div>
+        <div class="num-row"><span class="n y">3</span><div><h4>Sum × 2.5</h4><p>Gives one number from <strong>0 to 100</strong> — it is <em>not</em> a percentage.</p></div></div>
+        <div class="num-row"><span class="n r">4</span><div><h4>Interpret</h4><p>~68 = average · 80+ = excellent · under 50 = poor.</p></div></div>
+      </div>
+      <div>
+        <p class="codecap">Example SUS items (StudyMate)</p>
+        <div class="panel" style="padding:.2vh 1.2vw">
+          <div class="num-row"><span class="n">+</span><div><p>“I would use StudyMate often.”</p></div></div>
+          <div class="num-row"><span class="n r">−</span><div><p>“StudyMate was unnecessarily complex.”</p></div></div>
+          <div class="num-row"><span class="n">+</span><div><p>“StudyMate was easy to use.”</p></div></div>
+        </div>
+        <div class="plain g"><span class="lab">When to use SUS</span><p>Short, free, battle-tested — run it on <strong>any</strong> prototype. 5–10 users after a week → a number you compare across versions and put in your report.</p></div>
+      </div>
+    </div>
+    <div class="figblock" style="margin-top:.4vh">
+      <svg viewBox="0 0 820 62" style="width:100%;max-height:11vh;display:block" xmlns="http://www.w3.org/2000/svg">
+        <rect x="40" y="14" width="370" height="20" fill="var(--red)"/>
+        <rect x="410" y="14" width="133" height="20" fill="var(--yellow)"/>
+        <rect x="543" y="14" width="89" height="20" fill="#7ED0A8"/>
+        <rect x="632" y="14" width="148" height="20" fill="var(--gbox)"/>
+        <text x="225" y="29" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="#fff">poor</text>
+        <text x="706" y="29" text-anchor="middle" font-family="var(--mono)" font-size="11" fill="#fff">excellent</text>
+        <polygon points="543,8 537,0 549,0" fill="var(--ink)"/>
+        <g font-family="var(--mono)" font-size="12" fill="var(--muted)" text-anchor="middle">
+          <text x="40" y="52">0</text><text x="410" y="52">50</text><text x="543" y="52" fill="var(--ink)" font-weight="700">68 · avg</text><text x="632" y="52">80</text><text x="780" y="52">100</text>
+        </g>
+      </svg>
+      <div class="cap">A SUS score is interpreted on this 0–100 scale — aim above the ~68 average (Bangor et al., 2009)</div>
+    </div>
+    <p class="foot-note">Sources: Brooke (1996) “SUS: a quick and dirty usability scale”; Bangor, Kortum &amp; Miller (2009) for grades / adjective ratings.</p>
+  </div>
+</section>
+<section class="slide lvl5">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Usability test · the order</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker red">ACCEPTANCE · HOW TO RUN A USABILITY TEST — SUS COMES LAST</span>
+    <h2 class="head">Users do real tasks first — then fill the SUS</h2>
+    <div class="grid g2" style="grid-template-columns:1.05fr .95fr;gap:2vw;align-items:start">
+      <div>
+        <p class="codecap">The order of a session</p>
+        <div class="panel" style="padding:.1vh 1.2vw">
+          <div class="num-row"><span class="n">1</span><div><h4>Write task scenarios</h4><p>Realistic goals a user should be able to accomplish.</p></div></div>
+          <div class="num-row"><span class="n">2</span><div><h4>Recruit 5–10 target users</h4><p>Here: students who’d actually use StudyMate.</p></div></div>
+          <div class="num-row"><span class="n">3</span><div><h4>Brief — “think aloud”</h4><p>They narrate; <strong>you don’t help or hint</strong>.</p></div></div>
+          <div class="num-row"><span class="n">4</span><div><h4>They do each task — you observe</h4><p>Note success / time / errors / where they get stuck.</p></div></div>
+          <div class="num-row"><span class="n r">5</span><div><h4>Then fill the SUS</h4><p>Right after the tasks — 10 items, rated 1–5.</p></div></div>
+          <div class="num-row"><span class="n g">6</span><div><h4>Score + fix + retest</h4><p>SUS 0–100 with your notes → fix worst spots, repeat.</p></div></div>
+        </div>
+      </div>
+      <div>
+        <p class="codecap">Example task scenarios (StudyMate)</p>
+        <div class="panel" style="padding:.1vh 1.2vw">
+          <div class="num-row"><span class="n">T1</span><div><h4>Add a task due Friday</h4><p>Create “Submit report” with this Friday’s date. <span style="color:var(--muted)">· done without help?</span></p></div></div>
+          <div class="num-row"><span class="n">T2</span><div><h4>Turn on a reminder</h4><p>Set it to remind 1 day before due. <span style="color:var(--muted)">· finds the setting?</span></p></div></div>
+          <div class="num-row"><span class="n">T3</span><div><h4>Mark a task done</h4><p>Complete an existing task. <span style="color:var(--muted)">· obvious control?</span></p></div></div>
+          <div class="num-row"><span class="n">T4</span><div><h4>Find overdue tasks</h4><p>Show which tasks are past due. <span style="color:var(--muted)">· can they tell?</span></p></div></div>
+          <div class="num-row"><span class="n">T5</span><div><h4>Change a due date</h4><p>Move a task to next week. <span style="color:var(--muted)">· edit discoverable?</span></p></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="plain g"><span class="lab">Why this order</span><p>SUS measures the <em>feeling</em> of usability; the <strong>task observations tell you where it broke</strong>. You need both — and SUS is only meaningful <strong>after</strong> people have actually used it on real tasks.</p></div>
+    <p class="foot-note">Observe during the tasks; administer SUS immediately after. Source: Brooke (1996); standard usability-testing practice (e.g. Nielsen, 5-user testing).</p>
+  </div>
+</section>
+<section class="slide lvl5">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· SUS questions · StudyMate</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker red">ACCEPTANCE · THE 10 SUS ITEMS, WRITTEN FOR STUDYMATE · RATED 1–5</span>
+    <h2 class="head">The SUS questionnaire for StudyMate</h2>
+    <div class="grid g2" style="gap:2vw;align-items:start">
+      <div>
+        <p class="codecap" style="color:#0B7A4A">Positive items (odd) — score = answer − 1</p>
+        <div class="panel" style="padding:.1vh 1.2vw">
+          <div class="num-row"><span class="n g">1</span><div><p>I would like to use <strong>StudyMate</strong> frequently.</p></div></div>
+          <div class="num-row"><span class="n g">3</span><div><p>I thought StudyMate was <strong>easy to use</strong>.</p></div></div>
+          <div class="num-row"><span class="n g">5</span><div><p>The functions in StudyMate were <strong>well integrated</strong>.</p></div></div>
+          <div class="num-row"><span class="n g">7</span><div><p>Most people would <strong>learn StudyMate very quickly</strong>.</p></div></div>
+          <div class="num-row"><span class="n g">9</span><div><p>I felt <strong>very confident</strong> using StudyMate.</p></div></div>
+        </div>
+      </div>
+      <div>
+        <p class="codecap" style="color:#C43A2B">Negative items (even) — score = 5 − answer</p>
+        <div class="panel" style="padding:.1vh 1.2vw">
+          <div class="num-row"><span class="n r">2</span><div><p>StudyMate was <strong>unnecessarily complex</strong>.</p></div></div>
+          <div class="num-row"><span class="n r">4</span><div><p>I’d need <strong>technical support</strong> to use StudyMate.</p></div></div>
+          <div class="num-row"><span class="n r">6</span><div><p>There was <strong>too much inconsistency</strong> in StudyMate.</p></div></div>
+          <div class="num-row"><span class="n r">8</span><div><p>StudyMate was <strong>very cumbersome</strong> to use.</p></div></div>
+          <div class="num-row"><span class="n r">10</span><div><p>I needed to <strong>learn a lot</strong> before I could get going.</p></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="plain"><span class="lab">How to use these</span><p>Each rated <strong>1 (strongly disagree) – 5 (strongly agree)</strong>, filled <strong>right after the tasks</strong>. Convert (odd: −1 · even: 5−), sum, × 2.5 → a 0–100 score.</p></div>
+    <p class="foot-note">The 10 standard items (Brooke, 1996) with “the system” replaced by “StudyMate.” Keep the wording &amp; the alternating +/− pattern.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Good test vs bad test</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">WRITING TESTS THAT ARE WORTH KEEPING</span>
+    <h2 class="head">A good test is small, clear, and about one thing</h2>
+    <div class="grid g2">
+      <div class="dcard do">
+        <span class="pill">DO</span>
+        <div class="item"><h4>Name it like a sentence</h4><p><code>test_does_not_remind_done_task</code> — the name says what should happen.</p></div>
+        <div class="item"><h4>Test the boundaries</h4><p>Empty list, the exact due date, a huge list — the edges are where bugs hide.</p></div>
+        <div class="item"><h4>One reason to fail</h4><p>Each test checks one behaviour, so a failure points at one cause.</p></div>
+      </div>
+      <div class="dcard dont">
+        <span class="pill">DON'T</span>
+        <div class="item"><h4>Test only the happy path</h4><p>“It works when everything is perfect” proves almost nothing.</p></div>
+        <div class="item"><h4>Assert twenty things at once</h4><p>When it fails you won't know which part broke.</p></div>
+        <div class="item"><h4>Depend on today's date / the network</h4><p>A test that passes Monday and fails Tuesday isn't a test — it's a coin flip.</p></div>
+      </div>
+    </div>
+    <div class="plain"><span class="lab">In plain terms</span><p>A good test is like a good exam question: it asks about <strong>one</strong> thing, and a wrong answer tells you exactly what the student — here, your code — got wrong.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Testing AI-generated code</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker red">AI-FIRST · TESTS ARE HOW YOU CATCH THE AI</span>
+    <h2 class="head">AI writes the happy path; your tests find the edges</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:30%">AI often misses…</th><th>…and the test that catches it</th></tr></thead>
+        <tbody>
+          <tr><td class="b">The empty case</td><td>No tasks at all → should return <code>[]</code>, not crash.</td></tr>
+          <tr><td class="b">The “done” / excluded case</td><td>A completed task must <em>not</em> be reminded.</td></tr>
+          <tr><td class="b">The exact boundary</td><td>Due <em>today</em> vs due <em>tomorrow</em> — off-by-one is the classic AI bug.</td></tr>
+          <tr><td class="b">Silent wrong logic</td><td>Runs fine, returns the wrong list — only an assertion reveals it.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="plain r"><span class="lab">The rule</span>
+      <p>Ask AI for the code <em>and</em> the tests — then <strong>check the tests cover your acceptance criteria</strong>. It almost always leaves one out. Finding that gap is the engineering, and it's what you're graded on.</p></div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Case study · Ariane 5</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker red">CASE STUDY · WHEN A REUSED UNIT WENT UNTESTED</span>
+    <h2 class="head">Ariane 5, Flight 501 — a 37-second, ~$370M bug</h2>
+    <div class="grid g2" style="align-items:start">
+      <div class="bcard"><span class="lbl">What happened</span><h3>Reused code, new rocket</h3><p>Inertial-reference software was <strong>reused from Ariane 4</strong>. Ariane 5 flew faster, so a horizontal-velocity value overflowed when a 64-bit number was converted into a 16-bit one. The unhandled error shut down <strong>both</strong> the primary and backup units; the rocket veered and self-destructed 37 s after liftoff.</p></div>
+      <div class="bcard"><span class="lbl">Why a test would have caught it</span><h3>The new range was never tested</h3><p>The conversion was <strong>never tested with Ariane 5's larger velocity values</strong> — the reused path had no test for the new operating range, and the code assumed the value could not overflow.</p></div>
+    </div>
+    <div class="plain r"><span class="lab">The lesson — straight back to this chapter</span>
+      <p><strong>Reused code is not tested code.</strong> Re-test every reused component against the <em>new</em> context's inputs and boundaries — exactly the edge cases (Idea 5) that AI-generated code also skips.</p></div>
+    <p class="foot-note">Source: ESA/CNES Ariane 501 Inquiry Board Report (Lions et al., 1996).</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Team studio</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker blue">TEAM STUDIO · ~45 MIN</span>
+    <h2 class="head">Turn two acceptance criteria into two passing tests</h2>
+    <div class="grid g3">
+      <div class="scard c-blue"><div class="lbl">Step A · 10 min</div><h3>Pick the logic</h3><p>Choose one function at the heart of an FR — the piece that decides something.</p><div class="bar n1"><i></i><i></i><i></i></div></div>
+      <div class="scard c-green"><div class="lbl">Step B · 25 min</div><h3>Write 2–3 tests</h3><p>One happy path, one edge, one “should-not”. Prompt AI, then <strong>read &amp; fix</strong> them.</p><div class="bar n2"><i></i><i></i><i></i></div></div>
+      <div class="scard c-red"><div class="lbl">Step C · 10 min</div><h3>Run until green</h3><p>Make a test fail on purpose first — prove it actually checks something.</p><div class="bar n3"><i></i><i></i><i></i></div></div>
+    </div>
+    <p class="foot-note">Leave with at least one test that <strong>failed, then passed</strong> after you fixed the code. That is the whole loop in miniature.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Your project + AI</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker red">DO THIS WITH YOUR TEAM</span>
+    <h2 class="head">Use tests to harden your prototype</h2>
+    <div class="grid g2">
+      <div class="dcard do"><span class="pill">PROJECT STEP</span>
+        <div class="item"><h4>Protect the core logic</h4><p>Write tests for the one or two functions your demo absolutely cannot get wrong.</p></div>
+        <div class="item"><h4>Trace to the SRS</h4><p>Point each test at an acceptance criterion — that's your evidence at the oral exam.</p></div>
+      </div>
+      <div class="dcard dont" style="border:none"><span class="pill" style="background:var(--red)">AI-FIRST — VERIFY!</span>
+        <div class="item"><h4>Ask AI for test cases</h4><p>Then check they truly cover the edges — add the one it forgot.</p></div>
+        <div class="item"><h4>Never ship a red bar</h4><p>If a test is failing, the feature is not done. Fix the code, not the test.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· AI Critique #7</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker red">🧠 AI CRITIQUE #7 · LAST 10 MIN · ON A4</span>
+    <h2 class="head">Spot it · explain it · fix it</h2>
+    <div class="quote" style="border-left-color:var(--red);margin-bottom:2.2vh"><p>“I added a test so you're covered: <code>assert add_task('Buy milk') is not None</code>. Green across the board — ship it.”</p><p class="by">— an AI coding assistant, confidently</p></div>
+    <div class="grid g3">
+      <div class="scard c-red"><div class="lbl">1 · Spot</div><h3>What's weak?</h3><p>The test only checks “something came back.” It never checks the task was stored correctly, with the right title or due date.</p><div class="bar n1"><i></i><i></i><i></i></div></div>
+      <div class="scard c-yellow"><div class="lbl">2 · Explain</div><h3>Why is it wrong?</h3><p>A test that can't fail for the real bug gives false confidence. “Not None” passes even if the data is garbage.</p><div class="bar n2"><i></i><i></i><i></i></div></div>
+      <div class="scard c-green"><div class="lbl">3 · Fix</div><h3>The right way</h3><p>Assert on the <em>result</em>: the stored task's title equals <code>'Buy milk'</code>, status is <code>open</code>, and an invalid input is rejected.</p><div class="bar n3"><i></i><i></i><i></i></div></div>
+    </div>
+    <p class="foot-note">Hand in your A4 before you leave — this is your attendance + AI-critique mark for the week.</p>
+  </div>
+</section>
+<section class="slide">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· References &amp; further reading</span></span><span class="count"></span></div>
+  <div class="body top">
+    <span class="kicker blue">REFERENCES · WHERE THIS COMES FROM</span>
+    <h2 class="head">Textbook &amp; source references</h2>
+    <div class="panel" style="padding:.4vh 1.6vw"><div class="num-row"><span class="n ">1</span><div><h4>Sommerville, I. (2011) Software Engineering, 9e</h4><p>Ch8 Software Testing — §8.1 Development testing, §8.2 TDD, §8.3 Release testing, §8.4 User testing.</p></div></div>
+<div class="num-row"><span class="n g">2</span><div><h4>SWEBOK v4 (IEEE, 2024)</h4><p>Software Testing KA — test levels, techniques, test-driven development.</p></div></div>
+<div class="num-row"><span class="n y">3</span><div><h4>Boehm, B. (1979)</h4><p>Verification vs validation — “build it right” vs “build the right thing.”</p></div></div>
+<div class="num-row"><span class="n r">4</span><div><h4>Cohn, M. (2009) Succeeding with Agile</h4><p>The test pyramid — many unit tests, few end-to-end tests.</p></div></div>
+<div class="num-row"><span class="n p">5</span><div><h4>ESA/CNES (1996) Ariane 501 Inquiry Board Report</h4><p>The reused-and-untested overflow that destroyed Flight 501.</p></div></div>
+<div class="num-row"><span class="n ">6</span><div><h4>Acceptance &amp; usability measurement</h4><p>Davis (1989) TAM; Venkatesh et al. (2003, 2012) UTAUT / UTAUT2; Brooke (1996) &amp; Bangor et al. (2009) SUS.</p></div></div></div>
+    <p class="foot-note">Grounded in the course's own Sommerville 9e + SWEBOK v4 (in <code>raw/</code>). Read §8 before the exam; SUS is the acceptance measure you can actually run.</p>
+  </div>
+</section>
+<section class="slide dark">
+  <div class="chrome"><span class="l"><span class="play">▶</span> intro2se-ch7-testing.fig <span class="crumb">· Summary</span></span><span class="count"></span></div>
+  <div class="body">
+    <span class="kicker">CHAPTER 7 · IN FOUR LINES</span>
+    <h2 class="head">Running isn't working — prove it with tests</h2>
+    <div class="quad">
+      <div class="q"><div class="tag">Why</div><h4>Verification + validation</h4><p>Built it right, and built the right thing — tests and demos cover both.</p></div>
+      <div class="q"><div class="tag">What</div><h4>Input → expected output</h4><p>A unit test checks one function in isolation — fast, precise, repeatable.</p></div>
+      <div class="q"><div class="tag">Thread</div><h4>Acceptance criteria become tests</h4><p>Every AC is a test — the Golden Thread reaching into your code.</p></div>
+      <div class="q"><div class="tag">AI-First</div><h4>Tests catch what AI missed</h4><p>Generate, then verify coverage. The gap it leaves is yours to find.</p></div>
+    </div>
+    <p class="foot-note" style="color:#8b93c7">Reading: Sommerville Ch8 · Valente (Software Testing) · SWEBOK: Software Testing. Next: Ch8 — Software Quality &amp; Basic Security.</p>
+  </div>
+</section>
+
+</div>
+<div class="bar" id="bar"></div><span class="hint">← / → · click edges · Home / End · Ctrl/⌘-P to print</span>
+<script>
+/* Intro2SE slide-deck engine — keyboard + click nav, progress bar, counter. */
+(function(){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var i=0, bar=document.getElementById('bar'), cur=document.getElementById('cur');
+  function fill(n){ slides.forEach(function(s,k){
+      var count=s.querySelector('.count');
+      if(count) count.textContent=String(k+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  });}
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach(function(s,k){ s.classList.toggle('active',k===i); });
+    if(bar) bar.style.width=((i+1)/slides.length*100)+'%';
+    if(cur) cur.textContent=(i+1)+' / '+slides.length;
+  }
+  fill();
+  document.addEventListener('keydown',function(e){
+    if(['ArrowRight','ArrowDown',' ','PageDown'].indexOf(e.key)>-1){e.preventDefault();show(i+1);}
+    else if(['ArrowLeft','ArrowUp','PageUp'].indexOf(e.key)>-1){e.preventDefault();show(i-1);}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(slides.length-1);}
+  });
+  document.getElementById('deck').addEventListener('click',function(e){
+    if(e.target.closest('a')) return;
+    if(e.clientX<innerWidth*0.25) show(i-1); else show(i+1);
+  });
+  show(0);
+})();
+
+</script>
+</body>
+</html>
