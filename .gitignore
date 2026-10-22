@@ -1,0 +1,19 @@
+# ไฟล์ระบบ
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# เครื่องมือ
+node_modules/
+*.log
+.vscode/
+
+# ภาพ/ไฟล์จากสคริปต์ทดสอบ (LESSONS-FROM-V1: shots/ เคยหลุดเข้า repo)
+shots/
+screenshots/
+playwright-report/
+test-results/
+
+# ไฟล์ที่ส่ง Classroom มีชื่อ/เบอร์ผู้ใช้จริง — ห้ามเข้า repo (PDPA)
+M1-Charter_*.pdf
+M2-SRS_*.pdf

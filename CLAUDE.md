@@ -68,7 +68,7 @@ specs/                            งานของ Spec Kit (1 Must FR = 1 fea
 
 ## คำสั่ง
 - เปิด prototype: ดับเบิลคลิก `prototype/index.html`
-- รัน test: `node --test prototype/tests` (Node 18+ ไม่ใช้ npm)
+- รัน test: `node --test` ที่ root (Node 18+ ไม่ใช้ npm) · ใส่ path โฟลเดอร์จะ fail (ตรวจแล้ว 22/10/69 บน Node 24)
 
 ## กติกาที่พลาดบ่อย
 - ไม่มี FR/NFR = ไม่ทำ · ใส่รหัส FR/NFR ในทุก commit, screen, diagram, test

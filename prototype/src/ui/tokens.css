@@ -1,0 +1,72 @@
+/* Design tokens — MedMind v2 · ต้นฉบับค่าอยู่ใน docs/03-design/design-system.md §1
+   เจ้าของ: D (Rossatorn Sangkaew) · ร่างโดย A ตามที่ทีมตัดสิน 22/10/69
+   กติกา: หน้าจอใช้ค่าจากไฟล์นี้เท่านั้น (constitution · Platform constraints) · เปลี่ยนสีต้องคำนวณ contrast ใหม่ (NFR-03) */
+
+:root {
+  /* สี · contrast ที่คำนวณแล้วอยู่ใน design-system.md §1.1 */
+  --color-bg: #F6F4EF;            /* พื้นหน้า (กระดาษอุ่น) */
+  --color-surface: #FFFFFF;       /* การ์ด ช่องกรอก ตัวจอ */
+  --color-surface-sunken: #ECE8E0;/* ปุ่มรอง พื้นกลุ่ม */
+  --color-ink: #1C1F23;           /* ตัวอักษรหลัก */
+  --color-ink-muted: #545A61;     /* ตัวอักษรรอง */
+  --color-line: #D9D4CA;          /* เส้นแบ่ง (ตกแต่ง) */
+  --color-line-strong: #8C857A;   /* ขอบช่องกรอก (non-text ≥ 3:1) */
+  --color-accent: #1F6B4A;        /* สีเน้นสีเดียว: ปุ่มหลัก "กินแล้ว" */
+  --color-accent-strong: #17573C; /* ปุ่มหลักตอนกด */
+  --color-accent-soft: #E2EFE6;   /* พื้นสถานะ "กินแล้ว" */
+  --color-on-accent: #FFFFFF;
+  --color-warn-ink: #7A4F00;      /* สถานะ "กำลังเตือน" */
+  --color-warn-soft: #FAEFD6;
+  --color-danger-ink: #9E2A1F;    /* สถานะ "ยังไม่ยืนยัน" · ข้อผิดพลาด */
+  --color-danger-soft: #F8E4E0;
+  --color-focus: #1C1F23;         /* วงโฟกัสคีย์บอร์ด */
+  --color-backdrop: rgba(28, 31, 35, 0.5); /* พื้นหลัง dialog */
+
+  /* แถบทดลอง (demo) — ไม่ใช่หน้าจอของแอป ยกเว้นจาก NFR-03 ขนาดตัวอักษร (design-system.md §1.6) */
+  --color-demo-bg: #23272E;
+  --color-demo-ink: #F3F1EC;
+  --color-demo-muted: #B8BDC4;
+
+  /* ตัวอักษร · ฟอนต์เดียวจากเครื่องผู้ใช้ (เปิดแบบ file:// ได้ ไม่โหลดจากเน็ต) */
+  --font-sans: "Leelawadee UI", "Thonburi", "Sukhumvit Set", "Noto Sans Thai", "Tahoma", sans-serif;
+  --text-sm: 18px;   /* ขั้นต่ำของข้อความทั่วไป (NFR-03) */
+  --text-md: 20px;
+  --text-lg: 24px;   /* ชื่อยา (NFR-03 ≥ 24) */
+  --text-xl: 28px;
+  --text-2xl: 40px;  /* เวลามื้อบนหน้าเตือน · รหัส 6 หลัก */
+  --text-demo: 14px;
+  --weight-regular: 400;
+  --weight-bold: 700;
+  --leading-tight: 1.25;
+  --leading-body: 1.5;
+
+  /* ระยะ · สเกล 4 · 8 · 16 · 24 · 32 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+
+  /* ขนาดเป้าแตะ */
+  --tap-primary: 64px;  /* ปุ่ม "กินแล้ว"/"ยังไม่กิน" (NFR-03 ≥ 64) */
+  --tap-min: 48px;      /* ปุ่มและช่องกรอกอื่น */
+
+  /* มุม เส้น เงา */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 24px;
+  --radius-phone: 32px;
+  --border-width: 1px;
+  --border-input: 2px;
+  --focus-ring: 3px;
+  --shadow-phone: 0 1px 2px rgba(28, 31, 35, 0.08), 0 8px 24px rgba(28, 31, 35, 0.08);
+
+  /* โครงหน้า */
+  --phone-width: 390px;
+  --phone-height: 780px;
+  --duration-fast: 120ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --duration-fast: 0ms; }
+}

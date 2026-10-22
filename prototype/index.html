@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MedMind — prototype</title>
+  <meta name="description" content="ต้นแบบระบบเตือนกินยาและแจ้งสถานะการกินยาให้ผู้ดูแลผู้สูงอายุ (Must FR-01–FR-05)">
+  <link rel="stylesheet" href="src/ui/tokens.css">
+  <link rel="stylesheet" href="src/ui/app.css">
+</head>
+<body>
+  <div id="app">
+    <noscript>ต้องเปิด JavaScript เพื่อใช้ต้นแบบนี้</noscript>
+  </div>
+
+  <!-- Foundation (เจ้าของ: D) · ลำดับนี้ห้ามเปลี่ยน -->
+  <script src="src/core/events.js"></script>
+  <script src="src/core/clock.js"></script>
+  <script src="src/core/store.js"></script>
+  <script src="src/ui/shell.js"></script>
+
+  <!-- กฎของแต่ละ FR (UMD · test ได้ด้วย node --test) · เจ้าของเอาคอมเมนต์ออกเมื่อสร้างไฟล์แล้ว
+       แยกบรรทัดต่อคน เพื่อไม่ให้ PR ชนกัน (TEAM-PLAN ข้อ 2) -->
+  <!-- A · FR-01 --> <!-- <script src="src/modules/pairing.js"></script> -->
+  <!-- A · FR-01 --> <!-- <script src="vendor/jsqr/jsQR.js"></script> -->
+  <!-- A · FR-01 --> <!-- <script src="src/modules/qrScan.js"></script> -->
+  <!-- B · FR-02 --> <!-- <script src="vendor/tesseract/tesseract.min.js"></script> -->
+  <!-- B · FR-02 --> <!-- <script src="src/modules/labelParser.js"></script> -->
+  <!-- B · FR-02 --> <!-- <script src="src/modules/readLabel.js"></script> -->
+  <!-- B · FR-02 --> <!-- <script src="src/modules/medication.js"></script> -->
+  <!-- C · FR-03 --> <!-- <script src="src/modules/doseSession.js"></script> -->
+  <!-- D · FR-04 --> <!-- <script src="src/modules/confirm.js"></script> -->
+  <!-- E · FR-05 --> <!-- <script src="src/modules/escalation.js"></script> -->
+
+  <!-- หน้าจอ (ลงทะเบียนด้วย MedMind.screens.register) · ลำดับในไฟล์ = ลำดับเลือกหน้าแรก -->
+  <!-- A · S1, C1 --> <!-- <script src="src/screens/pairing.js"></script> -->
+  <!-- B · C2 -->     <!-- <script src="src/screens/medication.js"></script> -->
+  <!-- C · S2 -->     <!-- <script src="src/screens/reminder.js"></script> -->
+  <!-- D · S3 -->     <!-- <script src="src/screens/home.js"></script> -->
+  <!-- E · C3 -->     <!-- <script src="src/screens/status.js"></script> -->
+</body>
+</html>
