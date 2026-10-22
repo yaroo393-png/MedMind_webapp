@@ -2,6 +2,12 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-22 — A + Claude Code · เปิด GitHub Pages
+- ลิงก์: https://yaroo393-png.github.io/MedMind_webapp/prototype/ (+ `?role=senior`, `?role=caregiver`) · ตรวจแล้ว: หน้าและไฟล์ src ตอบ 200
+- ตั้งค่า: Settings → Pages → branch `feat/foundation` / root (ชั่วคราว) · **ต้องเปลี่ยนเป็น `main` หลัง merge** ไม่งั้นลิงก์ค้างเวอร์ชันเก่า
+- ไฟล์: `prototype/README.md` (ใส่ลิงก์) · branch: ยังไม่ commit
+- ยังขาด: ทดสอบสแกน QR/ถ่ายฉลากบนมือถือจริงผ่านลิงก์นี้ (SCHEDULE พฤ./ส.) · คำตอบอาจารย์เรื่องส่งลิงก์แทนดับเบิลคลิก (ADR-08)
+
 ## 2026-10-22 — A (YAR OO) แทน C + Claude Code · architecture.md v1.0 + สัญญาข้อมูล
 - ไฟล์: `docs/03-design/architecture.md` (ใหม่) · `spec.md` §7 (คอลัมน์ Design) + §8 (AI log)
 - เนื้อหา: 3 ชั้น + deployment · ADR-01–08 พร้อมทางเลือกที่ปฏิเสธ · Use Case (UC-1–7) · Sequence 4.1 เตือน→ยืนยัน→แจ้ง, 4.2 เพิ่มยา, 4.3 จับคู่ ·

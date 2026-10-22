@@ -4,7 +4,10 @@
 
 ## เปิดดู
 - **ดับเบิลคลิก `prototype/index.html`** — ไม่ต้องมี server, DB หรือ npm
-- สแกน QR / ถ่ายฉลากบนมือถือ: เปิดผ่านลิงก์ GitHub Pages `https://<owner>.github.io/<repo>/prototype/` (กล้องต้องใช้ HTTPS)
+- **ลิงก์ออนไลน์ (GitHub Pages):** https://yaroo393-png.github.io/MedMind_webapp/prototype/ — ตรวจแล้ว 22/10/69 ตอบ 200 ·
+  แยกบทบาท: [`?role=senior`](https://yaroo393-png.github.io/MedMind_webapp/prototype/?role=senior) · [`?role=caregiver`](https://yaroo393-png.github.io/MedMind_webapp/prototype/?role=caregiver)
+  · Pages ชี้ที่ branch `feat/foundation` ชั่วคราว → เปลี่ยนเป็น `main` หลัง merge (Settings → Pages)
+- สแกน QR / ถ่ายฉลากบนมือถือ: ใช้ลิงก์ GitHub Pages ด้านบน (กล้องต้องใช้ HTTPS)
 - จอใหญ่เห็นโทรศัพท์ 2 เครื่อง (ผู้สูงอายุ / ผู้ดูแล) ใช้ข้อมูลร่วมกัน · จอเล็กสลับด้วยแท็บ
 - **เปิดแยกหน้า:** `index.html?role=senior` และ `index.html?role=caregiver` (หรือลิงก์ "เปิด:" บนแถบทดลอง) ในเบราว์เซอร์เดียวกัน
   → ข้อมูล เวลาจำลอง และการล้างข้อมูล ซิงก์กันผ่าน localStorage · **ข้ามเครื่อง/ข้ามเบราว์เซอร์ไม่ได้** (ไม่มี server · SRS §2.2)
