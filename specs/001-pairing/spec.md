@@ -136,7 +136,7 @@
 - QR บรรจุข้อความรูปแบบ `MEDMIND:<รหัส 6 หลัก>` เท่านั้น (ADR-07) · ตัวอ่าน QR ใช้เฉพาะที่ทีมอนุมัติแล้ว (TEAM-PLAN ข้อ 5, ข้อ 4)
 - ยกเลิกแล้วไม่กดยืนยันขั้นที่สอง = ไม่เปลี่ยนอะไร (ตีความ BR-17 "ต้องกดยืนยันอีกครั้ง" · ไม่มี AC แยก)
 - ผู้สูงอายุกดยินยอมกับรหัสเชิญเฉพาะรหัสหนึ่ง (ไม่ใช่ยินยอมถาวรล่วงหน้า) ตามโครงข้อมูลใน `architecture.md` (`consentAt` อยู่ที่ InviteCode)
-- สัญญาฟังก์ชัน (`newInvite`, `consent`, `pair`, `lockedUntil`, `canAccess`, `unpair`, `qrText`, `codeFromQr`, `readQr`) ตาม `architecture.md` §8.3 · ชุดข้อมูลใน store: `devices`, `invites`, `pairAttempts`, `pairing`
+- สัญญาฟังก์ชันของ `pairing` และ `qrScan` ตาม [contracts/pairing-module.md](contracts/pairing-module.md) (ต้นฉบับย่อใน `architecture.md` §8.3) · ชุดข้อมูลใน store: `devices`, `invites`, `pairAttempts`, `pairing`
 - การล็อก (BR-18) ผูกกับเครื่องผู้ดูแล ไม่ใช่ทั้งระบบ · ใน prototype ล้างข้อมูลเบราว์เซอร์แล้วปลดล็อกได้ → ป้องกันได้จริงเมื่อมี server (M4) · ยอมรับเป็นข้อจำกัดของ prototype
 - Dependencies: Foundation (`src/core`, `src/ui`) merge แล้ว · FR-02–05 เรียก `canAccess` และอาศัย `unpair` ลบข้อมูลของ feature ตัวเอง (`medications`, `mealTimes`, `confirmations`, `notices`)
 - Out of scope (SRS §6, §3.6): Caregiver หลายคน (FR-06) · เชื่อมข้ามเครื่องจริง · บัญชีผู้ใช้ · หน้าเลือกบทบาท

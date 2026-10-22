@@ -2,6 +2,20 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-22 — A + Claude Code · `/speckit-analyze` 001-pairing + แก้ตามผล
+- ผล analyze: CRITICAL 0 · HIGH 3 · MEDIUM 4 · LOW 6 · coverage 100% (16 requirement / 38 task)
+- แก้แล้ว 12 ข้อ:
+  - `tasks.md` เพิ่ม "กติกาหน้าจอ S1/C1" 6 ข้อ: render เรียกซ้ำได้ผลเดิม · ห้าม `store.reload()` ใน render (ไม่งั้นวนไม่จบ) · เขียน store เฉพาะเมื่อค่าเปลี่ยน · สี canvas จาก token · ปุ่มหลัก ≤ 1 · feedback ทุกการกระทำ
+  - T013 ไม่เปิด script หน้าจอก่อนมีไฟล์ (กัน 404) · T014 toast "สร้างรหัสใหม่แล้ว" · T015 ปุ่ม "เชื่อมต่อ" เป็นปุ่มรอง + ไปหน้าแรกผู้ดูแลหลังจับคู่ · T026 จับเวลาอ่าน QR · T037 grep สีเขียนตรง/`reload` ใน render + ตรวจ render ไม่วน
+  - spec Assumptions อ้าง contracts แทนรายชื่อเก่า · data-model: Devices = SENIOR + CAREGIVER · ปุ่ม "สร้างรหัสใหม่" ทั้ง 2 สถานะรอ · รหัส 6 หลักใช้ `--text-2xl` ตาม design-system · research R-7 ชี้ชัดว่า reload เฉพาะในปุ่ม
+- ไม่แก้ (ตามที่ตัดสินแล้ว): E2 — `NO_CONSENT` นับเป็นครั้งผิดตาม BR-18 "ทุกเหตุผล" → **B ควรรู้ตอนยืนยัน BR-18** (ผู้ดูแลที่กดซ้ำระหว่างรอยินยอม 5 ครั้งจะถูกล็อก)
+- ถัดไป: `/speckit-implement` · branch: `feat/pairing` · ยังไม่ commit
+
+## 2026-10-22 — A + Claude Code · `/speckit-tasks` specs/001-pairing (FR-01)
+- ไฟล์: `specs/001-pairing/tasks.md` — 38 task (Setup 3 · Foundational 2 · US1 11 · US2 10 · US3 5 · Polish 7) · test บังคับตาม constitution III เขียนก่อน implement
+- ตาราง AC → test task ครบ ✓1–✗8 · MVP = Phase 1–3 (จับคู่ด้วยรหัส) แต่ demo M3 ต้องครบทั้ง 3 story (P1 ทั้งหมด)
+- ถัดไป: `/speckit-analyze` → `/speckit-implement` · branch: `feat/pairing` · ยังไม่ commit
+
 ## 2026-10-22 — A + Claude Code · `/speckit-plan` specs/001-pairing (FR-01)
 - ไฟล์ใหม่: `specs/001-pairing/plan.md` · `research.md` · `data-model.md` · `contracts/pairing-module.md` · `contracts/screens.md` · `quickstart.md`
 - แก้: `architecture.md` §8.1 (ข้อยกเว้น `reasonText`) · §8.3 (**กฎล็อกนับจากครั้งผิดล่าสุด** — แบบเดิมปลดล็อกก่อนเวลา · `consent(invites, code, now)` · operation เสริม) · `spec.md` 001 R9 (ถ้อยคำ) · SRS AI log

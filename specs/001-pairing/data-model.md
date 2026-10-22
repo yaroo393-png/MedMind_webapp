@@ -9,7 +9,7 @@
 
 | Entity (ชุดข้อมูลใน store) | ฟิลด์ | กฎตรวจ | ที่มา |
 |---|---|---|---|
-| **Devices** (`devices`: object เดียว) | `seniorId`, `caregiverId` (ข้อความสุ่ม `S-`/`C-` + 8 ตัว) · `createdAt` | สร้างครั้งแรกที่เปิด (`ensureDevices`) · ไม่เปลี่ยนจนล้างข้อมูล | ADR-05 · SRS §2.2 (1 เบราว์เซอร์ = 2 เครื่องจำลอง) |
+| **Devices** (`devices`: object เดียว) = SENIOR + CAREGIVER ของ ERD §6 (1 เบราว์เซอร์จำลอง 2 เครื่อง จึงเก็บรวม) | `seniorId`, `caregiverId` (ข้อความสุ่ม `S-`/`C-` + 8 ตัว) · `createdAt` (ใช้แทน `createdAt` ของทั้งสอง entity — สร้างพร้อมกัน) | สร้างครั้งแรกที่เปิด (`ensureDevices`) · ไม่เปลี่ยนจนล้างข้อมูล | ADR-05 · SRS §2.2 (1 เบราว์เซอร์ = 2 เครื่องจำลอง) |
 | **InviteCode** (`invites`: list) | `code` (ตัวเลข 6 หลัก ข้อความ) · `seniorId` · `createdAt` · `expiresAt = createdAt + 10 นาที` · `consentAt` (null = ยังไม่ยินยอม) · `usedAt` (null = ยังไม่ใช้) | `code` ไม่ซ้ำใน list · ผู้สูงอายุ 1 คนมีรหัสที่ `usedAt = null` ≤ 1 รหัส · หมดอายุเมื่อ `now ≥ expiresAt` | BR-01, BR-02, NFR-05 · clarify Q4 |
 | **PairAttempt** (`pairAttempts`: list) | `caregiverId` · `failedAt` | เพิ่ม 1 รายการต่อการปฏิเสธเหตุผล 1–5 · ไม่เพิ่มเมื่อ `LOCKED` · ลบของผู้ดูแลคนนั้นเมื่อจับคู่สำเร็จ · ลบรายการที่ `failedAt ≤ now − 10 นาที` | BR-18 · research R-3 |
 | **Pairing** (`pairing`: object หรือไม่มี) | `pairingId` · `seniorId` · `caregiverId` · `consentAt` (คัดจาก InviteCode) · `pairedAt` | มีได้ 1 รายการต่อผู้สูงอายุ (BR-02) · `consentAt` ต้องไม่ว่าง (NFR-05) | BR-02, NFR-04, NFR-05 |
@@ -46,7 +46,7 @@ stateDiagram-v2
 |---|---|---|---|
 | S1 ผู้สูงอายุ | `PAIRED` | มี `pairing` ของ `seniorId` | — ("ยกเลิกการจับคู่" เป็นปุ่มรอง + dialog ยืนยัน) |
 | | `EXPIRED` | รหัสที่ยังไม่ใช้หมดอายุ | "สร้างรหัสใหม่" |
-| | `WAITING_CONSENT` | รหัสยังไม่หมดอายุ · `consentAt = null` | "อนุญาตให้ลูกหลานดูสถานะการกินยา" |
+| | `WAITING_CONSENT` | รหัสยังไม่หมดอายุ · `consentAt = null` | "อนุญาตให้ลูกหลานดูสถานะการกินยา" · "สร้างรหัสใหม่" เป็นปุ่มรอง |
 | | `WAITING_CAREGIVER` | ยินยอมแล้ว · ยังไม่จับคู่ | — (แสดง "รอผู้ดูแลสแกน") · "สร้างรหัสใหม่" เป็นปุ่มรอง |
 | | (ไม่มีรหัสที่ยังไม่ใช้) | เปิดครั้งแรก / หลังยกเลิกการจับคู่ | สร้างรหัสให้ทันที → `WAITING_CONSENT` |
 | C1 ผู้ดูแล | `PAIRED` | `canAccess(pairing, caregiverId)` | — ("ยกเลิกการจับคู่" ปุ่มรอง + dialog) |

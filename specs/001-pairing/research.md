@@ -67,7 +67,8 @@ FR-01 ✓1 ต้อง "เห็น QR" แต่ `prototype/vendor/` มี�
 
 ## R-7 สองแท็บกดพร้อมกัน (edge case ADR-06)
 
-- **Decision:** หน้าจอเรียก `store.reload()` ก่อนอ่านข้อมูลเพื่อเรียก `newInvite` / `consent` / `pair` / `unpair` แล้วเขียนกลับทันที
+- **Decision:** ตัวจัดการปุ่มของหน้าจอ (ไม่ใช่ render) เรียก `store.reload()` ก่อนอ่านข้อมูลเพื่อเรียก `newInvite` / `consent` / `pair` / `unpair` แล้วเขียนกลับทันที
+  · ห้ามเรียกใน render เพราะ `reload()` แจ้งผู้ฟังทุกครั้ง → render วนไม่จบ (`/speckit-analyze` C1 · tasks.md "กติกาหน้าจอ")
   (localStorage เขียนแบบ synchronous ในแท็บเดียว) · `pair` ตรวจ `pairing` ที่มีอยู่ → `ALREADY_PAIRED` / รหัส `usedAt` → `USED`
 - **Rationale:** ช่องว่างเหลือแค่ระดับมิลลิวินาทีระหว่างแท็บในเบราว์เซอร์เดียวกัน · ยอมรับใน prototype · ระบบจริงต้องตรวจที่ server (M4)
 - **Alternatives:** ล็อกข้ามแท็บ (Web Locks / BroadcastChannel) → ปฏิเสธ: เพิ่มกลไกที่ไม่มี FR บังคับ
