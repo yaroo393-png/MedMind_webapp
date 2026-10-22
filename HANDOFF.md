@@ -2,6 +2,18 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-22 — A (YAR OO) แทน C + Claude Code · architecture.md v1.0 + สัญญาข้อมูล
+- ไฟล์: `docs/03-design/architecture.md` (ใหม่) · `spec.md` §7 (คอลัมน์ Design) + §8 (AI log)
+- เนื้อหา: 3 ชั้น + deployment · ADR-01–08 พร้อมทางเลือกที่ปฏิเสธ · Use Case (UC-1–7) · Sequence 4.1 เตือน→ยืนยัน→แจ้ง, 4.2 เพิ่มยา, 4.3 จับคู่ ·
+  State มื้อยา · ERD 8 entity · module/coupling · **§8 สัญญาข้อมูล: ชื่อชุดข้อมูลใน store + operation (input/output/AC) ของทุกโมดูล A–E** · coverage + traceability
+- ต่างจาก v1: ตัดฟิลด์ความถี่/วันเริ่ม–สิ้นสุด (gold-plating) · ค่าที่คำนวณได้ไม่เป็นฟิลด์ (เวลาเตือน, สถานะ, รอบ) · DOSE_SESSION เป็นค่าคำนวณ ไม่ใช่ entity ที่เก็บ · consentAt อยู่ที่ InviteCode
+- ตรวจ: Mermaid 8 รูปเรนเดอร์ผ่าน (mermaid 10.9.1 ใน Chrome headless) · test: ไม่มี (เอกสาร)
+- ยังขาด / ต้องตัดสิน:
+  - **ADR-08 สถานะ "เสนอ":** รอ B, D ยืนยันวิธี OCR แบบดับเบิลคลิก + คำตอบอาจารย์เรื่องลิงก์ GitHub Pages (A)
+  - เจ้าของโมดูลแต่ละคนตรวจสัญญา §8.3 ของตัวเองก่อน `/speckit-plan` · เปลี่ยนสัญญาต้องแจ้งทุกคน
+  - §8.4 ใครเรียก `escalate` ตามเวลา: C กับ E ตกลงตอน implement
+- branch / PR: ยังไม่ commit · แนะนำ branch `design/architecture`
+
 ## 2026-10-22 — A (YAR OO) แทน D + Claude Code · Foundation ของ prototype
 - ไฟล์ใหม่: `prototype/index.html` · `prototype/README.md` · `prototype/src/core/{events,clock,store}.js` · `prototype/src/ui/{tokens.css,app.css,shell.js}` ·
   `prototype/tests/foundation.test.js` · `docs/03-design/design-system.md` (v0.1) · `.gitignore`
