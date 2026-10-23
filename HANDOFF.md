@@ -5,7 +5,7 @@
 ## 2026-10-23 — A + Claude Code · `/speckit-implement` 002-label (รอบหลัง analyze)
 - งานของ AI ใน tasks.md ครบ (T001–T025) · เหลือ T026–T027 = งานของคน (ไม่ติ๊กแทน)
 - เพิ่ม `docs/04-test/nfr-08-11-label-reading.md` แบบฟอร์มวัด NFR-08/NFR-11/SC-011 บนมือถือ 20 ใบ (ผลทุกช่อง `[ทีมกรอก]` · เจ้าของ E)
-- **ตรวจพบ:** GitHub Pages ยังเสิร์ฟ branch เก่า (`prototype/src/screens/medication.js`, `pairing.js` = 404) → ต้องเปลี่ยน Settings → Pages ก่อนวัด ส. 24
+- **ตรวจพบ:** GitHub Pages ยังเสิร์ฟ branch เก่า (`prototype/src/screens/medication.js`, `pairing.js` = 404) → ผู้ใช้เปลี่ยน Pages เป็น `feat/label` แล้ว · ตรวจ 23:25 ไฟล์ FR-02 + OCR ฝังตอบ 200 · ลิงก์ที่ใช้คือ `/prototype/` (root ของ repo ไม่มีหน้า = 404 ปกติ)
 - `node --test` 118/118 · branch `feat/label`
 
 ## 2026-10-23 — A + Claude Code · `/speckit-analyze` 002-label + แก้ตามผล
