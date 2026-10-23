@@ -2,6 +2,15 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-24 — A (แทน C ตามที่ทีมตัดสิน) + Claude Code · FR-03 analyze → implement (specs/003-reminder) — 19/19 task
+- analyze: 1 CRITICAL (ปุ่ม "กินแล้ว" หลักหลายปุ่มเมื่อมื้อซ้อน ขัด constitution) + 2 MEDIUM + 4 LOW → แก้เอกสารก่อนเขียนโค้ด · ปุ่มหลักเฉพาะมื้อแรก
+- ไฟล์ใหม่: `src/modules/doseSession.js` · `src/screens/reminder.js` (S2) · `tests/doseSession.test.js` (33)
+- แก้: `index.html` (เปิดบรรทัดของ C) · `screens/pairing.js` (S1 ปุ่ม "หน้าเตือนกินยา" + ไป S2 เองเมื่อรอบใหม่เริ่ม) · `app.css` (`.session`, `.session-time` — **แจ้ง D**) · architecture §4.1, §7 ตารางโมดูล, §8.3, §9.1 · design-system · SRS §7 + AI log · README
+- **ผลจริง:** `node --test` 151/151 · Chrome S2 35/35 · NFR-03 22/22 · ชุด FR-01/FR-02 ซ้ำผ่าน · console error 0
+- **ยังขาด (คนทำ):** ฟังเสียงจริงบนมือถือ (test นับ oscillator ไม่ได้ฟัง) · NFR-02 (ผู้สูงอายุกดยืนยันใน 10 วิ) วัดหลัง FR-04 · C ตรวจ · D ตรวจ CSS
+- ส่งต่อ FR-04: ลบ toast "ยังบันทึกไม่ได้ในรุ่นนี้" ใน reminder.js · ใช้ `doseSession.lateUntil` · ถ้ามี S3 ให้ใช้ `MedMind.reminder.dueKey` ไป S2
+- branch: `feat/reminder` · ยังไม่ commit
+
 ## 2026-10-24 — A (แทน C) + Claude Code · FR-03 `/speckit-tasks` (specs/003-reminder)
 - `tasks.md` 19 task: Setup 1 · Foundational 2 · US1 6 · US2 3 · US3 3 · Polish 4 · test ก่อนโค้ดทุก story · ตาราง AC → test ครบ ✓1 ✗2 ✓3 ✗4 ✗5
 - ถัดไป: `/speckit-analyze` → `/speckit-implement`

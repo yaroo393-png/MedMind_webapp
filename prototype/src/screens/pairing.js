@@ -87,6 +87,10 @@
     });
   }
 
+  function hasScreen(id) {
+    return MM.screens.all().some(function (s) { return s.id === id; });
+  }
+
   function unpairButton(onClick) {
     return h('button', { class: 'btn btn--secondary btn--block', type: 'button', onClick: onClick }, 'ยกเลิกการจับคู่');
   }
@@ -110,6 +114,7 @@
     render: function (body, ctx) {
       var app = ctx.app;
       var store = app.store;
+      var seenDueKey = MM.reminder ? MM.reminder.dueKey(app) : '';  // รอบเตือนที่มีอยู่ตอนเปิดหน้านี้
 
       function onNewCode() {
         store.reload();
@@ -136,6 +141,10 @@
             h('p', { class: 'card__title', text: 'เชื่อมต่อกับลูกหลานแล้ว' }),
             h('p', { class: 'muted', text: 'เชื่อมต่อเมื่อเวลา ' + MM.clock.formatTime(pairing.pairedAt) + ' · ลูกหลานเห็นรายการยาและสถานะการกินยาของคุณ' })
           ]),
+          // หน้าเตือนของ C (FR-03 · specs/003-reminder) · ยังไม่มี → ไม่แสดงปุ่ม
+          hasScreen('S2')
+            ? h('button', { class: 'btn btn--secondary btn--block', type: 'button', onClick: function () { ctx.go('S2'); } }, 'หน้าเตือนกินยา')
+            : null,
           unpairButton(function () { confirmUnpair(ctx); })  // สำเร็จ → draw() เห็นว่าไม่มีคู่ → รหัสใหม่ (✗6)
         ];
       }
@@ -170,6 +179,11 @@
         var pairing = store.get('pairing');
         var content;
         if (P.isSeniorPaired(pairing, d.seniorId)) {
+          // รอบเตือนใหม่เริ่ม → ไปหน้าเตือนเอง ผู้สูงอายุไม่ต้องกด (FR-03 R8) · รอบที่เห็นอยู่แล้วตอนเปิดหน้านี้ไม่ดึงกลับ
+          // (ผู้สูงอายุกด "การเชื่อมต่อ" จาก S2 เพื่อยกเลิกการจับคู่ได้) · specs/003-reminder/contracts/screens.md
+          var dueKey = MM.reminder ? MM.reminder.dueKey(app) : '';
+          if (dueKey && dueKey !== seenDueKey) { ctx.go('S2'); return; }
+          seenDueKey = dueKey;
           content = pairedView(pairing);
         } else {
           var invites = store.get('invites', []);

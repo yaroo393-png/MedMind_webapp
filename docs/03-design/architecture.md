@@ -181,7 +181,7 @@ sequenceDiagram
     actor Caregiver as ผู้ดูแล
 
     CLK->>S2: 08:00
-    S2->>DS: dueSessions(sessions, confirmations, 08:00)
+    S2->>DS: dueSessions(sessions, confirmations, pairingId, 08:00)
     DS-->>S2: มื้อ 08:00 รอบ 1 (BR-08)
     S2->>Senior: ยาทั้งมื้อ + เสียง + "กินแล้ว"/"ยังไม่กิน" (BR-09)
     alt กด "กินแล้ว" 08:03 (FR-04 ✓1)
@@ -412,7 +412,7 @@ erDiagram
 | `readLabel` | FR-02 | B | — | — | — (vendor Tesseract) |
 | `labelParser` | FR-02 | B (+A ช่วย) | — | — | — |
 | `medication` | FR-02 | B | MEDICATION, MEAL_TIMES | — | — |
-| `doseSession` | FR-03 | C | — | MEDICATION, MEAL_TIMES, DOSE_CONFIRMATION | — |
+| `doseSession` | FR-03 | C | — | MEDICATION, MEAL_TIMES, DOSE_CONFIRMATION | `medication` (`reminderTimes` · ไม่คำนวณเวลาซ้ำ) |
 | `confirm` | FR-04 | D | DOSE_CONFIRMATION | — | `doseSession` |
 | `escalation` | FR-05 | E | CAREGIVER_NOTICE | DOSE_CONFIRMATION | `doseSession` |
 
@@ -484,11 +484,15 @@ erDiagram
 **`doseSession` (C · FR-03)**
 | Operation | Output | กฎ / AC |
 |---|---|---|
-| `sessionsOf(medications, mealTimes, day)` | `[{ sessionKey, at: datetime, medicationIds }]` เรียงตามเวลา · ยาเวลาเดียวกันรวมมื้อเดียว | BR-06 · ✓1 · ✗5 (ไม่มียา = `[]`) |
+| `dayOf(ms, offsetDays?)` | `"YYYY-MM-DD"` เวลาท้องถิ่น · หน้าจอส่งมื้อของเมื่อวาน + วันนี้ (มื้อดึกเตือนซ้ำหลังเที่ยงคืน) | §8.1 · NFR-01 |
+| `sessionsOf(medications, mealTimes, day)` | `[{ sessionKey, at: datetime, medicationIds }]` เรียงตามเวลา · ยาเวลาเดียวกันรวมมื้อเดียว · เวลาจาก `medication.reminderTimes` · ยาที่ไม่มีเวลาเตือนถูกข้าม | BR-06 · ✓1 · ✗5 (ไม่มียา = `[]`) |
 | `roundAt(session, now)` | `0` ก่อน T · `1` T · `2` T+5 · `3` T+10 · `null` ตั้งแต่ T+15 | BR-08 · ✗2 |
-| `dueSessions(sessions, confirmations, now)` | มื้อที่กำลังเตือนและยังไม่ยืนยัน เรียงตามเวลา | ✓3 · ✗4 (BR-16) |
-| `lateUntil(session, sessions)` | datetime สิ้นสุดช่วงยืนยันช้า | BR-15 |
-| `statusOf(session, sessions, confirmations, now)` | `'WAITING' \| 'ALERTING' \| 'TAKEN' \| 'TAKEN_LATE' \| 'UNCONFIRMED'` | §5 · BR-14 |
+| `dueSessions(sessions, confirmations, pairingId, now)` | `[{ sessionKey, at, medicationIds, round, late }]` เรียงตามเวลา · ตัดมื้อที่ยืนยันแล้วของคู่นี้ · ไม่มีมื้อรอบ 1–3 = `[]` · มี = เพิ่มมื้อที่เลย T+15 แต่ยังอยู่ในช่วงยืนยันช้า (`round: null, late: true` · clarify 003) | ✓3 · ✗4 (BR-16) |
+| `lateUntil(session, sessions)` | datetime สิ้นสุดช่วงยืนยันช้า (ไม่รวม): มื้อแรกของวันเดียวกันที่เริ่มหลัง T+15 · ไม่มี = 00:00 วันถัดไป · ไม่น้อยกว่า T+15 · FR-04/FR-05 ใช้ตัวเดียวกัน | BR-15 · FR-04 ✗6 |
+| `newSoundKeys(due, played)` | คีย์ `at#round` ใหม่ของมื้อที่กำลังเตือน · หน้าจอเล่นเสียง 1 ครั้งเมื่อไม่ว่าง | BR-09 · BR-16 |
+| `statusOf(session, sessions, confirmations, now)` (ทำใน FR-04) | `'WAITING' \| 'ALERTING' \| 'TAKEN' \| 'TAKEN_LATE' \| 'UNCONFIRMED'` | §5 · BR-14 |
+
+รายละเอียดเต็ม: `specs/003-reminder/contracts/dose-session.md` (ทำแล้ว 24/10)
 
 **`confirm` (D · FR-04)**
 | Operation | Output | กฎ / AC |
@@ -525,8 +529,8 @@ erDiagram
 |---|---|---|---|
 | FR-01 | `ensureDevices` · `currentInvite` · `isExpired` · `newInvite` · `consent` · `pair` · `lockedUntil` · `minutesLeft` · `reasonText` · `canAccess` · `isSeniorPaired` · `unpair` · `qrText` · `codeFromQr` · `qrMatrix` · `readQr` (ทำแล้ว 22/10) | INVITE_CODE (C, U) · PAIR_ATTEMPT (C, R, D) · PAIRING (C, R, D) · `unpair` D ทุก entity ของคู่ | S1, C1 |
 | FR-02 | `readLabel` · `parseLabel` · `emptyDraft` · `validMealTimes` · `validateDraft` · `reminderTimes` · `saveMedication` · `removeMedication` · `medicationsOf` (ทำแล้ว 23/10) | MEDICATION (C) · MEAL_TIMES (C, U) | C2 |
-| FR-03 | `sessionsOf` · `roundAt` · `dueSessions` | MEDICATION (R) · MEAL_TIMES (R) · DOSE_CONFIRMATION (R) | S2 |
-| FR-04 | `confirm` · `notYet` · `lateUntil` · `statusOf` | DOSE_CONFIRMATION (C, R) | S2, S3 |
+| FR-03 | `dayOf` · `sessionsOf` · `roundAt` · `dueSessions` · `lateUntil` · `newSoundKeys` (ทำแล้ว 24/10) | MEDICATION (R) · MEAL_TIMES (R) · DOSE_CONFIRMATION (R) | S2 |
+| FR-04 | `confirm` · `notYet` · `statusOf` · ใช้ `lateUntil` ของ `doseSession` | DOSE_CONFIRMATION (C, R) | S2, S3 |
 | FR-05 | `escalate` · `addNotice` · `dailyStatus` · `statusLabel` · `noticeText` · `canAccess` | CAREGIVER_NOTICE (C, R) · DOSE_CONFIRMATION (R) | C3 |
 
 ### 9.2 Coverage (ไม่มี FR ไร้ที่อยู่ · ไม่มีส่วนเกิน)

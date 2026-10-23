@@ -133,6 +133,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .card__title { font-size: var(--text-lg); font-weight: var(--weight-bold); line-height: var(--leading-tight); }
 
+/* มื้อยาบนหน้าเตือน S2 (FR-03 · BR-16 หลายมื้อแยกหัวข้อ) · เพิ่มโดย A แทน C 24/10/69 แจ้ง D */
+.session { display: flex; flex-direction: column; gap: var(--space-3); }
+.session + .session { padding-top: var(--space-4); border-top: var(--border-input) solid var(--color-line-strong); }
+.session-time { font-size: var(--text-2xl); font-weight: var(--weight-bold); line-height: var(--leading-tight); font-variant-numeric: tabular-nums; }
+
 /* Field */
 .field { display: flex; flex-direction: column; gap: var(--space-1); }
 .field__label { font-weight: var(--weight-bold); }
