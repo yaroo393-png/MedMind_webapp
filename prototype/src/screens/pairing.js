@@ -18,6 +18,8 @@
   var QR_CELL = 8;   // px ต่อโมดูลใน canvas (CSS ย่อ/ขยายให้พอดีกรอบ .qr)
   var QR_QUIET = 4;  // ขอบเงียบตามมาตรฐาน QR
   var MAX_IMAGE_SIDE = 1024;  // ย่อรูปมือถือก่อนอ่าน QR (research R-2)
+  var MAX_FRAME_SIDE = 640;   // ย่อเฟรมกล้องสดก่อนอ่าน QR
+  var SCAN_INTERVAL_MS = 200; // อ่านเฟรมละ 5 ครั้ง/วินาที พอสำหรับถือกล้องเล็ง ไม่กินเครื่อง
   var UNPAIRED_TEXT = 'การจับคู่ถูกยกเลิกแล้ว';  // clarify Q2
 
   // ---------- ตัวช่วยร่วม ----------
@@ -201,6 +203,8 @@
       var codeInput = null;
       var wasPaired = false;  // เห็นสถานะเชื่อมต่อแล้ว → ถ้าคู่หายไปจากอีกเครื่อง แจ้ง "การจับคู่ถูกยกเลิกแล้ว" (clarify Q2)
       var selfUnpairing = false;
+      var camera = null;      // { stream, video, box, timer } ขณะเปิดกล้องสด · อยู่นอก draw เพราะ draw ล้างหน้าจอใหม่ได้ทุกเมื่อ
+      var starting = false;   // กันกดซ้ำระหว่างรอผู้ใช้ตอบขอสิทธิ์กล้อง
       // { tone, text } ของผลครั้งล่าสุด · มาจากหน้าอื่นด้วย notice UNPAIRED (architecture §8.5)
       var message = ctx.params.notice === 'UNPAIRED' ? { tone: 'info', text: UNPAIRED_TEXT } : null;
 
@@ -234,6 +238,56 @@
         // LOCKED แสดงจากสถานะล็อกใน draw() อยู่แล้ว → ไม่ซ้ำ · ครั้งที่ 5 แสดงเหตุผลของรหัสนั้น + แถบล็อก (✗8)
         message = r.reason === 'LOCKED' ? null : { tone: 'danger', text: P.reasonText(r.reason) };
         store.set('pairAttempts', r.pairAttempts);
+      }
+
+      // ---------- กล้องสด (ADR-07 แก้ 22/10 · research R-2) ----------
+      function stopCamera() {
+        if (!camera) return;
+        window.clearInterval(camera.timer);
+        camera.stream.getTracks().forEach(function (t) { t.stop(); });  // ปิดไฟกล้อง
+        camera = null;
+      }
+
+      function scanFrame() {
+        var v = camera && camera.video;
+        if (!v || v.readyState < 2 || !v.videoWidth) return;
+        var scale = Math.min(1, MAX_FRAME_SIDE / Math.max(v.videoWidth, v.videoHeight));
+        var w = Math.max(1, Math.round(v.videoWidth * scale));
+        var hgt = Math.max(1, Math.round(v.videoHeight * scale));
+        var canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = hgt;
+        var g = canvas.getContext('2d', { willReadFrequently: true });
+        g.drawImage(v, 0, 0, w, hgt);
+        var code = Q.readQr(g.getImageData(0, 0, w, hgt));
+        if (!code) return;  // ยังไม่เห็น QR (หรือไม่ใช่ QR ของเรา) → เล็งต่อ ไม่นับครั้งผิด
+        stopCamera();
+        codeValue = code;
+        attemptPair(code);
+      }
+
+      // เปิดกล้องหลัง · ไม่มี API (เช่น http ไม่ใช่ HTTPS) → ถอยไปเลือก/ถ่ายรูป · ไม่อนุญาต/เปิดไม่ได้ → ข้อความ ✗7 + ช่องรหัส
+      function startCamera(fallbackPick) {
+        if (camera || starting) return;
+        var md = window.navigator.mediaDevices;
+        if (!md || typeof md.getUserMedia !== 'function') { fallbackPick(); return; }
+        starting = true;
+        md.getUserMedia({ video: { facingMode: 'environment' }, audio: false }).then(function (stream) {
+          starting = false;
+          var video = h('video', { playsinline: true, muted: true, autoplay: true, 'aria-label': 'ภาพจากกล้อง' });
+          video.muted = true;
+          video.srcObject = stream;
+          camera = { stream: stream, video: video, box: h('div', { class: 'scanner' }, video), timer: null };
+          camera.timer = window.setInterval(function () {
+            try { scanFrame(); } catch (err) { console.warn('[C1] scan frame failed', err); }
+          }, SCAN_INTERVAL_MS);
+          draw();
+          video.play().catch(function () { /* autoplay ถูกบล็อก: ผู้ใช้เพิ่งกดปุ่ม จึงไม่ควรเกิด */ });
+        }, function (err) {
+          starting = false;
+          console.warn('[C1] camera unavailable', err && err.name);
+          showQrError();
+        });
       }
 
       function showQrError() {
@@ -292,6 +346,10 @@
             h('p', { class: 'card__title', text: 'เชื่อมต่อกับผู้สูงอายุแล้ว' }),
             h('p', { class: 'muted', text: 'เชื่อมต่อเมื่อเวลา ' + MM.clock.formatTime(pairing.pairedAt) })
           ]),
+          // ไปหน้ายา (C2 · FR-02) เมื่อมีหน้าจอนั้นแล้ว
+          MM.screens.all().some(function (s) { return s.id === 'C2'; })
+            ? h('button', { class: 'btn btn--secondary btn--block', type: 'button', onClick: function () { ctx.go('C2'); } }, 'ยาของผู้สูงอายุ')
+            : null,
           unpairButton(function () {
             selfUnpairing = true;  // ยกเลิกเองเห็น toast แล้ว ไม่ต้องแจ้งซ้ำ (draw ระหว่าง dialog เปิดไม่ล้างค่านี้)
             confirmUnpair(ctx).then(function () { selfUnpairing = false; }, function () { selfUnpairing = false; });
@@ -314,19 +372,27 @@
           }
         });
         codeInput.value = codeValue;
-        // ปุ่มหลักเปิดตัวเลือกรูป (input ซ่อน) — ปุ่มจริงจึง disabled ได้ระหว่างล็อก
+        // เลือก/ถ่ายรูป QR (input ซ่อน) — ทางสำรองเมื่อกล้องสดใช้ไม่ได้ เช่น เปิดแบบดับเบิลคลิก
         var fileInput = h('input', {
-          class: 'visually-hidden', type: 'file', accept: 'image/*', capture: 'environment',
+          class: 'visually-hidden', type: 'file', accept: 'image/*',
           tabindex: '-1', 'aria-hidden': 'true', onChange: onImageChosen
         });
+        var scanning = camera !== null;
         return [
           locked ? banner({ tone: 'danger', text: P.reasonText('LOCKED', P.minutesLeft(retryAt, now)) }) : null,
           banner(message),
-          h('p', { text: 'สแกน QR บนโทรศัพท์ของผู้สูงอายุ หรือใส่รหัส 6 หลัก' }),
-          h('button', {
-            class: 'btn btn--primary btn--block btn--xl', type: 'button', disabled: locked,
+          h('p', { text: scanning ? 'เล็งกล้องไปที่ QR บนโทรศัพท์ของผู้สูงอายุ' : 'สแกน QR บนโทรศัพท์ของผู้สูงอายุ หรือใส่รหัส 6 หลัก' }),
+          scanning ? camera.box : null,
+          scanning
+            ? h('button', { class: 'btn btn--secondary btn--block', type: 'button', onClick: function () { stopCamera(); draw(); } }, 'ปิดกล้อง')
+            : h('button', {
+              class: 'btn btn--primary btn--block btn--xl', type: 'button', disabled: locked,
+              onClick: function () { startCamera(function () { fileInput.click(); }); }
+            }, 'สแกน QR'),
+          scanning ? null : h('button', {
+            class: 'btn btn--ghost btn--block', type: 'button', disabled: locked,
             onClick: function () { fileInput.click(); }
-          }, 'สแกน QR'),
+          }, 'เลือกรูป QR จากเครื่อง'),
           fileInput,
           h('form', {
             class: 'stack', novalidate: true,
@@ -351,6 +417,8 @@
         var paired = P.canAccess(pairing, d.caregiverId);
         if (!paired && wasPaired && !selfUnpairing) message = { tone: 'info', text: UNPAIRED_TEXT };
         wasPaired = paired;
+        var lockedNow = P.lockedUntil(store.get('pairAttempts', []), d.caregiverId, now) !== null;
+        if (paired || lockedNow) stopCamera();  // เชื่อมต่อแล้ว/ถูกล็อก → ปิดกล้อง
         var content = paired
           ? pairedView(pairing)
           : readyView(P.lockedUntil(store.get('pairAttempts', []), d.caregiverId, now), now);
@@ -359,8 +427,10 @@
         if (hadFocus && codeInput && codeInput.isConnected) codeInput.focus();
       }
 
+      ctx.onCleanup(stopCamera);  // ออกจากหน้า C1 → ปิดกล้อง
       ctx.subscribe(draw);
       draw();
+      if (camera && camera.video.isConnected) camera.video.play().catch(function () {});
     }
   });
 })(window, document);

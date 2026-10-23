@@ -88,7 +88,10 @@
 | สถานะว่าง | `.empty` · `.empty__title` | — | ยังไม่มีมื้อยา (FR-03 ✗5, FR-05 ✗4) |
 | Toast | `ctx.toast(msg, tone)` · `app.toast(role, msg, tone)` | `success` / `danger` / ปกติ · หายเองใน 4 วินาที · อ่านด้วย screen reader (`aria-live`) · อยู่ใต้หัวจอ ไม่บังปุ่มล่าง | feedback ทุกการกระทำ · แจ้งผู้ดูแล (FR-05) |
 | Dialog ยืนยัน | `ctx.confirm({ title, message, confirmLabel, tone })` → `Promise<boolean>` | `tone: 'danger'` → โฟกัส "ยกเลิก" ก่อน · Esc/แตะพื้นหลัง = ยกเลิก | การกระทำที่ย้อนไม่ได้: ยกเลิกการจับคู่ (BR-17) · ล้างข้อมูล |
+| กรอบภาพกล้องสด | `.scanner` (สี่เหลี่ยมจัตุรัส กว้างเต็มจอ · ขอบ `--border-input`) | — | C1 (FR-01 ✓3) · เพิ่มโดย A 22/10 แจ้ง D |
 | QR + รหัสเชิญ | `.qr` (กรอบ canvas `--qr-size` 240 px) · `.invite-code` (`--text-2xl` เว้นวรรค 3+3) · `.field__input--code` | QR สีจาก `--color-ink` บน `--color-surface` (contrast 16.54:1 · คำนวณ 22/10) | S1, C1 (FR-01 ✓1) · เพิ่มโดย A 22/10/69 แจ้ง D |
+| ตัวเลือกแบบแตะ | `.choices` (fieldset) · `.choice` (label + radio/checkbox สูง ≥ 48 px) | เลือกแล้ว = ขอบ/พื้น accent · `.field--invalid` = ขอบแดง | C2 เวลาตามฉลาก/มื้อ (FR-02) · เพิ่มโดย A 23/10 แจ้ง D |
+| ซ่อน | `[hidden]` ชนะ `display` ของ component เสมอ | — | ทุกหน้าจอ · เพิ่มโดย A 23/10 |
 | ป้าย Covers | `.covers` (หัวจอทุกหน้า) | สร้างจาก `covers` ของหน้าจอ | constitution หลักการ I |
 | โทรศัพท์ + แท็บ | `.phone` · `.stage__tabs` | จอ ≥ 861 px เห็น 2 เครื่อง · จอเล็กสลับด้วยแท็บ · `?role=senior` / `?role=caregiver` = เครื่องเดียวต่อหน้า (ไม่มีแท็บ) | SRS §2.2 |
 
@@ -100,7 +103,7 @@
 |---|---|---|---|---|---|
 | S1 | ผู้สูงอายุ | QR + รหัสเชิญ + ยินยอม · หมดอายุ · เชื่อมต่อแล้ว + ยกเลิก | FR-01 | A | ทำแล้ว — `src/screens/pairing.js` (specs/001-pairing) |
 | C1 | ผู้ดูแล | สแกน QR / ใส่รหัส · ล็อก · ยกเลิกการจับคู่ | FR-01 | A | ทำแล้ว — `src/screens/pairing.js` (specs/001-pairing) |
-| C2 | ผู้ดูแล | ถ่ายฉลาก → ร่าง → ตรวจ → บันทึก | FR-02 | B | (รอ feature) |
+| C2 | ผู้ดูแล | ยาของผู้สูงอายุ: รายการ · ถ่ายฉลาก → ร่าง → ตรวจ → บันทึก · แก้ · ลบ | FR-02 | B | ทำแล้ว — `src/screens/medication.js` (specs/002-label) |
 | S2 | ผู้สูงอายุ | หน้าเตือนมื้อยา + ปุ่ม "กินแล้ว"/"ยังไม่กิน" | FR-03, FR-04 | C (+ ปุ่ม D) | (รอ feature) |
 | S3 | ผู้สูงอายุ | หน้าแรก: มื้อของวัน + ยืนยันช้า | FR-04 | D | (รอ feature) |
 | C3 | ผู้ดูแล | สถานะรายวัน + การแจ้ง | FR-05 | E | (รอ feature) |

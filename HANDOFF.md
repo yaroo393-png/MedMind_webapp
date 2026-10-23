@@ -2,6 +2,29 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-23 — A (แทน B ตามที่ทีมตัดสิน) + Claude Code · FR-02 plan → tasks → implement (specs/002-label) — 25/25 task
+- **ADR-08 ยอมรับ:** อาจารย์ต้องการดับเบิลคลิก → OCR ฝังเป็น .js (`prototype/vendor/tesseract-embed/` 11.8 MB สร้างจาก `prototype/tools/embed-ocr.js`) โหลดเฉพาะครั้งแรกที่อ่านฉลาก
+- ไฟล์ใหม่: `src/modules/labelParser.js` · `medication.js` · `readLabel.js` · `src/screens/medication.js` (C2) · `tests/labelParser.test.js` (21) · `medication.test.js` (23) · `tests/fixtures/labels.js` · `samples/` (ฉลากสมมติ 4 ใบ)
+- แก้: `index.html` · `app.css` (`.choices/.choice`, `[hidden]` — **แจ้ง D**) · `screens/pairing.js` (C1 → ปุ่ม "ยาของผู้สูงอายุ") · architecture (ADR-08, §8.3, §9) · design-system · SRS (BR-03 ลบยา, §7, AI log) · READMEs
+- **ความเป็นส่วนตัว:** OCR ทำ "HN"/คำนำหน้าเพี้ยน (เห็นจากรูปจริง) → ตัวแยกรับเฉพาะรูปแบบยา ไม่อ่านชื่อผู้ป่วย/HN/แพทย์ · ข้อความดิบไม่แสดงไม่เก็บ · รูปจริงอยู่ `real-labels/` (git ไม่เก็บ · ตรวจแล้ว repo มีข้อมูลจากรูปจริง 0 ไฟล์)
+- **ผลจริง:** `node --test` 117/117 · Chrome ดับเบิลคลิก + OCR จริง: C2 28 ข้อผ่าน · NFR-03 17/17 · รูปจริง 4 ใบ ร่างถูกและไม่หลุดข้อมูลส่วนตัว (เดสก์ท็อป 3.0–8.8 วินาที — ไม่ใช่ NFR-08) · ชุด FR-01 + กล้องสดผ่านซ้ำ · console error 0
+- **ยังขาด (คนต้องทำ):** วัด NFR-08/NFR-11 กับฉลากจริง 20 ใบ **บนมือถือ** (ส. 24) → `docs/04-test/` · B ยืนยัน BR-03 (ลบยา) + BR-18 · D ตรวจ CSS ใหม่ · ทดสอบมือตาม `specs/002-label/quickstart.md`
+- branch: `feat/label` · ยังไม่ commit
+
+## 2026-10-23 — A (แทน B ตามที่ทีมตัดสิน) + Claude Code · `/speckit-specify` + `/speckit-clarify` specs/002-label (FR-02)
+- branch: `feat/label` (แตกจาก `feat/pairing`) · ไฟล์: `specs/002-label/spec.md`, `checklists/requirements.md` (ผ่านครบ) · `.gitignore` เพิ่ม `real-labels/`
+- **ADR-08 ตัดสินแล้ว (A 23/10):** อาจารย์ต้องการเปิดแบบดับเบิลคลิก → OCR ต้องทำงานบน `file://` (แก้ ADR-08 ใน plan)
+- clarify 4 ข้อ: ก่อนอาหาร N นาทีแล้วตกก่อนเที่ยงคืน = บันทึกไม่ได้ · **ลบยาได้ (เพิ่มใน BR-03 — B ต้องยืนยัน)** · ฉลากตัวอย่างใน `prototype/samples/` + รูปจริงสำหรับทดสอบมือ/วัด NFR · **ไม่อ่านชื่อผู้ป่วย/HN เข้าระบบ** (NFR-09 · R10b · SC-011)
+- **รอ:** ผู้ใช้ส่งรูปฉลากจริง 2–3 ใบ (ปิดชื่อ/HN) เพื่อออกแบบตัวแยกข้อความ · วางรูปจริงที่ `real-labels/` (git ไม่เก็บ)
+- ถัดไป: `/speckit-plan` · ยังไม่ commit
+
+## 2026-10-22 — A + Claude Code · เพิ่มกล้องสดสแกน QR (FR-01 ✓3 ✗7) — แก้ ADR-07
+- **เหตุ:** ผู้ใช้ทดสอบบนมือถือแล้วไม่เห็นภาพกล้อง — ร่างแรกของ AI ใช้ "ถ่าย/เลือกรูป" เพราะตีความว่ากล้องสดไม่จำเป็น แต่ AC ✗7 พูดถึง "ไม่อนุญาตกล้อง" → ผู้ใช้เลือกทำกล้องสด (ตัวเลือก A)
+- ไฟล์: `prototype/src/screens/pairing.js` (T039) · `app.css` `.scanner` (T040) · แก้ ADR-07, research R-2, screens.md, quickstart ข้อ 0, README, design-system §2 (T041) · `tasks.md` เพิ่ม T039–T042 · ไม่เพิ่ม dependency (jsQR เดิม) · ไม่แตะโมดูลกฎ
+- **ผลจริง:** `node --test` 73/73 ผ่าน · Chrome + กล้องปลอม (วิดีโอ QR): เปิดกล้องหลัง ไม่เสียง · สแกนก่อนยินยอม = ปฏิเสธ · ยินยอมแล้ว = จับคู่ · ไฟกล้องดับหลังเจอ/จับคู่/กดปิด · เวลาจำลองเดินไม่ทำให้กล้องหาย · ล็อกแล้วปุ่ม disabled · ไม่อนุญาตกล้อง = "อ่าน QR ไม่ได้…" ไม่นับครั้งผิด · ไม่มี API = ถอยไปรูป · ชุดเดิม US1 16 · US2 17 · US3 13 · NFR-03 27 ผ่านซ้ำ · console error 0
+- **ยังขาด (คนต้องทำ):** ทดสอบกล้องสดบนมือถือจริงผ่านลิงก์ HTTPS (quickstart ข้อ 0) — **ลิงก์ Pages ยังชี้ `feat/foundation` ต้อง push `feat/pairing` แล้วสลับ Pages ไป branch นั้น ไม่งั้นมือถือเห็นเวอร์ชันเก่าที่ไม่มีหน้าจับคู่เลย** · ผลทดสอบมือถือ = `[ทีมกรอก]` · ข้อจำกัดที่ยังไม่ได้ทดสอบ: iOS Safari (กล้องหลัง/autoplay)
+- branch: `feat/pairing` · ยังไม่ commit
+
 ## 2026-10-22 — A + Claude Code · `/speckit-implement` 001-pairing (FR-01) — ทำครบ 38/38 task
 - ไฟล์ใหม่: `prototype/src/modules/pairing.js` · `qrScan.js` · `prototype/src/screens/pairing.js` (S1, C1) · `prototype/tests/pairing.test.js` (44) · `qrScan.test.js` (6)
 - แก้: `index.html` (เปิด 5 บรรทัดของ A) · `tokens.css` (`--qr-size`) · `app.css` (`.qr`, `.invite-code`, `.field__input--code` — **แจ้ง D**) ·

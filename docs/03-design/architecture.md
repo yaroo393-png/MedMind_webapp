@@ -109,17 +109,17 @@ flowchart LR
 
 **ADR-07 — QR อ่านจากรูป + รหัส 6 หลักเป็นทางสำรอง** · ยอมรับ
 - *Context:* FR-01 ✓3 สแกน QR · FR-01 ✗7 อ่าน QR ไม่ได้/ไม่อนุญาตกล้อง · ต้องเปิดแบบดับเบิลคลิกได้
-- *Decision:* Caregiver ถ่าย/เลือกรูป QR → อ่านในเบราว์เซอร์ (jsQR) · ไม่ได้ → ช่องใส่รหัส 6 หลัก · QR เก็บข้อความ `MEDMIND:<รหัส 6 หลัก>` เท่านั้น
+- *Decision (แก้ 22/10 หลังผู้ใช้ทดสอบบนมือถือจริงแล้วไม่เห็นกล้อง):* Caregiver สแกนด้วย**กล้องสด** (`getUserMedia` กล้องหลัง → อ่านเฟรมด้วย jsQR) · กล้องใช้ไม่ได้/ไม่อนุญาต → ข้อความ ✗7 + ช่องใส่รหัส 6 หลัก · ไม่มี API กล้อง (เช่น http ไม่ใช่ HTTPS) → ถอยไปเลือก/ถ่ายรูป · ปุ่มรอง "เลือกรูป QR จากเครื่อง" มีเสมอ (เปิดแบบดับเบิลคลิก `file://`) · QR เก็บข้อความ `MEDMIND:<รหัส 6 หลัก>` เท่านั้น
 - *Consequence:* ทำงานได้ทั้ง `file://` และ HTTPS (ทดสอบแล้ว · TEAM-PLAN 5.1) · ไม่มีข้อมูลส่วนตัวใน QR
-- *ปฏิเสธ:* สแกนสดจากวิดีโอกล้อง — ต้องใช้ HTTPS เสมอ โค้ดซับซ้อนกว่า และไม่จำเป็นต่อ AC
+- *ปฏิเสธ (ร่างแรก 22/10 — **กลับคำตัดสิน**):* ถ่าย/เลือกรูปอย่างเดียว เพราะผู้ใช้คาดหวังภาพกล้องสด และ AC ✗7 เขียนว่า "ไม่อนุญาตกล้อง" ซึ่งสื่อถึงกล้อง · ข้อเสียที่ยอมรับ: กล้องสดต้องใช้ HTTPS (GitHub Pages) บนมือถือ
 - *เพิ่ม 22/10 (plan 001 · research R-1):* สร้าง QR ด้วย `qrcode-generator@1.4.4` (MIT, ไฟล์เดียวใน vendor) → `qrMatrix` วาดลง canvas (ไม่ใช้ innerHTML) · ทดสอบไป-กลับกับ jsQR ใน node ผ่าน ·
   *ปฏิเสธ:* เขียนตัวเข้ารหัส QR เอง (Reed–Solomon ยาว ผิดง่าย) · CDN (ไม่มีเน็ตใช้ไม่ได้) · ไม่มี QR (ไม่ผ่าน ✓1/✓3)
 
-**ADR-08 — ส่งงานเป็นลิงก์ GitHub Pages + ทางสำรองดับเบิลคลิกที่อ่านฉลากได้** · **เสนอ — รอทีมยืนยัน (B, D) และคำตอบอาจารย์ (A)**
+**ADR-08 — เปิดด้วยดับเบิลคลิกเป็นหลัก และอ่านฉลากได้ (ลิงก์ GitHub Pages สำหรับมือถือ)** · **ยอมรับ 23/10 (A: อาจารย์ต้องการดับเบิลคลิก)**
 - *Context:* เกณฑ์ M3 "เปิดด้วยดับเบิลคลิก" · OCR โหลดไฟล์ภาษาไม่ได้ผ่าน `file://` · มือถือต้องใช้ HTTPS เพื่อเปิดกล้อง
-- *Decision (เสนอ):* ลิงก์หลัก = GitHub Pages · ดับเบิลคลิกยังอ่านฉลากได้โดยฝังไฟล์ภาษา/worker เป็น script (ทดลองแล้ว 22/10: อ่านข้อความไทย 3 บรรทัดถูก ~0.45 วินาที · `HANDOFF.md`)
-- *Consequence:* หน้าเว็บโหลดเพิ่ม ~12 MB · วิธีแก้บั๊กไลบรารีผูกกับรุ่น 5.1.1 · ยังไม่ได้ทดสอบกับรูปถ่ายฉลากจริง
-- *ปฏิเสธ:* ดับเบิลคลิกอย่างเดียว (ไม่มี OCR) — FR-02 ✓1 ทำงานไม่ได้ · Live Server/server ในเครื่อง — ผู้ตรวจต้องติดตั้งเพิ่ม
+- *Decision:* ส่งงานแบบดับเบิลคลิก · ไฟล์ OCR (ภาษาไทย/อังกฤษ, core, worker) ฝังเป็น `.js` base64 ใน `prototype/vendor/tesseract-embed/` สร้างด้วย `prototype/tools/embed-ocr.js` จาก vendor เดิม · โหลดเฉพาะครั้งแรกที่อ่านฉลาก · ลิงก์ GitHub Pages ใช้กับมือถือ (กล้องต้อง HTTPS) · ทดลองแล้ว: ข้อความทดสอบ 22/10 และ**รูปฉลากจริง 4 ใบ 23/10** (2 ใบอ่านบรรทัดยาได้ 1 ใบเป็นยาไม่รองรับ 1 ใบอ่านไม่ได้ · `specs/002-label/research.md` R-0)
+- *Consequence:* repo ใหญ่ขึ้น ~12 MB (โหลดเฉพาะเมื่ออ่านฉลาก) · แก้บั๊ก worker ของ 5.1.1 ในหน่วยความจำ (ไม่แก้ไฟล์ vendor) ผูกกับรุ่นนี้ · ความแม่นกับฉลากจริง 20 ใบ = วัด ส. 24 (NFR-08, NFR-11)
+- *ปฏิเสธ:* ลิงก์ GitHub Pages เป็นหลัก — อาจารย์ต้องการดับเบิลคลิก · ดับเบิลคลิกแบบไม่มี OCR — FR-02 ✓1 ทำงานไม่ได้ · Live Server/server ในเครื่อง — ผู้ตรวจต้องติดตั้งเพิ่ม · ฝังใน `index.html` โหลดทุกครั้ง — เปิดหน้าช้าโดยไม่จำเป็น
 
 ---
 
@@ -465,17 +465,21 @@ erDiagram
 **`qrScan` (A · FR-01)**: `qrText(code)` → `"MEDMIND:123456"` · `codeFromQr(text)` → `"123456"` หรือ `null` · `readQr(imageData)` → `codeFromQr(...)` หรือ `null` (✗7) · `qrMatrix(code)` → ตาราง boolean ของโมดูล QR (✓1 · ADR-07) · หน้าจอวาดลง canvas
 รายละเอียดเต็ม: `specs/001-pairing/contracts/pairing-module.md`
 
-**`readLabel` (B · FR-02 · adapter)**: `readLabel(file)` → `Promise<{ ok: true, text } | { ok: false, reason: 'UNSUPPORTED_PAGE' | 'UNREADABLE' }>` (✗5)
+**`readLabel` (B · FR-02 · adapter)**: `readLabel(file, onProgress?)` → `Promise<{ ok: true, text } | { ok: false, reason: 'UNSUPPORTED_PAGE' | 'UNREADABLE' }>` (✗5) · โหลด OCR ฝังครั้งแรกที่เรียก (ADR-08) · ไม่เก็บรูป/ข้อความ
 
-**`labelParser` (B · FR-02)**: `parseLabel(text)` → `Draft = { name, tabletsPerDose, timing, meals, minutesBefore, warnings, contraindications, asNeeded, needsCheck: [ชื่อช่อง] }`
+**`labelParser` (B · FR-02)**: `parseLabel(text)` → `Draft = { name, tabletsPerDose, timing, meals, minutesBefore, warnings, contraindications, unsupported: null | 'AS_NEEDED' | 'NOT_TABLET' | 'HALF_TABLET', needsCheck: [ชื่อช่อง], found }` · `emptyDraft()` · **รับเฉพาะรูปแบบยาที่รู้จัก ไม่อ่านชื่อผู้ป่วย/HN** (NFR-09 · spec 002 R10b)
 — ช่องที่แยกไม่ได้ = `null` และอยู่ใน `needsCheck` (BR-04 ห้ามเดา) · ✓1 ✗3 ✗10
 
 **`medication` (B · FR-02)**
 | Operation | Output | กฎ / AC |
 |---|---|---|
-| `validateDraft(draft, mealTimes)` | `{ ok: true }` หรือ `{ ok: false, reason: 'MISSING' \| 'AS_NEEDED', fields: [...] }` | BR-05, BR-07 · ✗3 ✗4 ✗10 |
-| `reminderTimes(med, mealTimes)` | `["HH:MM", ...]` หรือ `null` ถ้าข้อมูลไม่พอ | BR-06 · ✓6 ✓8 ✓9 |
-| `saveMedication(list, draft, pairingId, now, id)` | `{ ok, medications }` (ไม่ผ่าน validate = ไม่บันทึก) | ✓2 · NFR-06 |
+| `validMealTimes(mealTimes)` | `{ ok: true }` หรือ `{ ok: false, reason: 'MEAL_TIMES', fields }` | BR-06 · ✓6 |
+| `validateDraft(draft, mealTimes)` | `{ ok: true }` หรือ `{ ok: false, reason: 'UNSUPPORTED' \| 'MISSING' \| 'MEAL_TIMES' \| 'BEFORE_MIDNIGHT', fields: [...] }` (ตามลำดับนี้) | BR-04–07 · ✗3 ✗4 ✗10 · clarify 002 |
+| `reminderTimes(med, mealTimes)` | `["HH:MM", ...]` เรียง ไม่ซ้ำ · ข้อมูลไม่พอ/ตกก่อน 00:00 → `null` | BR-06 · ✓6 ✓8 ✓9 |
+| `saveMedication(list, draft, mealTimes, pairingId, now, id)` | `{ ok: true, medications, medication }` (id เดิม = แก้) · ไม่ผ่าน = ผลของ `validateDraft` รายการไม่เปลี่ยน | ✓2 · NFR-06 |
+| `removeMedication(list, id)` · `medicationsOf(list, pairingId)` | รายการใหม่ | BR-03 (ลบ · clarify 002) · NFR-04 |
+
+รายละเอียดเต็ม: `specs/002-label/contracts/label-modules.md`
 
 **`doseSession` (C · FR-03)**
 | Operation | Output | กฎ / AC |
@@ -520,7 +524,7 @@ erDiagram
 | FR | Operation | Entity (C/R/U/D) | Screen |
 |---|---|---|---|
 | FR-01 | `ensureDevices` · `currentInvite` · `isExpired` · `newInvite` · `consent` · `pair` · `lockedUntil` · `minutesLeft` · `reasonText` · `canAccess` · `isSeniorPaired` · `unpair` · `qrText` · `codeFromQr` · `qrMatrix` · `readQr` (ทำแล้ว 22/10) | INVITE_CODE (C, U) · PAIR_ATTEMPT (C, R, D) · PAIRING (C, R, D) · `unpair` D ทุก entity ของคู่ | S1, C1 |
-| FR-02 | `readLabel` · `parseLabel` · `validateDraft` · `reminderTimes` · `saveMedication` | MEDICATION (C) · MEAL_TIMES (C, U) | C2 |
+| FR-02 | `readLabel` · `parseLabel` · `emptyDraft` · `validMealTimes` · `validateDraft` · `reminderTimes` · `saveMedication` · `removeMedication` · `medicationsOf` (ทำแล้ว 23/10) | MEDICATION (C) · MEAL_TIMES (C, U) | C2 |
 | FR-03 | `sessionsOf` · `roundAt` · `dueSessions` | MEDICATION (R) · MEAL_TIMES (R) · DOSE_CONFIRMATION (R) | S2 |
 | FR-04 | `confirm` · `notYet` · `lateUntil` · `statusOf` | DOSE_CONFIRMATION (C, R) | S2, S3 |
 | FR-05 | `escalate` · `addNotice` · `dailyStatus` · `statusLabel` · `noticeText` · `canAccess` | CAREGIVER_NOTICE (C, R) · DOSE_CONFIRMATION (R) | C3 |
