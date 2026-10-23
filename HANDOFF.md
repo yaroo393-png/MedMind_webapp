@@ -2,6 +2,37 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-24 — A (แทน C) + Claude Code · FR-03 `/speckit-tasks` (specs/003-reminder)
+- `tasks.md` 19 task: Setup 1 · Foundational 2 · US1 6 · US2 3 · US3 3 · Polish 4 · test ก่อนโค้ดทุก story · ตาราง AC → test ครบ ✓1 ✗2 ✓3 ✗4 ✗5
+- ถัดไป: `/speckit-analyze` → `/speckit-implement`
+
+## 2026-10-24 — A (แทน C) + Claude Code · FR-03 `/speckit-plan` (specs/003-reminder)
+- ไฟล์: `plan.md` · `research.md` (R-1…R-9) · `data-model.md` · `contracts/dose-session.md` · `contracts/screens.md` · `quickstart.md`
+- ตัดสินทางเทคนิค: มื้อจาก `reminderTimes` ของ FR-02 (ไม่คำนวณซ้ำ) · รอบคำนวณจากเวลา ไม่ใช้ timer · ส่งมื้อเมื่อวาน+วันนี้ (มื้อดึกข้ามเที่ยงคืน) · `lateUntil` อยู่ใน doseSession (FR-04 ใช้ร่วม) · เสียง Web Audio ไม่มีไฟล์ (ดับเบิลคลิกได้) · S2 เป็นหน้าของผู้สูงอายุหลังจับคู่ · ปุ่มก่อน FR-04 = toast ไม่เขียนข้อมูล
+- ต้องแก้ตอน implement: architecture §8.3 doseSession + §9.1 · app.css `.session`/`.session-time` (แจ้ง D) · S1 ปุ่มไป S2 (pairing.js ของ A)
+- ถัดไป: `/speckit-tasks` · branch `feat/reminder`
+
+## 2026-10-24 — A (แทน C ตามที่ทีมตัดสิน) + Claude Code · FR-03 `/speckit-specify` (specs/003-reminder)
+- สร้าง `specs/003-reminder/spec.md` + `checklists/requirements.md` (ผ่านทุกข้อ) · `.specify/feature.json` → 003-reminder
+- อ้าง FR-03 ✓1 ✗2 ✓3 ✗4 ✗5 · BR-06, 08, 09, 16 · NFR-01, 03 · R1–R12 + R6b · ไม่มี requirement ใหม่
+- **ตัดสินแล้ว (ผู้ใช้):** มื้อที่ถึง T+15 แต่ยังไม่ยืนยัน แสดงในหน้าเตือนต่อจนหมดช่วงยืนยันช้า (BR-15) เฉพาะเมื่อหน้าเตือนเปิดเพราะมีมื้ออื่นกำลังเตือน · ไม่มีเสียง (แก้ค่าขอบ ✗4 ที่ขัดกับ BR-14)
+- ขอบเขต: ปุ่ม กินแล้ว/ยังไม่กิน แสดงตาม BR-09 · ผลเมื่อกด = FR-04 · แจ้งผู้ดูแลใน ✗4 = FR-05 · S2 เป็นหน้าของผู้สูงอายุหลังจับคู่จนกว่า FR-04 มี S3
+- ถัดไป: `/speckit-plan` · branch แนะนำ `feat/reminder` (แตกจาก `feat/label`)
+
+## 2026-10-23 — A + Claude Code · `/speckit-implement` 002-label (รอบหลัง analyze)
+- งานของ AI ใน tasks.md ครบ (T001–T025) · เหลือ T026–T027 = งานของคน (ไม่ติ๊กแทน)
+- เพิ่ม `docs/04-test/nfr-08-11-label-reading.md` แบบฟอร์มวัด NFR-08/NFR-11/SC-011 บนมือถือ 20 ใบ (ผลทุกช่อง `[ทีมกรอก]` · เจ้าของ E)
+- **ตรวจพบ:** GitHub Pages ยังเสิร์ฟ branch เก่า (`prototype/src/screens/medication.js`, `pairing.js` = 404) → ผู้ใช้เปลี่ยน Pages เป็น `feat/label` แล้ว · ตรวจ 23:25 ไฟล์ FR-02 + OCR ฝังตอบ 200 · ลิงก์ที่ใช้คือ `/prototype/` (root ของ repo ไม่มีหน้า = 404 ปกติ)
+- `node --test` 118/118 · branch `feat/label`
+
+## 2026-10-23 — A + Claude Code · `/speckit-analyze` 002-label + แก้ตามผล
+- ผล analyze: 0 CRITICAL · 1 HIGH · 7 MEDIUM · 5 LOW · coverage 23/25 (ที่ขาด = งานวัดของคน)
+- แก้: `specs/002-label/spec.md` (C1 ยาเดียวมีเวลาได้ 1 แบบ · R10b รับเฉพาะรูปแบบยา · FR-01 ยังไม่ merge · รูปใหม่ต้องยกเลิกร่างก่อน · status · เรียง SC) · `plan.md` (เวลาอ่านครบทั้งระดับโมดูลและผ่านหน้าจอ) · `tasks.md` (T003 · T024 · เพิ่ม T026–T027) · `quickstart.md` (ข้อ 9 ตัดเน็ต) · SRS §7 + AI log
+- test ใหม่: `labelParser.test.js` หลังอาหาร+ก่อนนอน → timing ว่าง · `node --test` 118/118
+- SC-009 ตรวจจริง: Chrome ตัดเน็ต ชุด C2 ผ่าน 28/28 · request ออกนอกเครื่องจากหน้าเว็บ 0
+- **ยังขาด:** T026 มือถือ + ฉลากจริง 20 ใบ (ส. 24) · T027 B ยืนยัน BR-03/BR-18 · D ตรวจ CSS
+- branch: `feat/label` · ยังไม่ commit
+
 ## 2026-10-23 — A (แทน B ตามที่ทีมตัดสิน) + Claude Code · FR-02 plan → tasks → implement (specs/002-label) — 25/25 task
 - **ADR-08 ยอมรับ:** อาจารย์ต้องการดับเบิลคลิก → OCR ฝังเป็น .js (`prototype/vendor/tesseract-embed/` 11.8 MB สร้างจาก `prototype/tools/embed-ocr.js`) โหลดเฉพาะครั้งแรกที่อ่านฉลาก
 - ไฟล์ใหม่: `src/modules/labelParser.js` · `medication.js` · `readLabel.js` · `src/screens/medication.js` (C2) · `tests/labelParser.test.js` (21) · `medication.test.js` (23) · `tests/fixtures/labels.js` · `samples/` (ฉลากสมมติ 4 ใบ)

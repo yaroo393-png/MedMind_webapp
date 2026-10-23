@@ -17,7 +17,7 @@ description: "Task list — 002-label (FR-02)"
 
 - [X] T001 [P] สร้าง `prototype/tools/embed-ocr.js` (node · ไม่ใช้ npm): อ่าน `vendor/tesseract/lang/{tha,eng}.traineddata`, `vendor/tesseract/core/tesseract-core-lstm.wasm.js`, `vendor/tesseract/worker.min.js` → เขียน `prototype/vendor/tesseract-embed/{lang-tha,lang-eng,core,worker}.js` รูปแบบ `window.MM_OCR = window.MM_OCR || {}; window.MM_OCR["<key>"] = "<base64>";` + `README.md` (ที่มา, วิธีสร้างใหม่, ห้ามแก้มือ) · รันแล้วบันทึกขนาดไฟล์จริง · **ทำจริง:** 4 ไฟล์ รวม 11.8 MB (tha 1.36 · eng 5.23 · core 5.01 · worker 0.16)
 - [X] T002 [P] สร้าง UMD เปล่า `prototype/src/modules/labelParser.js`, `prototype/src/modules/medication.js` และไฟล์ test `prototype/tests/labelParser.test.js`, `prototype/tests/medication.test.js` · `node --test` ยังผ่าน
-- [X] T003 [P] สร้างข้อความฉลากสมมติ `prototype/tests/fixtures/labels.js` (ข้อมูลสมมติ: "ผู้ป่วย ตัวอย่าง", HN `000000000`, แพทย์ "แพทย์ ตัวอย่าง") 6 แบบตามรูปแบบใน research R-0: ก่อนนอน+คำเตือน · ก่อนอาหารไม่ระบุนาที (มีคำเพี้ยน `เข้า`) · หลังอาหาร เช้า-เย็น · ก่อนอาหาร 30 นาที · ยาเมื่อมีอาการ · ผงซอง "ดื่มบ่อยๆ" · ข้อความขยะ (อ่านไม่ได้) · บรรทัดชื่อ/HN ทั้งแบบถูกและแบบเพี้ยน (`LN :`, `UW.`)
+- [X] T003 [P] สร้างข้อความฉลากสมมติ `prototype/tests/fixtures/labels.js` (ข้อมูลสมมติเท่านั้น) 8 แบบตามรูปแบบใน research R-0 (HN สมมติ `123456789`, ชื่อสมมติมีคำว่า "สมมุติ"): ก่อนนอน+คำเตือน · ก่อนอาหารไม่ระบุนาที (มีคำเพี้ยน `เข้า`) · หลังอาหาร เช้า-เย็น · ก่อนอาหาร 30 นาที · ยาเมื่อมีอาการ · ผงซอง "ดื่มบ่อยๆ" · ข้อความขยะ (อ่านไม่ได้) · บรรทัดชื่อ/HN ทั้งแบบถูกและแบบเพี้ยน (`LN :`, `UW.`)
 
 ## Phase 2: Foundational
 
@@ -59,8 +59,13 @@ description: "Task list — 002-label (FR-02)"
 
 - [X] T022 [P] NFR-03/ปุ่มหลัก/render ไม่วน บน C2 ทุกสถานะ (Chrome) · class ใหม่ (ถ้ามี) ใน `app.css` + `design-system.md` §2 แจ้ง D · **ทำจริง:** Chrome 17/17 (ข้อความ ≥ 18 · ชื่อยา 24 · ปุ่มหลัก 64 กว้างเต็ม · เป้าแตะ ≥ 48 · ไม่วาดซ้ำวน) · เพิ่ม `.choices/.choice` + `[hidden]` ใน app.css
 - [X] T023 [P] เอกสาร: `design-system.md` §3 (C2 ทำแล้ว) · SRS §7 Golden Thread แถว FR-02 · `architecture.md` §9 · `prototype/README.md` (ลองเพิ่มยา) · `vendor/README.md` (tesseract-embed)
-- [X] T024 ตรวจ 5 ความผิดพลาดของ AI + grep (`Date.now`, `import`, `innerHTML`, สีเขียนตรง) + ตรวจว่าไม่มีชื่อ/HN จากรูปจริงใน repo (`git grep` คำจากรูปจริงที่ปิดบังไว้ — ตรวจในเครื่อง ไม่พิมพ์ออก) · **ทำจริง:** ข้อมูลส่วนตัวจากรูปจริงใน repo = 0 ไฟล์ · ไม่พบ Date.now/import/innerHTML/สีเขียนตรง · reload 2 จุดในปุ่มบันทึก/ลบ
+- [X] T024 ตรวจ 5 ความผิดพลาดของ AI + grep (`Date.now`, `import`, `innerHTML`, สีเขียนตรง) + ตรวจว่าไม่มีชื่อ/HN จากรูปจริงใน repo (`git grep` คำจากรูปจริงที่ปิดบังไว้ — ตรวจในเครื่อง ไม่พิมพ์ออก) · **ทำจริง:** ข้อมูลส่วนตัวจากรูปจริงใน repo = 0 ไฟล์ · ไม่พบ Date.now/import/innerHTML/สีเขียนตรง · reload 2 จุดในปุ่มบันทึก/ลบ · **SC-009 (analyze G2):** ชุด C2 บน Chrome แบบตัดเน็ต (proxy ปิด + DNS ปิด) ผ่าน 28/28 อ่านฉลากได้ · net-log ของหน้าเว็บมี request ออกนอกเครื่อง 0 ครั้ง (มีแค่ preconnect ของ Chrome เอง ไม่ใช่ของแอป)
 - [X] T025 `node --test` + ชุด Chrome ทั้งหมด (FR-01 + FR-02) ผ่าน · HANDOFF + AI log · เสนอคำสั่ง commit · **ทำจริง:** `node --test` 117/117 · ชุด FR-01 ซ้ำ 16/17/13 + กล้องสด ผ่าน (ปรับสคริปต์เพราะหลังจับคู่ไปหน้า C2 ตามสัญญา) · HANDOFF + AI log อัปเดต
+
+## Phase 7: งานของคน (หลัง analyze 23/10)
+
+- [ ] T026 **(คนทำ · ส. 24)** มือถือผ่าน GitHub Pages (HTTPS · R11, SC-006): อ่านฉลากจริง 20 ใบ → จดเวลาส่งรูป → เห็นร่าง (NFR-08 · SC-007) · ชื่อยาตรงฉลาก (NFR-11 · SC-008) · ชื่อผู้ป่วย/HN ไม่โผล่ (SC-011) · ลองรูปที่อ่านไม่ได้ 1 ใบ (✗5) → จดใน `docs/04-test/nfr-08-11-label-reading.md` (แบบฟอร์มพร้อม · ช่องผล `[ทีมกรอก]`) · ห้ามจดชื่อ/HN จริง · **ก่อนวัด:** ตั้ง GitHub Pages ให้เสิร์ฟ branch ที่มี FR-02 (ตรวจ 23/10 23:25: Pages เสิร์ฟ `feat/label` แล้ว · ไฟล์ FR-02 + OCR ฝังตอบ 200)
+- [ ] T027 **(B)** ยืนยัน BR-03 (ลบยา) + BR-18 ใน PR ก่อน merge (constitution: requirement ใหม่ต้องทีมอนุมัติ) · **(D)** ตรวจ `.choices/.choice` + `[hidden]` ใน `app.css`
 
 ## Dependencies
 
@@ -72,11 +77,12 @@ Setup → Foundational → US1 → (US2 ∥ US3 หลัง T009) → Polish ·
 |---|---|---|
 | ✓1 · BR-04 · NFR-06 | T006, T012 | T008, T010, T011 |
 | ✓2 · NFR-06 | T007, T012 | T009, T011 |
-| ✗3 · BR-04, 05 | T013, T014 | T015, T016 |
+| ✗3 · BR-04, 05 (รวมเวลา 2 แบบในยาเดียว · analyze C1) | T013, T014 | T015, T016 |
 | ✗4 · BR-07 | T013, T014, T017 | T015, T016 |
 | ✗5 · ADR-03, 08 | T013, T017 | T010, T016 |
 | ✓6 ✓8 ✓9 · BR-06 | T018, T021 | T020 |
 | ✗7 | T007, T012 | T011 |
 | ✗10 | T013, T014, T017 | T015 |
 | BR-03 ลบ | T019, T021 | T020 |
-| NFR-09 · R10b · SC-011 | T006, T017, T024 | T008 |
+| NFR-09 · R10b · SC-009, SC-011 | T006, T017, T024, T026 | T008, T010 |
+| NFR-08 · NFR-11 · R11 มือถือ | T026 | T001, T010 |

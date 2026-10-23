@@ -95,6 +95,12 @@ test('FR-02 ✗3 / BR-04: before AND after meal on one label → timing empty, n
   assert.ok(d.needsCheck.includes('timing'));
 });
 
+test('FR-02 ✗3 / BR-04: after meal AND bedtime on one label → timing empty (one medication has one timing)', () => {
+  const d = L.parseLabel('X-DRUG 5 MG[10] เม็ด\nรับประทานครั้งละ 1 เม็ด\nหลังอาหาร เช้า และก่อนนอน');
+  assert.equal(d.timing, null);
+  assert.ok(d.needsCheck.includes('timing'));
+});
+
 test('FR-02 ✗3 / research R-0: a covered word ("…งอาหาร") is neither before nor after meal → timing empty, meals kept', () => {
   const d = L.parseLabel(LABELS.obscured);
   assert.equal(d.timing, null);
