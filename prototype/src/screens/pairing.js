@@ -346,6 +346,10 @@
             h('p', { class: 'card__title', text: 'เชื่อมต่อกับผู้สูงอายุแล้ว' }),
             h('p', { class: 'muted', text: 'เชื่อมต่อเมื่อเวลา ' + MM.clock.formatTime(pairing.pairedAt) })
           ]),
+          // ไปหน้ายา (C2 · FR-02) เมื่อมีหน้าจอนั้นแล้ว
+          MM.screens.all().some(function (s) { return s.id === 'C2'; })
+            ? h('button', { class: 'btn btn--secondary btn--block', type: 'button', onClick: function () { ctx.go('C2'); } }, 'ยาของผู้สูงอายุ')
+            : null,
           unpairButton(function () {
             selfUnpairing = true;  // ยกเลิกเองเห็น toast แล้ว ไม่ต้องแจ้งซ้ำ (draw ระหว่าง dialog เปิดไม่ล้างค่านี้)
             confirmUnpair(ctx).then(function () { selfUnpairing = false; }, function () { selfUnpairing = false; });

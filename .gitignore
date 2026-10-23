@@ -17,3 +17,6 @@ test-results/
 # ไฟล์ที่ส่ง Classroom มีชื่อ/เบอร์ผู้ใช้จริง — ห้ามเข้า repo (PDPA)
 M1-Charter_*.pdf
 M2-SRS_*.pdf
+
+# รูปฉลากยาจริง — มีชื่อผู้ป่วย/HN ห้ามเข้า repo (NFR-09 · specs/002-label clarify 23/10) · วางรูปจริงในโฟลเดอร์นี้
+real-labels/
