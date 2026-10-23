@@ -2,6 +2,14 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-23 — A + Claude Code · `/speckit-analyze` 002-label + แก้ตามผล
+- ผล analyze: 0 CRITICAL · 1 HIGH · 7 MEDIUM · 5 LOW · coverage 23/25 (ที่ขาด = งานวัดของคน)
+- แก้: `specs/002-label/spec.md` (C1 ยาเดียวมีเวลาได้ 1 แบบ · R10b รับเฉพาะรูปแบบยา · FR-01 ยังไม่ merge · รูปใหม่ต้องยกเลิกร่างก่อน · status · เรียง SC) · `plan.md` (เวลาอ่านครบทั้งระดับโมดูลและผ่านหน้าจอ) · `tasks.md` (T003 · T024 · เพิ่ม T026–T027) · `quickstart.md` (ข้อ 9 ตัดเน็ต) · SRS §7 + AI log
+- test ใหม่: `labelParser.test.js` หลังอาหาร+ก่อนนอน → timing ว่าง · `node --test` 118/118
+- SC-009 ตรวจจริง: Chrome ตัดเน็ต ชุด C2 ผ่าน 28/28 · request ออกนอกเครื่องจากหน้าเว็บ 0
+- **ยังขาด:** T026 มือถือ + ฉลากจริง 20 ใบ (ส. 24) · T027 B ยืนยัน BR-03/BR-18 · D ตรวจ CSS
+- branch: `feat/label` · ยังไม่ commit
+
 ## 2026-10-23 — A (แทน B ตามที่ทีมตัดสิน) + Claude Code · FR-02 plan → tasks → implement (specs/002-label) — 25/25 task
 - **ADR-08 ยอมรับ:** อาจารย์ต้องการดับเบิลคลิก → OCR ฝังเป็น .js (`prototype/vendor/tesseract-embed/` 11.8 MB สร้างจาก `prototype/tools/embed-ocr.js`) โหลดเฉพาะครั้งแรกที่อ่านฉลาก
 - ไฟล์ใหม่: `src/modules/labelParser.js` · `medication.js` · `readLabel.js` · `src/screens/medication.js` (C2) · `tests/labelParser.test.js` (21) · `medication.test.js` (23) · `tests/fixtures/labels.js` · `samples/` (ฉลากสมมติ 4 ใบ)
