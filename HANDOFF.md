@@ -2,6 +2,12 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-23 — A + Claude Code · `/speckit-implement` 002-label (รอบหลัง analyze)
+- งานของ AI ใน tasks.md ครบ (T001–T025) · เหลือ T026–T027 = งานของคน (ไม่ติ๊กแทน)
+- เพิ่ม `docs/04-test/nfr-08-11-label-reading.md` แบบฟอร์มวัด NFR-08/NFR-11/SC-011 บนมือถือ 20 ใบ (ผลทุกช่อง `[ทีมกรอก]` · เจ้าของ E)
+- **ตรวจพบ:** GitHub Pages ยังเสิร์ฟ branch เก่า (`prototype/src/screens/medication.js`, `pairing.js` = 404) → ต้องเปลี่ยน Settings → Pages ก่อนวัด ส. 24
+- `node --test` 118/118 · branch `feat/label`
+
 ## 2026-10-23 — A + Claude Code · `/speckit-analyze` 002-label + แก้ตามผล
 - ผล analyze: 0 CRITICAL · 1 HIGH · 7 MEDIUM · 5 LOW · coverage 23/25 (ที่ขาด = งานวัดของคน)
 - แก้: `specs/002-label/spec.md` (C1 ยาเดียวมีเวลาได้ 1 แบบ · R10b รับเฉพาะรูปแบบยา · FR-01 ยังไม่ merge · รูปใหม่ต้องยกเลิกร่างก่อน · status · เรียง SC) · `plan.md` (เวลาอ่านครบทั้งระดับโมดูลและผ่านหน้าจอ) · `tasks.md` (T003 · T024 · เพิ่ม T026–T027) · `quickstart.md` (ข้อ 9 ตัดเน็ต) · SRS §7 + AI log
