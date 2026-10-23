@@ -2,6 +2,10 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-24 — A (แทน C) + Claude Code · FR-03 `/speckit-tasks` (specs/003-reminder)
+- `tasks.md` 19 task: Setup 1 · Foundational 2 · US1 6 · US2 3 · US3 3 · Polish 4 · test ก่อนโค้ดทุก story · ตาราง AC → test ครบ ✓1 ✗2 ✓3 ✗4 ✗5
+- ถัดไป: `/speckit-analyze` → `/speckit-implement`
+
 ## 2026-10-24 — A (แทน C) + Claude Code · FR-03 `/speckit-plan` (specs/003-reminder)
 - ไฟล์: `plan.md` · `research.md` (R-1…R-9) · `data-model.md` · `contracts/dose-session.md` · `contracts/screens.md` · `quickstart.md`
 - ตัดสินทางเทคนิค: มื้อจาก `reminderTimes` ของ FR-02 (ไม่คำนวณซ้ำ) · รอบคำนวณจากเวลา ไม่ใช้ timer · ส่งมื้อเมื่อวาน+วันนี้ (มื้อดึกข้ามเที่ยงคืน) · `lateUntil` อยู่ใน doseSession (FR-04 ใช้ร่วม) · เสียง Web Audio ไม่มีไฟล์ (ดับเบิลคลิกได้) · S2 เป็นหน้าของผู้สูงอายุหลังจับคู่ · ปุ่มก่อน FR-04 = toast ไม่เขียนข้อมูล
