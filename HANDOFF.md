@@ -2,6 +2,12 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-24 — A (แทน C) + Claude Code · FR-03 `/speckit-plan` (specs/003-reminder)
+- ไฟล์: `plan.md` · `research.md` (R-1…R-9) · `data-model.md` · `contracts/dose-session.md` · `contracts/screens.md` · `quickstart.md`
+- ตัดสินทางเทคนิค: มื้อจาก `reminderTimes` ของ FR-02 (ไม่คำนวณซ้ำ) · รอบคำนวณจากเวลา ไม่ใช้ timer · ส่งมื้อเมื่อวาน+วันนี้ (มื้อดึกข้ามเที่ยงคืน) · `lateUntil` อยู่ใน doseSession (FR-04 ใช้ร่วม) · เสียง Web Audio ไม่มีไฟล์ (ดับเบิลคลิกได้) · S2 เป็นหน้าของผู้สูงอายุหลังจับคู่ · ปุ่มก่อน FR-04 = toast ไม่เขียนข้อมูล
+- ต้องแก้ตอน implement: architecture §8.3 doseSession + §9.1 · app.css `.session`/`.session-time` (แจ้ง D) · S1 ปุ่มไป S2 (pairing.js ของ A)
+- ถัดไป: `/speckit-tasks` · branch `feat/reminder`
+
 ## 2026-10-24 — A (แทน C ตามที่ทีมตัดสิน) + Claude Code · FR-03 `/speckit-specify` (specs/003-reminder)
 - สร้าง `specs/003-reminder/spec.md` + `checklists/requirements.md` (ผ่านทุกข้อ) · `.specify/feature.json` → 003-reminder
 - อ้าง FR-03 ✓1 ✗2 ✓3 ✗4 ✗5 · BR-06, 08, 09, 16 · NFR-01, 03 · R1–R12 + R6b · ไม่มี requirement ใหม่
