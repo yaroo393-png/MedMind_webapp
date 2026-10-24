@@ -2,6 +2,23 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-24 — A (แทน E) + Claude Code · FR-05 `/speckit-tasks` (specs/005-status)
+- `tasks.md` 22 task: Setup 1 · Foundational 2 (`addNotice`, `noticeText`) · US1 7 (แจ้ง T+15 · ตัวรัน · แถบ · ฝั่งผู้สูงอายุ) · US2 5 (C3 · หน้าแรกผู้ดูแล) · US3 3 (ยืนยันช้า) · Polish 4 · test ก่อนโค้ด · ตาราง AC → test ครบ ✓1 ✗2 ✓3 ✗4 ✓5 ✓6 ✗7
+- ถัดไป: `/speckit-analyze` → `/speckit-implement`
+
+## 2026-10-24 — A (แทน E) + Claude Code · FR-05 `/speckit-plan` (specs/005-status)
+- ไฟล์: `plan.md` · `research.md` (R-1…R-8) · `data-model.md` · `contracts/escalation-module.md` · `contracts/screens.md` · `quickstart.md`
+- ตัดสินทางเทคนิค: `escalate` ทำซ้ำไม่เพิ่ม แจ้งในช่วง [T+15, lateUntil) · ตัวรันตามเวลาระดับหน้าเว็บใน `status.js` (ทุกหน้า ไม่ขึ้นกับหน้าจอ · reload ก่อนเขียน) · ฟิลด์ใหม่ `seenAt` (แถบค้างจนกด) · ข้อความยืนยันช้าเอาเวลาจากบันทึกยืนยัน · สถานะรายวันใช้คำจาก `confirm` · หน้าแรกผู้ดูแล C3 เมื่อมียา
+- ต้องแก้ตอน implement: architecture §6 (`seenAt`), §8.3, §8.4, §9.1 · `medication.js` ของ B (isStart · แถบ · ปุ่ม "สถานะวันนี้") · `reminder.js` (ลบทาง "ยังไม่พร้อม")
+- ถัดไป: `/speckit-tasks` · branch `feat/status`
+
+## 2026-10-24 — A (แทน E ตามที่ทีมตัดสิน) + Claude Code · FR-05 `/speckit-specify` (specs/005-status)
+- `spec.md` + `checklists/requirements.md` (ผ่านทุกข้อ) · `.specify/feature.json` → 005-status · AC FR-05 ✓1 ✗2 ✓3 ✗4 ✓5 ✓6 ✗7 · BR-11, 13, 14, 15, 16 · NFR-01, 04 · R1–R16
+- **ตัดสินแล้ว (ผู้ใช้):** ข้อความใหม่ = แถบค้างบนสุดของทุกหน้าผู้ดูแลจนกด "ดูสถานะ" · ข้อความทั้งวันอยู่บนหน้าสถานะ C3
+- ค่าเริ่มต้นที่ AI ตั้ง (ทีมแก้ได้): ไม่แจ้ง "ยังไม่ยืนยัน" ย้อนหลังเมื่อพ้นช่วงยืนยันช้า · ยืนยันช้าแจ้งเสมอ · หน้าแรกผู้ดูแลหลังจับคู่ = C3 เมื่อมียา (แก้ `isStart` ของ C2 — **แจ้ง B**) · แจ้ง = ข้อความในหน้าเว็บ ไม่มี push/LINE (ADR-01)
+- FR-04 ส่งต่อ: ลบ "ระบบแจ้งลูกหลานยังไม่พร้อมในรุ่นนี้" ใน reminder.js เมื่อ escalation โหลด
+- branch แนะนำ `feat/status` (แตกจาก `feat/confirm`) · ถัดไป `/speckit-clarify` หรือ `/speckit-plan`
+
 ## 2026-10-24 — A (แทน D ตามที่ทีมตัดสิน) + Claude Code · FR-04 `/speckit-implement` (specs/004-confirm) — 21/21 task
 - ไฟล์ใหม่: `src/modules/confirm.js` (`confirm` · `undoConfirm` · `notYet` · `visibleDue` · `statusOf` · `statusLabel` · `canConfirmLate`) · `src/screens/home.js` (S3 "ยาของฉันวันนี้") · `tests/confirm.test.js` (33)
 - แก้: `screens/reminder.js` (ของ C · ส่วนปุ่มของ D): "กินแล้ว"/"ยังไม่กิน" ทำงานจริง · ยกเลิก 10 วินาที (`MedMind.reminder.offerUndo`/`undoBanner`/`confirmTap`/`subscribe`) · ซ่อนมื้อหลัง "ยังไม่กิน" · S2 เป็นหน้าแรกเฉพาะตอนกำลังเตือน · ลบ toast "ยังบันทึกไม่ได้ในรุ่นนี้" · `screens/pairing.js` (S1 ปุ่ม "กลับหน้าแรก" → S2 ถ้ากำลังเตือน ไม่งั้น S3) · `index.html` (เปิด confirm.js, home.js)
