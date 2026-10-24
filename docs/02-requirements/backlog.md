@@ -74,7 +74,7 @@
 | Design system | `docs/03-design/design-system.md` | ✅ |
 | User flow + wireframe | `docs/03-design/user-flow.md` | ✅ 25/10 |
 | Prototype ครบ Must FR + error/empty | `prototype/` | 🟡 รอ merge โค้ด FR-05 |
-| Test scenarios + ผลจริง + usability/SUS | `docs/04-test/` | ⬜ ส่วนอัตโนมัติร่างได้ · ส่วนคน [ทีมกรอก] |
+| Test scenarios + ผลจริง + usability/SUS | `docs/04-test/test-scenarios.md` · `usability-sus.md` | ✅ ส่วนอัตโนมัติ 25/10 (36/36 AC มี test · 214/214) · ⬜ ส่วนคน [ทีมกรอก] |
 | Final report 2–3 หน้า | `docs/05-report/final-report.md` | ⬜ |
 | AI-Use Statement | `docs/05-report/ai-use-statement.md` | ⬜ |
 | Demo slides | `docs/06-presentation/` | ⬜ |
