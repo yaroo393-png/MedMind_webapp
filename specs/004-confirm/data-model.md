@@ -30,9 +30,12 @@ ERD ไม่เปลี่ยน · feature นี้เป็นผู้เ�
 | ข้อความสถานะ (BR-14) | `confirm.statusLabel` | S3 · C3 (FR-05) |
 | `hideUntil` | `confirm.notYet` | S2 ซ่อนมื้อ |
 
+ลบระเบียนยืนยัน: เฉพาะ `confirm.undoConfirm` ภายใน 10 วินาทีหลังแตะ (BR-10 · R-8)
+
 ## ค่าในหน่วยความจำของหน้าเว็บ (ไม่เก็บ)
 
 - `hidden { sessionKey → hideUntil }` (R-3) · หายเมื่อรีเฟรช/ปิดหน้า
+- การแตะที่ยังยกเลิกได้ 1 รายการ `{ text, undo, commit, timer }` (R-8) · ปิดหน้า = ไม่ commit (การแจ้งที่รอไม่ถูกส่ง · ดู spec edge)
 
 ## การเปลี่ยนสถานะของมื้อ (`architecture.md` §5)
 

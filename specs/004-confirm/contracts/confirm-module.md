@@ -11,6 +11,7 @@
 | `visibleDue(due, hidden, now)` | ผลของ `doseSession.dueSessions` · `{ sessionKey: hideUntil }` | `due` ที่ตัดมื้อกำลังเตือนที่ `now < hidden[key]` · ไม่เหลือมื้อกำลังเตือน → `[]` | R4b · clarify 24/10 |
 | `statusOf(session, sessions, confirmations, pairingId, now)` | | `{ status, confirmedAt }` · `TAKEN` / `TAKEN_LATE` (มีบันทึก · ช้าเมื่อ `confirmedAt ≥ at + 15`) · `WAITING` (`now < at`) · `ALERTING` (`now < at + 15`) · `UNCONFIRMED` · `confirmedAt` = `null` เมื่อไม่มีบันทึก | BR-14 · §5 |
 | `statusLabel(status, confirmedAt)` | | "กินแล้ว HH:MM" · "กินแล้ว (ยืนยันช้า) HH:MM" · "กำลังเตือน" · "ยังไม่ยืนยัน" · "รอถึงเวลา" · ไม่มีคำว่า "ไม่ได้กิน" | BR-14 · BR-13 |
+| `undoConfirm(confirmations, pairingId, sessionKey)` | | รายการใหม่ที่ไม่มีระเบียนของ (`pairingId`, `sessionKey`) · ไม่มี = รายการเดิม (ค่าเท่ากัน) · ไม่กระทบคู่อื่น/มื้ออื่น | BR-10 · R1b (analyze 24/10) |
 | `canConfirmLate(session, sessions, confirmations, pairingId, now)` | | `true` เมื่อ `statusOf` = `UNCONFIRMED` และ `now < lateUntil` (หน้าแรกแสดงปุ่ม) | BR-15 · ✓5 ✗6 |
 
 **ข้อตกลง**: ไม่แก้ input · input ผิดรูป (`confirmations`/`sessions` ไม่ใช่ list ที่ไม่ใช่ `undefined`/`null`, `now` ไม่ใช่ตัวเลข) → `TypeError` · `confirmations` `undefined`/`null` = `[]`
@@ -27,4 +28,5 @@
 | ค่าขอบ | 07:59 `NOT_STARTED` · 08:00 ได้ (ตรงเวลา) · 08:15 − 1 ms ตรงเวลา · 08:15 ช้า · ไม่มีมื้อถัดไป: 23:59 ได้ |
 | BR-16 | ยืนยัน A ไม่ทำให้ B ยืนยัน · `notYet` ของ A ไม่กระทบ `visibleDue` ของ B |
 | R4b | `visibleDue`: ซ่อน A (กำลังเตือน) ที่เหลือ B → [B] (+ มื้อช่วงยืนยันช้า) · ซ่อนมื้อเดียวที่กำลังเตือน → `[]` · ถึง `hideUntil` → แสดงอีก |
+| R1b · BR-10 | `undoConfirm` หลัง `confirm` → ไม่มีบันทึก · `statusOf` กลับเป็นตามเวลา · `dueSessions` มีมื้อนี้อีก (ถ้ายังในรอบ) · ไม่กระทบบันทึกของมื้อ/คู่อื่น · ยืนยันใหม่ได้หลังยกเลิก |
 | BR-14 | `statusOf` ทั้ง 5 แบบ · `statusLabel` ตรงตัว 5 แบบ · ไม่มี "ไม่ได้กิน" |

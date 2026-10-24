@@ -2,6 +2,12 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-24 — A (แทน D) + Claude Code · FR-04 `/speckit-analyze` + แก้ตามผล
+- analyze: 1 CRITICAL — "กินแล้ว" และ "ยังไม่กิน" รอบ T+10 ย้อนไม่ได้แต่ไม่มีการยืนยัน (ขัดกติกาวิชา) · ผู้ใช้เลือก **ยกเลิกได้ 10 วินาที** (ไม่มี dialog · ยังแตะ 1 ครั้ง)
+- แก้ SRS BR-10, BR-11 (**รอ D ยืนยัน**) · spec (R1b, SC-009, edge ปิดหน้าระหว่างช่วงยกเลิก) · research R-8 · contracts (`undoConfirm`, `offerUndo`/`undoBanner`, ตารางสถานะ→class) · data-model · quickstart · tasks 21 ข้อ (เพิ่ม 2) · AI log
+- "กินแล้ว" บันทึกทันที ยกเลิก = ลบ · การแจ้งผู้ดูแลจากการแตะส่งเมื่อพ้น 10 วินาที · ปิดหน้าก่อนครบ → FR-05 แจ้งที่ T+15 แทน
+- ถัดไป: `/speckit-implement`
+
 ## 2026-10-24 — A (แทน D) + Claude Code · FR-04 `/speckit-tasks` (specs/004-confirm)
 - `tasks.md` 19 task: Setup 1 · Foundational 2 (สถานะ/คำ BR-14) · US1 4 · US2 4 · US3 4 · Polish 4 · test ก่อนโค้ด · ตาราง AC → test ครบ ✓1 ✗2 ✓3 ✗4 ✓5 ✗6
 - ถัดไป: `/speckit-analyze` → `/speckit-implement`
