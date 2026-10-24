@@ -38,7 +38,7 @@ node --test
 | M2 SRS | [`docs/02-requirements/spec.md`](docs/02-requirements/spec.md) (FR · BR · NFR · AC · Golden Thread · AI log) · [`backlog.md`](docs/02-requirements/backlog.md) |
 | M2 Design | [`architecture.md`](docs/03-design/architecture.md) (3 ชั้น · ADR · diagram · data model) · [`design-system.md`](docs/03-design/design-system.md) · [`user-flow.md`](docs/03-design/user-flow.md) |
 | M3 Test | [`test-scenarios.md`](docs/04-test/test-scenarios.md) · [`usability-sus.md`](docs/04-test/usability-sus.md) · [`nfr-08-11-label-reading.md`](docs/04-test/nfr-08-11-label-reading.md) |
-| M3 Report | [`final-report.md`](docs/05-report/final-report.md) · AI-Use Statement `docs/05-report/ai-use-statement.md` |
+| M3 Report | [`final-report.md`](docs/05-report/final-report.md) · [`ai-use-statement.md`](docs/05-report/ai-use-statement.md) |
 | Feature (Spec Kit) | [`specs/001-pairing`](specs/001-pairing) · [`002-label`](specs/002-label) · [`003-reminder`](specs/003-reminder) · [`004-confirm`](specs/004-confirm) · [`005-status`](specs/005-status) |
 | ความคืบหน้า | [`HANDOFF.md`](HANDOFF.md) |
 
