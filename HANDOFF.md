@@ -2,6 +2,12 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-25 — A + Claude Code · หน้า repo ตามตัวอย่าง Temporary-Room-Reservation-MFU
+- `README.md` เขียนใหม่ตามลำดับหัวข้อของตัวอย่าง: ชื่อ + badge → ปัญหา/Must FR → โครงสร้าง repo → tech stack → Quick Start → การทดสอบ → ข้อมูลทดลอง → เอกสาร → ทีม/AI/ขอบเขต (ส่วนท้ายเพิ่มเพราะวิชาต้องการ)
+- ใหม่ `docs/README.md` — สารบัญเรียงตาม milestone (M1 → M2 → design → feature → test → report → กติกา) แบบตาราง index ของตัวอย่าง
+- ไม่สร้าง `AI_CHANGELOG.md` / `RULES.md` ซ้ำ: เทียบได้กับ AI log (`spec.md` §8) และ `CLAUDE.md` + constitution ที่มีแล้ว
+- AI log ใน `spec.md` §8 เรียงตามวันที่แล้ว (แถวใหม่ต่อท้ายตารางจากนี้) · ตรวจลิงก์ในทั้ง 2 หน้า 49 ลิงก์ ไม่เสีย
+
 ## 2026-10-25 — A (แทน E) + Claude Code · AI-Use Statement
 - ใหม่: `docs/05-report/ai-use-statement.md` — สรุป (เครื่องมือ · ความโปร่งใสเรื่องผู้ทำงาน) · ใช้ AI ตรงไหนทุกขั้น · **AI ผิด 9 กรณี + จับได้ด้วยอะไร** (test ค่าขอบ · analyze · รันจริง · คนลองบนมือถือ) · คนตัดสิน 7 ข้อ · ข้อมูลส่วนตัวกับ AI (รูปฉลากจริง 4 ใบ เก็บใน `real-labels/` ที่ git ไม่เก็บ) · กลไกคุม AI · ข้อจำกัด
 - แก้: README ลิงก์ · backlog · SRS AI log (บันทึกการใช้ Sonnet 5.5 ในรอบสั้นตามจริง)
