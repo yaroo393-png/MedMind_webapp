@@ -23,7 +23,7 @@ flowchart TB
         C2["C2 ถ่ายฉลาก → ร่าง → บันทึก<br/>FR-02"]
         S2["S2 หน้าเตือนมื้อยา<br/>FR-03, FR-04"]
         S3["S3 หน้าแรกผู้สูงอายุ<br/>FR-04"]
-        C3["C3 สถานะรายวัน<br/>FR-05"]
+        C3["C3 สถานะการกินยาวันนี้<br/>FR-05"]
     end
     subgraph L["ชั้นตรรกะ (Logic) — กฎ BR-01–17 · ฟังก์ชันล้วน รับเวลาจาก clock (ADR-02)"]
         direction LR
@@ -200,11 +200,11 @@ sequenceDiagram
             S2->>Senior: "จะแจ้งลูกหลาน…" + "ยกเลิก" 10 วินาที (R1b)
             S2->>ES: addNotice(notices, มื้อ, UNCONFIRMED, pairingId, now) เมื่อพ้น 10 วินาที
         else ถึง 08:15 (FR-05 ✗2, BR-13)
-            CLK->>ES: escalate(sessions, confirmations, notices, 08:15)
+            CLK->>ES: ตัวรันระดับหน้าเว็บ (status.js · ทุกหน้า) escalate(sessions, confirmations, notices, pairingId, 08:15)
         end
         ES->>ST: CaregiverNotice UNCONFIRMED (1 ครั้งต่อมื้อ)
-        ST-->>C3: "ยังไม่ยืนยันการกินยา" (ไม่ใช้ "ไม่ได้กิน")
-        C3->>Caregiver: แจ้ง + สถานะ "ยังไม่ยืนยัน"
+        ST-->>C3: "มื้อ 08:00 · ยังไม่ยืนยันการกินยา" (ไม่ใช้ "ไม่ได้กิน")
+        C3->>Caregiver: แถบค้างบนทุกหน้าผู้ดูแลจนกด "ดูสถานะ" + สถานะ "ยังไม่ยืนยัน" (R11)
         opt ยืนยันช้า 08:40 ก่อนมื้อถัดไป (FR-04 ✓5, BR-15)
             Senior->>CF: confirm(confirmations, มื้อ, sessions, pairingId, 08:40) จาก S3
             CF-->>ST: DoseConfirmation · ยืนยันช้า
@@ -385,7 +385,8 @@ erDiagram
         id pairingId FK
         text sessionKey
         enum type "UNCONFIRMED / CONFIRMED_LATE · คู่ (sessionKey, type) ไม่ซ้ำ (BR-13)"
-        datetime sentAt
+        datetime sentAt "UNCONFIRMED: T+15 ≤ sentAt < สิ้นช่วงยืนยันช้า (005 R-1)"
+        datetime seenAt "ผู้ดูแลกด ดูสถานะ/รับทราบ · ว่าง = แถบยังค้าง (FR-05 R11 · clarify 24/10)"
     }
 ```
 
@@ -398,7 +399,7 @@ erDiagram
 | MEAL_TIMES | FR-02, FR-03 | BR-06 | Caregiver ตั้งครั้งแรกตอนเพิ่มยา |
 | MEDICATION | FR-02, FR-03 | BR-04–07 | บันทึกเมื่อกดบันทึกเท่านั้น (NFR-06) |
 | DOSE_CONFIRMATION | FR-04, FR-05 | BR-10, 12, 15 | 1 ระเบียนต่อมื้อ (NFR-07) |
-| CAREGIVER_NOTICE | FR-05 | BR-11, 13, 15 | 1 ระเบียนต่อ (มื้อ, ชนิด) (BR-13, NFR-01) |
+| CAREGIVER_NOTICE | FR-05 | BR-11, 13, 15 · R11 (`seenAt`) | 1 ระเบียนต่อ (คู่, มื้อ, ชนิด) (BR-13, NFR-01) · `seenAt` เขียนเมื่อผู้ดูแลกดดู |
 
 **มื้อยา (DoseSession) ไม่ใช่ entity ที่เก็บ:** คำนวณจาก MEDICATION + MEAL_TIMES ของวันนั้น — ยาที่เวลาเตือนตรงกันรวมเป็นมื้อเดียว (BR-06)
 **ตัดจาก v1:** ฟิลด์ความถี่ วันเริ่ม/สิ้นสุด (ไม่มี FR) · `reminderTime`, `status`, `round`, `caregiverAlertedAt` (คำนวณได้ / ซ้ำกับ CAREGIVER_NOTICE)
@@ -511,14 +512,17 @@ erDiagram
 **`escalation` (E · FR-05)**
 | Operation | Output | กฎ / AC |
 |---|---|---|
-| `addNotice(notices, session, type, pairingId, now)` | รายการใหม่ · มี (sessionKey, type) อยู่แล้ว = คืนรายการเดิม | BR-13 · ✓5 · NFR-01 |
-| `escalate(sessions, confirmations, notices, pairingId, now)` | `notices` + UNCONFIRMED ของทุกมื้อที่ถึง T+15 แล้วยังไม่ยืนยัน | BR-13 · ✓1 ✗2 |
-| `dailyStatus(sessions, confirmations, now)` | `[{ sessionKey, time, status, confirmedAt }]` · ไม่มีมื้อ = `[]` · สถานะ/คำใช้ `confirm.statusOf` / `confirm.statusLabel` (ไม่เขียนซ้ำ) | BR-14 · ✓3 ✗4 |
-| `noticeText(notice)` | "ยังไม่ยืนยันการกินยา" / "ยืนยันการกินยาแล้ว เวลา HH:MM" — ไม่มีคำว่า "ไม่ได้กิน" | BR-13, BR-15 · ✓6 |
+| `addNotice(notices, session, type, pairingId, now)` | รายการใหม่ + `{ pairingId, sessionKey, type, sentAt, seenAt: null }` · มี (คู่, มื้อ, ชนิด) แล้ว = คืนรายการเดิม (ตัวเดิม) | BR-13 · ✓5 · BR-15 |
+| `escalate(sessions, confirmations, notices, pairingId, now)` | เพิ่ม UNCONFIRMED ให้มื้อที่ `T+15 ≤ now <` สิ้นช่วงยืนยันช้า (ช่วงว่าง เช่น 23:50 → จนจบวันของ T+15) และยังไม่ยืนยัน · ไม่มีอะไรเพิ่ม = ตัวเดิม | BR-13, 16 · ✓1 ✗2 ✓5 · NFR-01 |
+| `noticeText(notice, confirmations)` | "ยังไม่ยืนยันการกินยา" / "ยืนยันการกินยาแล้ว เวลา HH:MM" (เวลาจากบันทึกยืนยัน) — ไม่มีคำว่า "ไม่ได้กิน" | BR-13, BR-15 · ✗2 ✓6 |
+| `dailyStatus(sessions, confirmations, pairingId, now)` | `[{ sessionKey, at, medicationIds, status, confirmedAt, label }]` เรียงเวลา · ไม่มีมื้อ = `[]` · สถานะ/คำใช้ `confirm.statusOf` / `confirm.statusLabel` (ไม่เขียนซ้ำ) | BR-14 · ✓3 ✗4 |
+| `noticesOf(notices, pairingId, now)` · `unseen(notices, pairingId)` · `markSeen(notices, pairingId, now)` | ข้อความวันนี้ของคู่ ล่าสุดก่อน · ที่ยังไม่กดดู · ใส่ `seenAt` (ไม่มีให้ใส่ = ตัวเดิม) | R10, R11 · NFR-04 |
+
+รายละเอียดเต็ม: `specs/005-status/contracts/escalation-module.md` (ทำแล้ว 24/10)
 
 ### 8.4 ใครรันกฎตามเวลา
-หน้าที่เปิดอยู่ทุกหน้า (ADR-06) เรียกตอนเวลาจำลองเปลี่ยน: `escalation.escalate(...)` แล้วเขียน `notices` เฉพาะเมื่อผลต่างจากเดิม
-— `addNotice` / `confirm` ทำซ้ำแล้วไม่เพิ่ม จึงไม่แจ้งซ้ำแม้เปิดหลายแท็บ (BR-13, NFR-07) · ตัวเรียกรวมอยู่ที่หน้าจอ C3 และ S2 (E, C ตกลงกันตอน implement) · การแจ้งจากการแตะ (FR-04 ✗4, ยืนยันช้า) S2/S3 เรียก `addNotice` เมื่อพ้นช่วงยกเลิก 10 วินาที (plan 004 research R-5, R-8)
+ตัวรันระดับหน้าเว็บ 1 ตัวใน `screens/status.js` (ทุกหน้าที่เปิด ทั้งผู้สูงอายุและผู้ดูแล ไม่ขึ้นกับหน้าจอ · ADR-06) เรียก `escalation.escalate(...)` ตอนเริ่ม และเมื่อเวลาจำลองหรือข้อมูลเปลี่ยน · มีข้อความใหม่ → `store.reload()` แล้วคิดซ้ำก่อนเขียน `notices` (store เขียนทั้งก้อน · plan 005 research R-2)
+— `addNotice` / `confirm` ทำซ้ำแล้วไม่เพิ่ม จึงไม่แจ้งซ้ำแม้เปิดหลายแท็บ (BR-13, NFR-07) · การแจ้งจากการแตะ (FR-04 ✗4, ยืนยันช้า) S2/S3 เรียก `addNotice` เมื่อพ้นช่วงยกเลิก 10 วินาที (plan 004 research R-5, R-8)
 
 ### 8.5 ข้อตกลงหน้าจอเรื่องสิทธิ์และการยกเลิกจับคู่ (NFR-04, NFR-10 · ตัดสิน 22/10 · plan 001 research R-8)
 บังคับทุกหน้าจอที่อ่านข้อมูลของคู่ · รายละเอียด `specs/001-pairing/contracts/screens.md`
@@ -538,7 +542,7 @@ erDiagram
 | FR-02 | `readLabel` · `parseLabel` · `emptyDraft` · `validMealTimes` · `validateDraft` · `reminderTimes` · `saveMedication` · `removeMedication` · `medicationsOf` (ทำแล้ว 23/10) | MEDICATION (C) · MEAL_TIMES (C, U) | C2 |
 | FR-03 | `dayOf` · `sessionsOf` · `roundAt` · `dueSessions` · `lateUntil` · `newSoundKeys` (ทำแล้ว 24/10) | MEDICATION (R) · MEAL_TIMES (R) · DOSE_CONFIRMATION (R) | S2 |
 | FR-04 | `confirm` · `undoConfirm` · `notYet` · `visibleDue` · `statusOf` · `statusLabel` · `canConfirmLate` · ใช้ `roundAt`, `lateUntil` ของ `doseSession` (ทำแล้ว 24/10) | DOSE_CONFIRMATION (C, R · D เฉพาะยกเลิกภายใน 10 วินาที) | S2, S3 |
-| FR-05 | `escalate` · `addNotice` · `dailyStatus` · `noticeText` · `canAccess` · ใช้ `statusLabel` ของ `confirm` | CAREGIVER_NOTICE (C, R) · DOSE_CONFIRMATION (R) | C3 |
+| FR-05 | `escalate` · `addNotice` · `noticeText` · `dailyStatus` · `noticesOf` · `unseen` · `markSeen` · `canAccess` · ใช้ `statusOf`/`statusLabel` ของ `confirm` (ทำแล้ว 24/10) | CAREGIVER_NOTICE (C, R, U `seenAt`) · DOSE_CONFIRMATION (R) | C3 · แถบแจ้งบน C2 |
 
 ### 9.2 Coverage (ไม่มี FR ไร้ที่อยู่ · ไม่มีส่วนเกิน)
 | FR / NFR | ADR | Use case §3 | Sequence §4 | State §5 | Entity §6 | Module §7 |
