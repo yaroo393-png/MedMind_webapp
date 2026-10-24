@@ -2,6 +2,12 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-24 — A (แทน D ตามที่ทีมตัดสิน) + Claude Code · FR-04 `/speckit-specify` (specs/004-confirm)
+- `spec.md` + `checklists/requirements.md` (ผ่านทุกข้อ) · `.specify/feature.json` → 004-confirm · AC FR-04 ✓1 ✗2 ✓3 ✗4 ✓5 ✗6 · BR-10, 11, 12, 15, 16 · NFR-02, 03, 07 · R1–R13 + R4b
+- **ตัดสินแล้ว (ผู้ใช้):** หลังแตะ "ยังไม่กิน" ซ่อนมื้อนั้นจากหน้าเตือนจนรอบถัดไป (T+10 → จนพ้น T+15) · ไม่บันทึกการซ่อน
+- ขอบเขต: ข้อความแจ้งผู้ดูแล (✗4, ยืนยันช้า) เขียนโดย FR-05 · feature นี้ตัดสินว่าต้องแจ้ง · S3 หน้าแรกรับสถานะว่าง/ยังไม่ถึงเวลาจาก S2 · ไม่มี dialog ก่อน "กินแล้ว" (NFR-02) · แก้/ลบการยืนยันไม่มี FR
+- branch แนะนำ `feat/confirm` (แตกจาก `feat/reminder`) · ถัดไป `/speckit-plan`
+
 ## 2026-10-24 — A (แทน C ตามที่ทีมตัดสิน) + Claude Code · FR-03 analyze → implement (specs/003-reminder) — 19/19 task
 - analyze: 1 CRITICAL (ปุ่ม "กินแล้ว" หลักหลายปุ่มเมื่อมื้อซ้อน ขัด constitution) + 2 MEDIUM + 4 LOW → แก้เอกสารก่อนเขียนโค้ด · ปุ่มหลักเฉพาะมื้อแรก
 - ไฟล์ใหม่: `src/modules/doseSession.js` · `src/screens/reminder.js` (S2) · `tests/doseSession.test.js` (33)
