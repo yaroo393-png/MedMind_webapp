@@ -2,6 +2,10 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-24 — A (แทน E) + Claude Code · FR-05 `/speckit-tasks` (specs/005-status)
+- `tasks.md` 22 task: Setup 1 · Foundational 2 (`addNotice`, `noticeText`) · US1 7 (แจ้ง T+15 · ตัวรัน · แถบ · ฝั่งผู้สูงอายุ) · US2 5 (C3 · หน้าแรกผู้ดูแล) · US3 3 (ยืนยันช้า) · Polish 4 · test ก่อนโค้ด · ตาราง AC → test ครบ ✓1 ✗2 ✓3 ✗4 ✓5 ✓6 ✗7
+- ถัดไป: `/speckit-analyze` → `/speckit-implement`
+
 ## 2026-10-24 — A (แทน E) + Claude Code · FR-05 `/speckit-plan` (specs/005-status)
 - ไฟล์: `plan.md` · `research.md` (R-1…R-8) · `data-model.md` · `contracts/escalation-module.md` · `contracts/screens.md` · `quickstart.md`
 - ตัดสินทางเทคนิค: `escalate` ทำซ้ำไม่เพิ่ม แจ้งในช่วง [T+15, lateUntil) · ตัวรันตามเวลาระดับหน้าเว็บใน `status.js` (ทุกหน้า ไม่ขึ้นกับหน้าจอ · reload ก่อนเขียน) · ฟิลด์ใหม่ `seenAt` (แถบค้างจนกด) · ข้อความยืนยันช้าเอาเวลาจากบันทึกยืนยัน · สถานะรายวันใช้คำจาก `confirm` · หน้าแรกผู้ดูแล C3 เมื่อมียา
