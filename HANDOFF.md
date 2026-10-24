@@ -2,6 +2,12 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-24 — A (แทน E) + Claude Code · FR-05 `/speckit-plan` (specs/005-status)
+- ไฟล์: `plan.md` · `research.md` (R-1…R-8) · `data-model.md` · `contracts/escalation-module.md` · `contracts/screens.md` · `quickstart.md`
+- ตัดสินทางเทคนิค: `escalate` ทำซ้ำไม่เพิ่ม แจ้งในช่วง [T+15, lateUntil) · ตัวรันตามเวลาระดับหน้าเว็บใน `status.js` (ทุกหน้า ไม่ขึ้นกับหน้าจอ · reload ก่อนเขียน) · ฟิลด์ใหม่ `seenAt` (แถบค้างจนกด) · ข้อความยืนยันช้าเอาเวลาจากบันทึกยืนยัน · สถานะรายวันใช้คำจาก `confirm` · หน้าแรกผู้ดูแล C3 เมื่อมียา
+- ต้องแก้ตอน implement: architecture §6 (`seenAt`), §8.3, §8.4, §9.1 · `medication.js` ของ B (isStart · แถบ · ปุ่ม "สถานะวันนี้") · `reminder.js` (ลบทาง "ยังไม่พร้อม")
+- ถัดไป: `/speckit-tasks` · branch `feat/status`
+
 ## 2026-10-24 — A (แทน E ตามที่ทีมตัดสิน) + Claude Code · FR-05 `/speckit-specify` (specs/005-status)
 - `spec.md` + `checklists/requirements.md` (ผ่านทุกข้อ) · `.specify/feature.json` → 005-status · AC FR-05 ✓1 ✗2 ✓3 ✗4 ✓5 ✓6 ✗7 · BR-11, 13, 14, 15, 16 · NFR-01, 04 · R1–R16
 - **ตัดสินแล้ว (ผู้ใช้):** ข้อความใหม่ = แถบค้างบนสุดของทุกหน้าผู้ดูแลจนกด "ดูสถานะ" · ข้อความทั้งวันอยู่บนหน้าสถานะ C3
