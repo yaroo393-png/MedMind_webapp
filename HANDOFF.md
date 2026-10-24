@@ -2,6 +2,46 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-24 — A (แทน D ตามที่ทีมตัดสิน) + Claude Code · FR-04 `/speckit-implement` (specs/004-confirm) — 21/21 task
+- ไฟล์ใหม่: `src/modules/confirm.js` (`confirm` · `undoConfirm` · `notYet` · `visibleDue` · `statusOf` · `statusLabel` · `canConfirmLate`) · `src/screens/home.js` (S3 "ยาของฉันวันนี้") · `tests/confirm.test.js` (33)
+- แก้: `screens/reminder.js` (ของ C · ส่วนปุ่มของ D): "กินแล้ว"/"ยังไม่กิน" ทำงานจริง · ยกเลิก 10 วินาที (`MedMind.reminder.offerUndo`/`undoBanner`/`confirmTap`/`subscribe`) · ซ่อนมื้อหลัง "ยังไม่กิน" · S2 เป็นหน้าแรกเฉพาะตอนกำลังเตือน · ลบ toast "ยังบันทึกไม่ได้ในรุ่นนี้" · `screens/pairing.js` (S1 ปุ่ม "กลับหน้าแรก" → S2 ถ้ากำลังเตือน ไม่งั้น S3) · `index.html` (เปิด confirm.js, home.js)
+- เอกสาร: architecture §4.1, §7, §8.1, §8.3, §8.4, §9.1 (คำสถานะย้ายมา `confirm.statusLabel` · `escalation` ใช้ `confirm`) · design-system (S2, S3, แถบยกเลิก) · SRS §7 แถว FR-04 + AI log · README "ลองยืนยันกินยา" · 004 contracts/research (`statusOf` ไม่รับ `sessions` · `hide` ไม่ export) · 003 research R-9 ส่งต่อแล้ว
+- ผล test จริง: `node --test` **184/184** · Chrome (scratchpad ไม่ commit): FR-04 s4 **53/53** (เวลาจริง · รวม ✓1 ✗2 ✓3 ✗4 ✓5 ✗6, ยกเลิก 10 วินาที, escalation จำลอง, NFR-03, ไม่มีคำ "ไม่ได้กิน") · FR-03 S2 35/35 + NFR-03 23/23 (ปรับข้อที่ปุ่มเปลี่ยน) · FR-01 us1 16 · us2 17 · us3 13 · polish 28 · FR-02 c2 28 (OCR จริง) · c2polish 17 · console error 0 · ชุดกล้อง (cam) ไม่ได้รันซ้ำ (ไม่ได้แก้ส่วนสแกน)
+- ก่อน FR-05: "ยังไม่กิน" รอบ T+10 / ยืนยันช้า → ไม่เขียน `notices` และบอกตามจริง "รับทราบแล้ว · ระบบแจ้งลูกหลานยังไม่พร้อมในรุ่นนี้" · **FR-05 ต้อง:** `escalation.addNotice(notices, session, type, pairingId, now)` คืนรายการเดิมเมื่อซ้ำ · ลบ `NOT_READY_TEXT` ใน reminder.js · `dailyStatus` ใช้ `confirm.statusOf/statusLabel`
+- ยังขาด (คน): D ยืนยัน BR-10/11 (ยกเลิก 10 วินาที) + ตรวจโค้ด/CSS · ทดสอบมือ 2 แท็บจริง (quickstart 2.7) · NFR-02 ผู้สูงอายุ 5 คน [ทีมกรอก]
+- branch `feat/confirm` · ยังไม่ commit
+
+## 2026-10-24 — A (แทน D) + Claude Code · FR-04 `/speckit-analyze` + แก้ตามผล
+- analyze: 1 CRITICAL — "กินแล้ว" และ "ยังไม่กิน" รอบ T+10 ย้อนไม่ได้แต่ไม่มีการยืนยัน (ขัดกติกาวิชา) · ผู้ใช้เลือก **ยกเลิกได้ 10 วินาที** (ไม่มี dialog · ยังแตะ 1 ครั้ง)
+- แก้ SRS BR-10, BR-11 (**รอ D ยืนยัน**) · spec (R1b, SC-009, edge ปิดหน้าระหว่างช่วงยกเลิก) · research R-8 · contracts (`undoConfirm`, `offerUndo`/`undoBanner`, ตารางสถานะ→class) · data-model · quickstart · tasks 21 ข้อ (เพิ่ม 2) · AI log
+- "กินแล้ว" บันทึกทันที ยกเลิก = ลบ · การแจ้งผู้ดูแลจากการแตะส่งเมื่อพ้น 10 วินาที · ปิดหน้าก่อนครบ → FR-05 แจ้งที่ T+15 แทน
+- ถัดไป: `/speckit-implement`
+
+## 2026-10-24 — A (แทน D) + Claude Code · FR-04 `/speckit-tasks` (specs/004-confirm)
+- `tasks.md` 19 task: Setup 1 · Foundational 2 (สถานะ/คำ BR-14) · US1 4 · US2 4 · US3 4 · Polish 4 · test ก่อนโค้ด · ตาราง AC → test ครบ ✓1 ✗2 ✓3 ✗4 ✓5 ✗6
+- ถัดไป: `/speckit-analyze` → `/speckit-implement`
+
+## 2026-10-24 — A (แทน D) + Claude Code · FR-04 `/speckit-plan` (specs/004-confirm)
+- ไฟล์: `plan.md` · `research.md` (R-1…R-7) · `data-model.md` · `contracts/confirm-module.md` · `contracts/screens.md` · `quickstart.md`
+- ตัดสินทางเทคนิค: `confirm` ใช้ `lateUntil` ของ doseSession (BR-15 ที่เดียว) · `notYet` คืนเวลาที่ซ่อนถึง · การซ่อนอยู่ในหน้าเว็บ ไม่บันทึก · `statusOf`/`statusLabel` ย้ายมาไว้ `confirm` (S3 ต้องใช้ก่อน FR-05 · คำ BR-14 ที่เดียว) · แจ้งผู้ดูแลผ่าน `escalation.addNotice` เมื่อมี — ก่อน FR-05 บอกผู้สูงอายุตามจริงว่ายังไม่พร้อม · S3 หน้าแรกใหม่ · S2 isStart เฉพาะมีมื้อต้องเตือน
+- ต้องแก้ตอน implement: architecture §7, §8.1, §8.3, §9.1 · reminder.js ของ C (ส่วนปุ่ม/สลับหน้า)
+- ถัดไป: `/speckit-tasks` · branch `feat/confirm`
+
+## 2026-10-24 — A (แทน D ตามที่ทีมตัดสิน) + Claude Code · FR-04 `/speckit-specify` (specs/004-confirm)
+- `spec.md` + `checklists/requirements.md` (ผ่านทุกข้อ) · `.specify/feature.json` → 004-confirm · AC FR-04 ✓1 ✗2 ✓3 ✗4 ✓5 ✗6 · BR-10, 11, 12, 15, 16 · NFR-02, 03, 07 · R1–R13 + R4b
+- **ตัดสินแล้ว (ผู้ใช้):** หลังแตะ "ยังไม่กิน" ซ่อนมื้อนั้นจากหน้าเตือนจนรอบถัดไป (T+10 → จนพ้น T+15) · ไม่บันทึกการซ่อน
+- ขอบเขต: ข้อความแจ้งผู้ดูแล (✗4, ยืนยันช้า) เขียนโดย FR-05 · feature นี้ตัดสินว่าต้องแจ้ง · S3 หน้าแรกรับสถานะว่าง/ยังไม่ถึงเวลาจาก S2 · ไม่มี dialog ก่อน "กินแล้ว" (NFR-02) · แก้/ลบการยืนยันไม่มี FR
+- branch แนะนำ `feat/confirm` (แตกจาก `feat/reminder`) · ถัดไป `/speckit-plan`
+
+## 2026-10-24 — A (แทน C ตามที่ทีมตัดสิน) + Claude Code · FR-03 analyze → implement (specs/003-reminder) — 19/19 task
+- analyze: 1 CRITICAL (ปุ่ม "กินแล้ว" หลักหลายปุ่มเมื่อมื้อซ้อน ขัด constitution) + 2 MEDIUM + 4 LOW → แก้เอกสารก่อนเขียนโค้ด · ปุ่มหลักเฉพาะมื้อแรก
+- ไฟล์ใหม่: `src/modules/doseSession.js` · `src/screens/reminder.js` (S2) · `tests/doseSession.test.js` (33)
+- แก้: `index.html` (เปิดบรรทัดของ C) · `screens/pairing.js` (S1 ปุ่ม "หน้าเตือนกินยา" + ไป S2 เองเมื่อรอบใหม่เริ่ม) · `app.css` (`.session`, `.session-time` — **แจ้ง D**) · architecture §4.1, §7 ตารางโมดูล, §8.3, §9.1 · design-system · SRS §7 + AI log · README
+- **ผลจริง:** `node --test` 151/151 · Chrome S2 35/35 · NFR-03 22/22 · ชุด FR-01/FR-02 ซ้ำผ่าน · console error 0
+- **ยังขาด (คนทำ):** ฟังเสียงจริงบนมือถือ (test นับ oscillator ไม่ได้ฟัง) · NFR-02 (ผู้สูงอายุกดยืนยันใน 10 วิ) วัดหลัง FR-04 · C ตรวจ · D ตรวจ CSS
+- ส่งต่อ FR-04: ลบ toast "ยังบันทึกไม่ได้ในรุ่นนี้" ใน reminder.js · ใช้ `doseSession.lateUntil` · ถ้ามี S3 ให้ใช้ `MedMind.reminder.dueKey` ไป S2
+- branch: `feat/reminder` · ยังไม่ commit
+
 ## 2026-10-24 — A (แทน C) + Claude Code · FR-03 `/speckit-tasks` (specs/003-reminder)
 - `tasks.md` 19 task: Setup 1 · Foundational 2 · US1 6 · US2 3 · US3 3 · Polish 4 · test ก่อนโค้ดทุก story · ตาราง AC → test ครบ ✓1 ✗2 ✓3 ✗4 ✗5
 - ถัดไป: `/speckit-analyze` → `/speckit-implement`
