@@ -78,7 +78,7 @@
 | Final report 2–3 หน้า | `docs/05-report/final-report.md` | ✅ ร่าง 25/10 · ⬜ reflection + ส่วนร่วม + ภาพหน้าจอ [ทีมกรอก] |
 | README วิธีรัน (root) | `README.md` | ✅ 25/10 |
 | AI-Use Statement | `docs/05-report/ai-use-statement.md` | ✅ ร่าง 25/10 · ⬜ ความเห็นทีม + ลงชื่อยืนยัน [ทีมกรอก] |
-| Demo slides | `docs/06-presentation/` | ⬜ |
+| Demo slides | `docs/06-presentation/slides.html` | ✅ ร่าง 25/10 · ⬜ ผู้พูด + เวลา + ซ้อม [ทีมกรอก] |
 
 ---
 

@@ -53,7 +53,7 @@
 |---|---|
 | [`05-report/final-report.md`](05-report/final-report.md) | Final report: ปัญหา · requirements · design · prototype · testing · **Golden Thread trace table** · ข้อจำกัด |
 | [`05-report/ai-use-statement.md`](05-report/ai-use-statement.md) | AI-Use Statement: ใช้ AI ตรงไหน · AI ผิดตรงไหนและจับได้อย่างไร · การตัดสินของคน · ข้อมูลกับ AI |
-| `06-presentation/` | Demo slides (Problem → Solution) — ยังไม่มี |
+| [`06-presentation/slides.html`](06-presentation/slides.html) · [`README.md`](06-presentation/README.md) | Demo slides 12 หน้า (Problem → Solution → Golden Thread) เปิดด้วยดับเบิลคลิก · ลำดับเรื่อง เวลา และ checklist ก่อนนำเสนอ |
 
 ## 7. ความคืบหน้าและกติกา
 
