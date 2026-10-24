@@ -128,7 +128,7 @@ node --test
 3. **M2 Design** [architecture](docs/03-design/architecture.md) · [design system](docs/03-design/design-system.md) · [user flow + wireframe](docs/03-design/user-flow.md)
 4. **Feature** [specs/](specs/) (spec · plan · contracts · tasks ต่อ FR)
 5. **M3 Test** [test scenarios](docs/04-test/test-scenarios.md) · [usability/SUS](docs/04-test/usability-sus.md)
-6. **M3 Report** [final report](docs/05-report/final-report.md) · [AI-Use Statement](docs/05-report/ai-use-statement.md) · demo slides `docs/06-presentation/`
+6. **M3 Report** [final report](docs/05-report/final-report.md) · [AI-Use Statement](docs/05-report/ai-use-statement.md) · [demo slides](docs/06-presentation/slides.html)
 7. **ความคืบหน้า** [HANDOFF.md](HANDOFF.md)
 
 ## ทีม

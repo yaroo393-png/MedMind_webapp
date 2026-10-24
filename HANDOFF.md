@@ -2,6 +2,13 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-25 — A (แทน E) + Claude Code · Demo slides
+- ใหม่: `docs/06-presentation/slides.html` — 12 หน้า HTML ไฟล์เดียว เปิดด้วยดับเบิลคลิก ไม่ใช้เน็ต · token เดียวกับ prototype · ← → / N บันทึกผู้พูด / F เต็มจอ / Ctrl+P = PDF · เรื่อง: ปัญหา (ผู้ใช้จริง 3 คน) → 5 Must FR → 1 มื้อ 2 เครื่อง → **live demo 6 ขั้น** → design → **Golden Thread** → test (ผลจริง · ผู้ใช้จริง [ทีมกรอก]) → "ทำไม" (ADR + ทางที่ปฏิเสธ) → AI → ข้อจำกัด → Q&A
+- ใหม่: `docs/06-presentation/README.md` — ลำดับเรื่อง เวลา (~12 นาที) ช่องผู้พูด และ checklist ก่อนนำเสนอ
+- ตรวจ: render ทุกหน้าใน Chrome ไม่ล้นจอ · แก้ตารางบนพื้นเข้ม (ตัวอักษรจะมองไม่เห็น) และข้อความช่วยใช้ที่ทับ footer
+- แก้: `docs/README.md` · `README.md` (ลิงก์) · backlog · SRS AI log
+- **ทีมต้องทำ:** ผู้พูดต่อสไลด์ · เวลาที่อาจารย์กำหนด · ซ้อม demo · กรอกผลสไลด์ 8 ถ้าวัดแล้ว
+
 ## 2026-10-25 — A + Claude Code · หน้า repo ตามตัวอย่าง Temporary-Room-Reservation-MFU
 - `README.md` เขียนใหม่ตามลำดับหัวข้อของตัวอย่าง: ชื่อ + badge → ปัญหา/Must FR → โครงสร้าง repo → tech stack → Quick Start → การทดสอบ → ข้อมูลทดลอง → เอกสาร → ทีม/AI/ขอบเขต (ส่วนท้ายเพิ่มเพราะวิชาต้องการ)
 - ใหม่ `docs/README.md` — สารบัญเรียงตาม milestone (M1 → M2 → design → feature → test → report → กติกา) แบบตาราง index ของตัวอย่าง
