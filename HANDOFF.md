@@ -2,6 +2,10 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-24 — A (แทน D) + Claude Code · FR-04 `/speckit-tasks` (specs/004-confirm)
+- `tasks.md` 19 task: Setup 1 · Foundational 2 (สถานะ/คำ BR-14) · US1 4 · US2 4 · US3 4 · Polish 4 · test ก่อนโค้ด · ตาราง AC → test ครบ ✓1 ✗2 ✓3 ✗4 ✓5 ✗6
+- ถัดไป: `/speckit-analyze` → `/speckit-implement`
+
 ## 2026-10-24 — A (แทน D) + Claude Code · FR-04 `/speckit-plan` (specs/004-confirm)
 - ไฟล์: `plan.md` · `research.md` (R-1…R-7) · `data-model.md` · `contracts/confirm-module.md` · `contracts/screens.md` · `quickstart.md`
 - ตัดสินทางเทคนิค: `confirm` ใช้ `lateUntil` ของ doseSession (BR-15 ที่เดียว) · `notYet` คืนเวลาที่ซ่อนถึง · การซ่อนอยู่ในหน้าเว็บ ไม่บันทึก · `statusOf`/`statusLabel` ย้ายมาไว้ `confirm` (S3 ต้องใช้ก่อน FR-05 · คำ BR-14 ที่เดียว) · แจ้งผู้ดูแลผ่าน `escalation.addNotice` เมื่อมี — ก่อน FR-05 บอกผู้สูงอายุตามจริงว่ายังไม่พร้อม · S3 หน้าแรกใหม่ · S2 isStart เฉพาะมีมื้อต้องเตือน
