@@ -77,7 +77,7 @@
 | Test scenarios + ผลจริง + usability/SUS | `docs/04-test/test-scenarios.md` · `usability-sus.md` | ✅ ส่วนอัตโนมัติ 25/10 (36/36 AC มี test · 214/214) · ⬜ ส่วนคน [ทีมกรอก] |
 | Final report 2–3 หน้า | `docs/05-report/final-report.md` | ✅ ร่าง 25/10 · ⬜ reflection + ส่วนร่วม + ภาพหน้าจอ [ทีมกรอก] |
 | README วิธีรัน (root) | `README.md` | ✅ 25/10 |
-| AI-Use Statement | `docs/05-report/ai-use-statement.md` | ⬜ |
+| AI-Use Statement | `docs/05-report/ai-use-statement.md` | ✅ ร่าง 25/10 · ⬜ ความเห็นทีม + ลงชื่อยืนยัน [ทีมกรอก] |
 | Demo slides | `docs/06-presentation/` | ⬜ |
 
 ---
