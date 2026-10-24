@@ -2,6 +2,22 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-25 — A (แทน D, B) + Claude Code · user flow + wireframe · backlog
+- ใหม่: `docs/03-design/user-flow.md` (แผนที่หน้าจอ · user flow FR-01–05 แบบ Mermaid 5 รูป · ไทม์ไลน์ 1 มื้อ 2 เครื่อง · wireframe low-fi S1–S3, C1–C3 + error/empty · เช็กลิสต์ UI · traceability) — ข้อความใน wireframe ตรวจกับโค้ดแล้ว · **Mermaid ยังไม่ได้ render ตรวจ** (เครื่องมือ render ผ่าน CDN ถูกบล็อก) → เปิดดูบน GitHub ก่อนส่ง
+- ใหม่: `docs/02-requirements/backlog.md` (DoR/DoD · ลำดับ FR + สถานะ + จำนวน test จากการรันจริง · validation backlog ที่ต้องใช้คน · ข้อที่รอยืนยัน BR-03/18 (B) BR-10/11 (D) BR-13 (E) · งานส่งมอบถึง 26/10 · Won't)
+- แก้: `design-system.md` ลิงก์ไป user-flow · SRS AI log
+- ⚠️ **PR #10 ถูก merge ก่อน push commit โค้ด FR-05 (`6eb4950`)** → main ยังไม่มี `escalation.js`, `status.js` · commit อยู่บน `origin/feat/status` แล้ว → เปิด PR `feat/status` → `main` ใหม่
+- ยังขาด: Product Owner [ทีมกรอก] · test docs · final report · AI-Use Statement · slides
+
+## 2026-10-24 — A (แทน E ตามที่ทีมตัดสิน) + Claude Code · FR-05 `/speckit-implement` (specs/005-status) — 22/22 task · **ครบ Must FR-01–05**
+- ไฟล์ใหม่: `src/modules/escalation.js` (`addNotice` · `escalate` · `noticeText` · `dailyStatus` · `noticesOf` · `unseen` · `markSeen`) · `src/screens/status.js` (C3 "สถานะการกินยาวันนี้" + แถบแจ้ง `MedMind.status.noticeBanner` + ตัวรันตามเวลาระดับหน้าเว็บ) · `tests/escalation.test.js` (30)
+- แก้: `screens/medication.js` (**ของ B — แจ้ง B**: covers + FR-05 · หน้าแรกเฉพาะตอนยังไม่มียา · แถบแจ้งบนสุด · ปุ่ม "สถานะวันนี้") · `screens/reminder.js` (ลบ "ยังไม่พร้อมในรุ่นนี้") · `index.html` (เปิดบรรทัดของ E)
+- เอกสาร: architecture §1 (ชื่อ C3), §4.1, §6 (`seenAt`), §8.3, §8.4 (ตัวรัน), §9.1 · design-system (C2, C3, แถบแจ้ง) · SRS BR-13 หมายเหตุ (**รอ E ยืนยัน**) + §7 FR-05 + AI log · README "ลองแจ้งผู้ดูแล" · spec/contract/research/tasks ของ 005 (ตาม analyze I1, I2, D1, F1) · 004 research R-5 ส่งต่อแล้ว
+- ผล test จริง: `node --test` **214/214** · Chrome (scratchpad ไม่ commit): FR-05 s5 **40/40** (เวลาจริง · ✓1 ✗2 ✓3 ✗4 ✓5 ✓6 ✗7 · แถบค้าง/ร่างใน C2 ไม่หาย/กดดูจากแท็บอื่น · ยกเลิก 10 วินาทีไม่แจ้ง · UI ≥ 18 px · ไม่วาดวน · ไม่มี "ไม่ได้กิน") · หน้าเฉพาะผู้สูงอายุ `?role=senior` แจ้งได้ 3/3 · FR-04 s4 53/53 (ปรับใช้ escalation จริง) · FR-03 35 + 23 · FR-01 16 + 17 + 13 + 28 · FR-02 c2 28 (OCR จริง · ปรับ Covers C2) + c2polish 17 · console error 0 · ชุดกล้องไม่ได้รันซ้ำ
+- บั๊กที่ test จับได้: มื้อ 23:50 ช่วงยืนยันช้าว่าง → ไม่ถูกแจ้งเลย → แก้ให้แจ้งได้จนจบวันของ T+15
+- ยังขาด (คน): E ยืนยันหมายเหตุ BR-13 + ตรวจโค้ด · B ตรวจการแก้ C2 · D ยืนยัน BR-10/11 · ทดสอบมือ 2 แท็บจริง (quickstart 2.11) · SC-008 ผู้ดูแลจริง [ทีมกรอก] · NFR-02 ผู้สูงอายุ 5 คน · NFR-08/11 ฉลากจริง 20 ใบ
+- branch `feat/status` · ยังไม่ commit
+
 ## 2026-10-24 — A (แทน E) + Claude Code · FR-05 `/speckit-tasks` (specs/005-status)
 - `tasks.md` 22 task: Setup 1 · Foundational 2 (`addNotice`, `noticeText`) · US1 7 (แจ้ง T+15 · ตัวรัน · แถบ · ฝั่งผู้สูงอายุ) · US2 5 (C3 · หน้าแรกผู้ดูแล) · US3 3 (ยืนยันช้า) · Polish 4 · test ก่อนโค้ด · ตาราง AC → test ครบ ✓1 ✗2 ✓3 ✗4 ✓5 ✓6 ✗7
 - ถัดไป: `/speckit-analyze` → `/speckit-implement`

@@ -10,7 +10,7 @@
   'use strict';
 
   var MM = window.MedMind || {};
-  if (!MM.screens || !MM.pairing || !MM.medication || !MM.doseSession || !MM.confirm) {
+  if (!MM.screens || !MM.pairing || !MM.medication || !MM.doseSession || !MM.confirm || !MM.escalation) {
     console.error('[reminder screen] โหลดไม่ครบ — ตรวจลำดับ <script> ใน index.html');
     return;
   }
@@ -23,8 +23,6 @@
   var EMPTY_TEXT = 'ยังไม่มียา ให้ผู้ดูแลเพิ่มยา';  // FR-03 ✗5 ตรงตัว
   var ROUND_TEXT = { 1: 'ถึงเวลากินยา', 2: 'เตือนซ้ำครั้งที่ 1', 3: 'เตือนซ้ำครั้งที่ 2' };
   var REASON_TEXT = { ALREADY: 'มื้อนี้ยืนยันแล้ว', TOO_LATE: 'เลยเวลายืนยันมื้อนี้แล้ว', NOT_STARTED: 'ยังไม่ถึงเวลามื้อนี้' };
-  // ก่อนมี FR-05 ห้ามบอกว่า "แจ้งแล้ว" (research R-5) · ลบเมื่อ escalation.js โหลด
-  var NOT_READY_TEXT = 'รับทราบแล้ว · ระบบแจ้งลูกหลานยังไม่พร้อมในรุ่นนี้';
   var UNDO_MS = 10 * 1000;  // ยกเลิกได้ 10 วินาที นับด้วยเวลาจริง ไม่ใช่นาฬิกาจำลอง (BR-10, BR-11 · research R-8)
   var BEEPS = 3;            // เสียงสั้น 3 จังหวะต่อรอบ
   var BEEP_GAP_S = 0.4;
@@ -156,13 +154,12 @@
     return el;
   }
 
-  // ---------- แจ้งลูกหลานผ่าน FR-05 (research R-5) · addNotice ซ้ำไม่เพิ่ม (BR-13) ----------
+  // ---------- แจ้งลูกหลานผ่าน FR-05 (004 research R-5 · 005 R-8) · addNotice ซ้ำไม่เพิ่ม (BR-13) ----------
   function notifyCaregiver(ctx, session, type) {
     var app = ctx.app;
     app.store.reload();
     var pairing = pairOf(app);
     if (!pairing) return;  // ยกเลิกการจับคู่ระหว่าง 10 วินาที → ไม่แจ้ง
-    if (!MM.escalation) { ctx.toast(NOT_READY_TEXT); return; }
     var before = app.store.get('notices', []);
     var after = MM.escalation.addNotice(before, session, type, pairing.pairingId, app.clock.now());
     if (after.length !== before.length) app.store.set('notices', after);

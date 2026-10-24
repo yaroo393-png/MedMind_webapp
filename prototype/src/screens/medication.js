@@ -35,14 +35,23 @@
     return 'ครั้งละ ' + med.tabletsPerDose + ' เม็ด · ' + when + (meals ? ' ' + meals : '');
   }
 
+  function hasScreen(id) {
+    return MM.screens.all().some(function (s) { return s.id === id; });
+  }
+
   function newId(now) { return 'M-' + now + '-' + Math.floor(Math.random() * 1e9).toString(36); }
 
   MM.screens.register({
     id: 'C2',
     role: 'caregiver',
     title: 'ยาของผู้สูงอายุ',
-    covers: ['FR-02', 'NFR-06', 'NFR-09'],
-    isStart: function (app) { return pairOf(app) !== null; },
+    covers: ['FR-02', 'FR-05', 'NFR-06', 'NFR-09'],  // FR-05 = แถบแจ้งผู้ดูแลบนสุด (specs/005-status · แก้โดย A แทน E แจ้ง B)
+    // หน้าแรกของผู้ดูแลเมื่อยังไม่มียา · มียาแล้ว → สถานะวันนี้ (C3 · 005 research R-7) · ไม่มี C3 → หน้านี้เสมอ
+    isStart: function (app) {
+      var pairing = pairOf(app);
+      if (!pairing) return false;
+      return !hasScreen('C3') || MED.medicationsOf(app.store.get('medications', []), pairing.pairingId).length === 0;
+    },
     render: function (body, ctx) {
       var app = ctx.app;
       var store = app.store;
@@ -174,6 +183,8 @@
           fileInput,
           h('button', { class: 'btn btn--secondary btn--block', type: 'button', onClick: function () { manualEntry(); } }, 'กรอกเอง'),
           cards.length ? h('div', { class: 'stack' }, cards) : null,
+          // สถานะวันนี้ของ E (FR-05 · specs/005-status) · ยังไม่มี → ไม่แสดงปุ่ม
+          hasScreen('C3') ? h('button', { class: 'btn btn--secondary btn--block', type: 'button', onClick: function () { ctx.go('C3'); } }, 'สถานะวันนี้') : null,
           h('button', { class: 'btn btn--ghost btn--block', type: 'button', onClick: function () { ctx.go('C1'); } }, 'การเชื่อมต่อ')
         ];
       }
@@ -302,7 +313,8 @@
         var focusId = active && body.contains(active) ? active.id : null;
         var content = mode === 'READING' ? readingView() : mode === 'DRAFT' ? draftView() : listView(pairing);
         body.textContent = '';
-        body.appendChild(h('div', { class: 'stack stack--lg' }, content));
+        // แถบแจ้งผู้ดูแล (FR-05 R11) บนสุดทุกมุมมอง · ร่างที่กรอกอยู่ใน draft ไม่หายเพราะวาดจากค่าในหน่วยความจำ
+        body.appendChild(h('div', { class: 'stack stack--lg' }, [MM.status ? MM.status.noticeBanner(ctx, false) : null].concat(content)));
         refresh();
         if (focusId) {
           var again = document.getElementById(focusId);

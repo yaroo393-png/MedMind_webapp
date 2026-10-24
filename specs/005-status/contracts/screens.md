@@ -9,9 +9,10 @@
 
 ## แถบแจ้ง — `MedMind.status.noticeBanner(ctx)` (clarify 24/10 · research R-6)
 
-- ผู้ดูแลจับคู่แล้ว (`canAccess`) และมี `unseen` → `.banner--warn` + `role="alert"`: บรรทัดละข้อความ "มื้อ HH:MM · " + `noticeText` (ล่าสุดก่อน) + ปุ่ม `btn--secondary btn--block` ·
+- `noticeBanner(ctx, onStatus)` · ผู้ดูแลจับคู่แล้ว (`canAccess`) และมี `unseen` → `.banner--warn` + `role="status"` (implement 24/10: หน้าผู้ดูแลวาดใหม่ทุกครั้งที่เวลาเปลี่ยน `alert` จะถูกอ่านซ้ำ): บรรทัดละข้อความ "มื้อ HH:MM · " + `noticeText` (ล่าสุดก่อน) + ปุ่ม `btn--secondary btn--block` ·
   บน C3: "รับทราบ" → `markSeen` · หน้าอื่น: "ดูสถานะ" → `markSeen` + `ctx.go('C3')` · handler `store.reload()` ก่อน · เขียนเมื่อค่าเปลี่ยน
 - ไม่มีข้อความที่ยังไม่กด → `null`
+- กด "ดูสถานะ"/"รับทราบ" ไม่มี dialog: ข้อความยังอยู่ใน "ข้อความแจ้งวันนี้" บน C3 จึงไม่มีข้อมูลหาย (analyze D1)
 - C2 (B) วางแถบนี้บนสุดของ `draw()` 1 บรรทัด (`MedMind.status ? … : null`) · C3 วางเอง
 
 ## C3 — `MedMind.screens.register({ id: 'C3', role: 'caregiver', title: 'สถานะการกินยาวันนี้', covers: ['FR-05', 'NFR-01', 'NFR-04'], isStart, render })`
@@ -29,6 +30,6 @@
 
 | ไฟล์ (เจ้าของ) | แก้ |
 |---|---|
-| `screens/medication.js` (B · C2) | `isStart` = จับคู่แล้ว **และ** ยังไม่มียาของคู่ (R-7) · แถบแจ้งบนสุดของ `draw()` · ปุ่มรอง "สถานะวันนี้" → C3 ในมุมมองรายการ (มี C3 เท่านั้น) |
+| `screens/medication.js` (B · C2) | covers เพิ่ม `FR-05` (analyze I1) · `isStart` = จับคู่แล้ว **และ** ยังไม่มียาของคู่ (R-7) · แถบแจ้งบนสุดของ `draw()` · ปุ่มรอง "สถานะวันนี้" → C3 ในมุมมองรายการ (มี C3 เท่านั้น) |
 | `screens/reminder.js` (C · ส่วนแจ้งของ D) | ลบ `NOT_READY_TEXT` + ทางที่ไม่มี `escalation` · ต้องมี `MedMind.escalation` ตอนโหลด (R-8) |
 | `index.html` | เปิดบรรทัด `<!-- E · FR-05 -->` (หลัง confirm.js) และ `<!-- E · C3 -->` |
