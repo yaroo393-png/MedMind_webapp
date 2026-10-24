@@ -2,6 +2,13 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-25 — A (แทน D, B) + Claude Code · user flow + wireframe · backlog
+- ใหม่: `docs/03-design/user-flow.md` (แผนที่หน้าจอ · user flow FR-01–05 แบบ Mermaid 5 รูป · ไทม์ไลน์ 1 มื้อ 2 เครื่อง · wireframe low-fi S1–S3, C1–C3 + error/empty · เช็กลิสต์ UI · traceability) — ข้อความใน wireframe ตรวจกับโค้ดแล้ว · **Mermaid ยังไม่ได้ render ตรวจ** (เครื่องมือ render ผ่าน CDN ถูกบล็อก) → เปิดดูบน GitHub ก่อนส่ง
+- ใหม่: `docs/02-requirements/backlog.md` (DoR/DoD · ลำดับ FR + สถานะ + จำนวน test จากการรันจริง · validation backlog ที่ต้องใช้คน · ข้อที่รอยืนยัน BR-03/18 (B) BR-10/11 (D) BR-13 (E) · งานส่งมอบถึง 26/10 · Won't)
+- แก้: `design-system.md` ลิงก์ไป user-flow · SRS AI log
+- ⚠️ **PR #10 ถูก merge ก่อน push commit โค้ด FR-05 (`6eb4950`)** → main ยังไม่มี `escalation.js`, `status.js` · commit อยู่บน `origin/feat/status` แล้ว → เปิด PR `feat/status` → `main` ใหม่
+- ยังขาด: Product Owner [ทีมกรอก] · test docs · final report · AI-Use Statement · slides
+
 ## 2026-10-24 — A (แทน E ตามที่ทีมตัดสิน) + Claude Code · FR-05 `/speckit-implement` (specs/005-status) — 22/22 task · **ครบ Must FR-01–05**
 - ไฟล์ใหม่: `src/modules/escalation.js` (`addNotice` · `escalate` · `noticeText` · `dailyStatus` · `noticesOf` · `unseen` · `markSeen`) · `src/screens/status.js` (C3 "สถานะการกินยาวันนี้" + แถบแจ้ง `MedMind.status.noticeBanner` + ตัวรันตามเวลาระดับหน้าเว็บ) · `tests/escalation.test.js` (30)
 - แก้: `screens/medication.js` (**ของ B — แจ้ง B**: covers + FR-05 · หน้าแรกเฉพาะตอนยังไม่มียา · แถบแจ้งบนสุด · ปุ่ม "สถานะวันนี้") · `screens/reminder.js` (ลบ "ยังไม่พร้อมในรุ่นนี้") · `index.html` (เปิดบรรทัดของ E)
