@@ -6,7 +6,7 @@
 - `isStart(app)` = จับคู่แล้ว **และ** `MedMind.reminder.dueKey(app)` ไม่ว่าง (R-6)
 - มื้อที่แสดง = `confirm.visibleDue(dueSessions(...), hidden, now)` · `dueKey` และเสียงใช้ผลเดียวกัน
 - ไม่มีมื้อต้องแสดง → มี S3 → `ctx.go('S3', { notice })` · ไม่มี S3 → สถานะว่าง/ยังไม่ถึงเวลาเดิม (ทางสำรอง)
-- `MedMind.reminder.hide(sessionKey, until)` — เก็บใน `hidden` ระดับหน้าเว็บ
+- `hidden` ระดับหน้าเว็บใน `reminder.js` (ไม่ export) · `MedMind.reminder.subscribe(fn)` แจ้งหน้าที่เปิดอยู่เมื่อการซ่อน/ยกเลิกเปลี่ยน (ไม่อยู่ใน store) · `MedMind.reminder.confirmTap(ctx, session)` = handler "กินแล้ว" ตัวเดียวของ S2 และ S3 (implement 24/10)
 
 **ยกเลิกได้ 10 วินาที (research R-8):** `MedMind.reminder.offerUndo({ text, undo, commit })` · `undoBanner()` แสดงบนสุดของ S2 และ S3 (`.banner--info` ข้อความ + ปุ่ม `btn--secondary` "ยกเลิก" สูง ≥ 48) · การแตะใหม่ commit ของเดิมทันที · หมดเวลา → commit + banner หาย
 
@@ -28,7 +28,7 @@
 | สถานะ | แสดง |
 |---|---|
 | ไม่มีมื้อวันนี้ | `.empty`: "ยังไม่มียา ให้ผู้ดูแลเพิ่มยา" (FR-03 ✗5 ตรงตัว) |
-| มีมื้อ | การ์ดละมื้อ เรียงเวลา: เวลา (`.card__title`) · ชื่อยาในมื้อ (คั่นด้วย " · ") · ป้ายสถานะ + `statusLabel` · `canConfirmLate` → ปุ่ม "กินแล้ว" `btn--xl btn--block` (primary เฉพาะปุ่มแรก) |
+| มีมื้อ | การ์ดละมื้อ เรียงเวลา: เวลา (`.session-time`) · ชื่อยาในมื้อ (`.card__title` ≥ 24 px · คั่นด้วย " · ") · ป้ายสถานะ + `statusLabel` · `canConfirmLate` → ปุ่ม "กินแล้ว" `btn--xl btn--block` (primary เฉพาะปุ่มแรก) |
 
 | สถานะ | class ป้าย |
 |---|---|
@@ -38,6 +38,7 @@
 | `WAITING` | `.status--waiting` |
 
 - ปุ่ม ghost "การเชื่อมต่อ" → S1 · ปุ่มหลัก ≤ 1 ต่อหน้าจอ
+- S1 (A) ปุ่ม "หน้าเตือนกินยา" เปลี่ยนเป็น "กลับหน้าแรก": กำลังเตือน → S2 · ไม่เตือน → S3 (implement 24/10)
 - "กินแล้ว" ใน S3 = ยืนยันช้า → เขียน + `offerUndo` "บันทึกแล้ว: กินแล้ว (ยืนยันช้า) HH:MM" (commit = แจ้ง `CONFIRMED_LATE` ตาม R-5) · `TOO_LATE` (แตะพอดีตอนหมดช่วง) → toast เหตุผล
 - เปิดบรรทัด `<!-- D · S3 -->` และ `<!-- D · FR-04 -->` ใน `index.html`
 

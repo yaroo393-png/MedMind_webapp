@@ -91,6 +91,11 @@
     return MM.screens.all().some(function (s) { return s.id === id; });
   }
 
+  function homeOf(app) {
+    var alerting = MM.reminder && MM.reminder.dueKey(app) !== '';
+    return alerting || !hasScreen('S3') ? 'S2' : 'S3';
+  }
+
   function unpairButton(onClick) {
     return h('button', { class: 'btn btn--secondary btn--block', type: 'button', onClick: onClick }, 'ยกเลิกการจับคู่');
   }
@@ -141,9 +146,9 @@
             h('p', { class: 'card__title', text: 'เชื่อมต่อกับลูกหลานแล้ว' }),
             h('p', { class: 'muted', text: 'เชื่อมต่อเมื่อเวลา ' + MM.clock.formatTime(pairing.pairedAt) + ' · ลูกหลานเห็นรายการยาและสถานะการกินยาของคุณ' })
           ]),
-          // หน้าเตือนของ C (FR-03 · specs/003-reminder) · ยังไม่มี → ไม่แสดงปุ่ม
-          hasScreen('S2')
-            ? h('button', { class: 'btn btn--secondary btn--block', type: 'button', onClick: function () { ctx.go('S2'); } }, 'หน้าเตือนกินยา')
+          // กลับหน้าแรก: กำลังเตือน → หน้าเตือน (S2 · FR-03) · ไม่เตือน → ยาของฉันวันนี้ (S3 · FR-04) · ยังไม่มีหน้าจอ → ไม่แสดงปุ่ม
+          hasScreen('S2') || hasScreen('S3')
+            ? h('button', { class: 'btn btn--secondary btn--block', type: 'button', onClick: function () { ctx.go(homeOf(app)); } }, 'กลับหน้าแรก')
             : null,
           unpairButton(function () { confirmUnpair(ctx); })  // สำเร็จ → draw() เห็นว่าไม่มีคู่ → รหัสใหม่ (✗6)
         ];

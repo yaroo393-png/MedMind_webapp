@@ -2,6 +2,15 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-24 — A (แทน D ตามที่ทีมตัดสิน) + Claude Code · FR-04 `/speckit-implement` (specs/004-confirm) — 21/21 task
+- ไฟล์ใหม่: `src/modules/confirm.js` (`confirm` · `undoConfirm` · `notYet` · `visibleDue` · `statusOf` · `statusLabel` · `canConfirmLate`) · `src/screens/home.js` (S3 "ยาของฉันวันนี้") · `tests/confirm.test.js` (33)
+- แก้: `screens/reminder.js` (ของ C · ส่วนปุ่มของ D): "กินแล้ว"/"ยังไม่กิน" ทำงานจริง · ยกเลิก 10 วินาที (`MedMind.reminder.offerUndo`/`undoBanner`/`confirmTap`/`subscribe`) · ซ่อนมื้อหลัง "ยังไม่กิน" · S2 เป็นหน้าแรกเฉพาะตอนกำลังเตือน · ลบ toast "ยังบันทึกไม่ได้ในรุ่นนี้" · `screens/pairing.js` (S1 ปุ่ม "กลับหน้าแรก" → S2 ถ้ากำลังเตือน ไม่งั้น S3) · `index.html` (เปิด confirm.js, home.js)
+- เอกสาร: architecture §4.1, §7, §8.1, §8.3, §8.4, §9.1 (คำสถานะย้ายมา `confirm.statusLabel` · `escalation` ใช้ `confirm`) · design-system (S2, S3, แถบยกเลิก) · SRS §7 แถว FR-04 + AI log · README "ลองยืนยันกินยา" · 004 contracts/research (`statusOf` ไม่รับ `sessions` · `hide` ไม่ export) · 003 research R-9 ส่งต่อแล้ว
+- ผล test จริง: `node --test` **184/184** · Chrome (scratchpad ไม่ commit): FR-04 s4 **53/53** (เวลาจริง · รวม ✓1 ✗2 ✓3 ✗4 ✓5 ✗6, ยกเลิก 10 วินาที, escalation จำลอง, NFR-03, ไม่มีคำ "ไม่ได้กิน") · FR-03 S2 35/35 + NFR-03 23/23 (ปรับข้อที่ปุ่มเปลี่ยน) · FR-01 us1 16 · us2 17 · us3 13 · polish 28 · FR-02 c2 28 (OCR จริง) · c2polish 17 · console error 0 · ชุดกล้อง (cam) ไม่ได้รันซ้ำ (ไม่ได้แก้ส่วนสแกน)
+- ก่อน FR-05: "ยังไม่กิน" รอบ T+10 / ยืนยันช้า → ไม่เขียน `notices` และบอกตามจริง "รับทราบแล้ว · ระบบแจ้งลูกหลานยังไม่พร้อมในรุ่นนี้" · **FR-05 ต้อง:** `escalation.addNotice(notices, session, type, pairingId, now)` คืนรายการเดิมเมื่อซ้ำ · ลบ `NOT_READY_TEXT` ใน reminder.js · `dailyStatus` ใช้ `confirm.statusOf/statusLabel`
+- ยังขาด (คน): D ยืนยัน BR-10/11 (ยกเลิก 10 วินาที) + ตรวจโค้ด/CSS · ทดสอบมือ 2 แท็บจริง (quickstart 2.7) · NFR-02 ผู้สูงอายุ 5 คน [ทีมกรอก]
+- branch `feat/confirm` · ยังไม่ commit
+
 ## 2026-10-24 — A (แทน D) + Claude Code · FR-04 `/speckit-analyze` + แก้ตามผล
 - analyze: 1 CRITICAL — "กินแล้ว" และ "ยังไม่กิน" รอบ T+10 ย้อนไม่ได้แต่ไม่มีการยืนยัน (ขัดกติกาวิชา) · ผู้ใช้เลือก **ยกเลิกได้ 10 วินาที** (ไม่มี dialog · ยังแตะ 1 ครั้ง)
 - แก้ SRS BR-10, BR-11 (**รอ D ยืนยัน**) · spec (R1b, SC-009, edge ปิดหน้าระหว่างช่วงยกเลิก) · research R-8 · contracts (`undoConfirm`, `offerUndo`/`undoBanner`, ตารางสถานะ→class) · data-model · quickstart · tasks 21 ข้อ (เพิ่ม 2) · AI log

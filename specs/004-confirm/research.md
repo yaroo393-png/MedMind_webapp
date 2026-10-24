@@ -21,14 +21,14 @@
 
 ## R-3 การซ่อนหลัง "ยังไม่กิน" = สถานะของหน้าเว็บ ไม่บันทึก
 
-- **Decision:** แผนที่ `hidden { sessionKey → hideUntil }` อยู่ระดับหน้าเว็บใน `screens/reminder.js` (`MedMind.reminder.hide(sessionKey, until)`) · กรองด้วยฟังก์ชันล้วน `confirm.visibleDue(due, hidden, now)`:
+- **Decision:** แผนที่ `hidden { sessionKey → hideUntil }` อยู่ระดับหน้าเว็บใน `screens/reminder.js` (ภายในไฟล์ · implement 24/10 ไม่ export `hide` เพราะไม่มีหน้าอื่นใช้) · กรองด้วยฟังก์ชันล้วน `confirm.visibleDue(due, hidden, now)`:
   ตัดมื้อกำลังเตือนที่ `now < hidden[sessionKey]` · ไม่เหลือมื้อกำลังเตือน → `[]` (มื้อช่วงยืนยันช้าไม่เปิดหน้าเตือนเอง · clarify 003) · `MedMind.reminder.dueKey` ใช้ผลที่กรองแล้ว
 - **Rationale:** clarify 24/10 "ไม่บันทึกการซ่อน" · ผลเมื่อรีเฟรช = แสดงอีกในรอบเดิม (ไม่เสียหาย · spec edge) · หน้าแรกไม่ดึงกลับหน้าเตือนระหว่างซ่อน เพราะ `dueKey` ไม่รวมมื้อที่ซ่อน · รอบถัดไปคีย์ใหม่ → หน้าเตือนขึ้นเองพร้อมเสียง
 - **Alternatives:** บันทึก "ยังไม่กิน" ลง store — สร้างข้อมูลที่ไม่มี entity ใน data model และทุกแท็บซ่อนตามกัน (เกินที่ clarify ตัดสิน)
 
 ## R-4 `statusOf` + `statusLabel` อยู่ใน `confirm` (ย้ายจาก doseSession / escalation)
 
-- **Decision:** `confirm.statusOf(session, sessions, confirmations, pairingId, now)` → `{ status, confirmedAt }` · status: `TAKEN` / `TAKEN_LATE` (มีบันทึก · ช้าเมื่อ `confirmedAt ≥ at + 15`) · `WAITING` (`now < at`) · `ALERTING` (`at ≤ now < at + 15`) · `UNCONFIRMED` (ที่เหลือ) ·
+- **Decision:** `confirm.statusOf(session, confirmations, pairingId, now)` (implement 24/10: ตัด `sessions` ที่ไม่ได้ใช้ออก) → `{ status, confirmedAt }` · status: `TAKEN` / `TAKEN_LATE` (มีบันทึก · ช้าเมื่อ `confirmedAt ≥ at + 15`) · `WAITING` (`now < at`) · `ALERTING` (`at ≤ now < at + 15`) · `UNCONFIRMED` (ที่เหลือ) ·
   `confirm.statusLabel(status, confirmedAt)` → "กินแล้ว 07:04" / "กินแล้ว (ยืนยันช้า) 08:40" / "กำลังเตือน" / "ยังไม่ยืนยัน" / "รอถึงเวลา" (BR-14 ตรงตัว)
 - **Rationale:** สถานะ TAKEN/TAKEN_LATE มาจากบันทึกยืนยันซึ่งเป็น entity ของ FR-04 · หน้าแรก S3 (FR-04) ต้องใช้คำ BR-14 ก่อน FR-05 มี · คำต้องตรงทุกที่ (§8.1) → ฟังก์ชันเดียว FR-05 (`dailyStatus`, หน้า C3) เรียกตัวนี้
 - **Alternatives:** คงไว้ที่ `escalation.statusLabel` (E) — S3 ต้องรอ FR-05 หรือเขียนคำซ้ำเอง (คำ 2 ที่ไม่ตรงกันได้)
