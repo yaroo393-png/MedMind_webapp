@@ -2,6 +2,12 @@
 
 อัปเดตทุกครั้งที่จบงาน (คนหรือ AI) · ล่าสุดอยู่บนสุด
 
+## 2026-10-24 — A (แทน D) + Claude Code · FR-04 `/speckit-plan` (specs/004-confirm)
+- ไฟล์: `plan.md` · `research.md` (R-1…R-7) · `data-model.md` · `contracts/confirm-module.md` · `contracts/screens.md` · `quickstart.md`
+- ตัดสินทางเทคนิค: `confirm` ใช้ `lateUntil` ของ doseSession (BR-15 ที่เดียว) · `notYet` คืนเวลาที่ซ่อนถึง · การซ่อนอยู่ในหน้าเว็บ ไม่บันทึก · `statusOf`/`statusLabel` ย้ายมาไว้ `confirm` (S3 ต้องใช้ก่อน FR-05 · คำ BR-14 ที่เดียว) · แจ้งผู้ดูแลผ่าน `escalation.addNotice` เมื่อมี — ก่อน FR-05 บอกผู้สูงอายุตามจริงว่ายังไม่พร้อม · S3 หน้าแรกใหม่ · S2 isStart เฉพาะมีมื้อต้องเตือน
+- ต้องแก้ตอน implement: architecture §7, §8.1, §8.3, §9.1 · reminder.js ของ C (ส่วนปุ่ม/สลับหน้า)
+- ถัดไป: `/speckit-tasks` · branch `feat/confirm`
+
 ## 2026-10-24 — A (แทน D ตามที่ทีมตัดสิน) + Claude Code · FR-04 `/speckit-specify` (specs/004-confirm)
 - `spec.md` + `checklists/requirements.md` (ผ่านทุกข้อ) · `.specify/feature.json` → 004-confirm · AC FR-04 ✓1 ✗2 ✓3 ✗4 ✓5 ✗6 · BR-10, 11, 12, 15, 16 · NFR-02, 03, 07 · R1–R13 + R4b
 - **ตัดสินแล้ว (ผู้ใช้):** หลังแตะ "ยังไม่กิน" ซ่อนมื้อนั้นจากหน้าเตือนจนรอบถัดไป (T+10 → จนพ้น T+15) · ไม่บันทึกการซ่อน
