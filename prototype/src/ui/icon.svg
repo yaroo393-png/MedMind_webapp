@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="MedMind">
+  <!-- ไอคอนแอป: ใบไม้ลายเส้น · สีจาก tokens.css (color-accent-soft = พื้น · color-accent = เส้น) · favicon ของ prototype และสไลด์ -->
+  <rect width="64" height="64" rx="14" fill="#E2EFE6"/>
+  <g fill="none" stroke="#1F6B4A" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 50C14 30 26 15 50 13c1 24-13 37-32 37"/>
+    <path d="M14 50C24 40 31 32 40 23"/>
+  </g>
+</svg>
